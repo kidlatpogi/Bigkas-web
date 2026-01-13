@@ -1,0 +1,52 @@
+/**
+ * Card Styles
+ */
+
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+/* Padding variants */
+.card-padding-none {
+  padding: 0;
+}
+
+.card-padding-small {
+  padding: var(--spacing-md);
+}
+
+.card-padding-default {
+  padding: var(--spacing-lg);
+}
+
+.card-padding-large {
+  padding: var(--spacing-xl);
+}
+
+/* Variants */
+.card-default {
+  background-color: var(--color-surface);
+}
+
+.card-elevated {
+  box-shadow: var(--shadow-md);
+  border: none;
+}
+
+.card-outlined {
+  box-shadow: none;
+  border: 2px solid var(--color-border);
+}
+
+.card-interactive {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.card-interactive:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
