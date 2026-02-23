@@ -397,3 +397,62 @@
 .account-actions {
   margin-top: var(--spacing-md);
 }
+
+/* ─────────────────────────────────────────────
+   Settings Page
+   ───────────────────────────────────────────── */
+.settings-page {
+  padding: var(--spacing-lg);
+  max-width: 640px;
+}
+
+.settings-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.settings-list {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-label {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+.settings-value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.settings-logout-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: transparent;
+  border: 1.5px solid var(--color-error, #FF3B30);
+  color: var(--color-error, #FF3B30);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-family: inherit;
+}
+.settings-logout-btn:hover {
+  background: var(--color-error, #FF3B30);
+  color: #FFFFFF;
+}

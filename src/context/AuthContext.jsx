@@ -137,6 +137,31 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  /**
+   * Update user nickname — stored locally and in user metadata.
+   * Triggers re-render so NicknameRoute auto-redirects to Dashboard.
+   * @param {string} nickname
+   * @returns {Promise<{ success: boolean, error?: string }>}
+   */
+  const updateNickname = useCallback(async (nickname) => {
+    const trimmed = nickname.trim();
+    if (!trimmed) return { success: false, error: 'Nickname is required' };
+
+    try {
+      // Optimistically update local state so routing reacts immediately
+      setUser((prev) => ({ ...prev, nickname: trimmed }));
+
+      // Persist in localStorage (demo mode) — real implementation would call Supabase
+      const demoUser = JSON.parse(localStorage.getItem('demoUser') || '{}');
+      localStorage.setItem('demoUser', JSON.stringify({ ...demoUser, nickname: trimmed }));
+
+      return { success: true };
+    } catch (error) {
+      console.error('updateNickname error:', error);
+      return { success: false, error: 'Failed to set nickname. Please try again.' };
+    }
+  }, []);
+
   const value = {
     user,
     isLoading,
@@ -144,6 +169,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     register,
+    updateNickname,
   };
 
   return (
