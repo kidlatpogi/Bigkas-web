@@ -90,6 +90,43 @@
 }
 .section-body.center { text-align: center; }
 
+/* ── Nav-link and footer buttons styled as links ── */
+.nav-link-btn,
+.footer-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+.nav-link-btn:hover { color: var(--primary); }
+.footer-link-btn {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.footer-link-btn:hover { color: var(--primary); }
+
+/* ── Scroll-snap for section-to-section navigation ── */
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 60px;
+}
+.hero-section,
+.problem-section,
+.solution-section,
+.features-section,
+.trust-section,
+.growth-section,
+.cta-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
 /* ── Scroll-triggered animation base ── */
 .problem-section,
 .solution-section,
@@ -99,7 +136,7 @@
 .cta-section {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .problem-section.in-view,
 .solution-section.in-view,
