@@ -834,7 +834,8 @@
 }
 .growth-chart {
   width: 100%;
-  height: 120px;
+  height: auto;
+  max-height: 140px;
 }
 .growth-labels {
   display: flex;

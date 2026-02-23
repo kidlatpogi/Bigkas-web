@@ -148,7 +148,7 @@ function GrowthChart() {
   const areaPoints = `0,${h} ${points} ${w},${h}`;
 
   return (
-    <svg className="growth-chart" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
+    <svg className="growth-chart" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet">
       <defs>
         <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="rgba(251,175,0,0.25)" />
