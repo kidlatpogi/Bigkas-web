@@ -361,6 +361,41 @@
 }
 .btn-android svg { flex-shrink: 0; }
 
+/* Android button - subtle version for hero */
+.btn-android-subtle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+  font-family: var(--font);
+  opacity: 0.8;
+}
+.btn-android-subtle:hover {
+  border-color: #3DDC84;
+  color: #3DDC84;
+  background: rgba(61, 220, 132, 0.04);
+  opacity: 1;
+  transform: translateY(-1px);
+}
+.btn-android-subtle svg { 
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* Hero android wrapper */
+.hero-android {
+  margin-top: 16px;
+}
+
 /* Hero stats */
 .hero-stats {
   display: flex;
@@ -1230,11 +1265,6 @@
     flex-wrap: wrap;
     justify-content: center;
   }
-  .footer-right {
-    flex-direction: column;
-    width: 100%;
-  }
-  .footer-right .btn-android,
   .footer-right button {
     width: 100%;
     max-width: 300px;

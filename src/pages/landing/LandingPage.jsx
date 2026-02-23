@@ -292,6 +292,19 @@ export default function LandingPage() {
               <StatPill value="85%" label="Avg. Score Improvement" />
               <StatPill value="0" label="Special Hardware Needed" />
             </div>
+            <div className="hero-android">
+              <a
+                href="https://expo.dev/accounts/kidlatpogi/projects/Bigkas/builds"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-android-subtle"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M17.523 2.226l1.392-2.415a.288.288 0 00-.499-.288L17.01 1.953C15.5 1.235 13.81.84 12 .84s-3.5.395-5.01 1.113L5.584-.477a.288.288 0 00-.499.288l1.392 2.415C3.038 4.267.72 8.168.72 12.6h22.56c0-4.432-2.318-8.333-5.757-10.374zM7.2 9.6a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm9.6 0a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM.72 13.8v8.4a1.8 1.8 0 003.6 0v-8.4H.72zm19.56 0v8.4a1.8 1.8 0 003.6 0v-8.4h-3.6zm-16.2 0v10.2a2.1 2.1 0 002.1 2.1h1.2v3.3a1.8 1.8 0 003.6 0v-3.3h2.04v3.3a1.8 1.8 0 003.6 0v-3.3h1.2a2.1 2.1 0 002.1-2.1V13.8H4.08z" fill="currentColor"/>
+                </svg>
+                Download for Android
+              </a>
+            </div>
           </div>
 
           {/* Dashboard Mockup — mirrors mobile DashboardScreen */}
@@ -624,17 +637,6 @@ export default function LandingPage() {
             <a href="#growth">Progress</a>
           </div>
           <div className="footer-right">
-            <a
-              href="https://expo.dev/accounts/kidlatpogi/projects/Bigkas/builds"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-android"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M17.523 2.226l1.392-2.415a.288.288 0 00-.499-.288L17.01 1.953C15.5 1.235 13.81.84 12 .84s-3.5.395-5.01 1.113L5.584-.477a.288.288 0 00-.499.288l1.392 2.415C3.038 4.267.72 8.168.72 12.6h22.56c0-4.432-2.318-8.333-5.757-10.374zM7.2 9.6a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm9.6 0a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM.72 13.8v8.4a1.8 1.8 0 003.6 0v-8.4H.72zm19.56 0v8.4a1.8 1.8 0 003.6 0v-8.4h-3.6zm-16.2 0v10.2a2.1 2.1 0 002.1 2.1h1.2v3.3a1.8 1.8 0 003.6 0v-3.3h2.04v3.3a1.8 1.8 0 003.6 0v-3.3h1.2a2.1 2.1 0 002.1-2.1V13.8H4.08z" fill="currentColor"/>
-              </svg>
-              Download for Android
-            </a>
             <button className="btn-nav-solid small" onClick={() => navigate(ROUTES.REGISTER)}>
               Get Started
             </button>
