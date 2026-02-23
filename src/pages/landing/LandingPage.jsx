@@ -50,8 +50,10 @@ function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
         </defs>
       </svg>
       <div className="score-overlay">
-        <span className="score-number">{score}</span>
-        <span className="score-percent">%</span>
+        <div className="score-value">
+          <span className="score-number">{score}</span>
+          <span className="score-percent">%</span>
+        </div>
         <span className="score-label">Confidence</span>
       </div>
     </div>

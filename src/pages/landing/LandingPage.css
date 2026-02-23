@@ -427,6 +427,11 @@
   align-items: center;
   justify-content: center;
 }
+.score-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
 .score-number {
   font-size: 48px;
   font-weight: 700;
