@@ -1,0 +1,247 @@
+/**
+ * DashboardPage — 1:1 copy of mobile DashboardScreen
+ * Design tokens from Bigkas-mobile repository:
+ *   Primary: #FBAF00  ·  Black: #010101  ·  Background: #F5F5F5
+ *   White: #FFFFFF    ·  Text secondary: rgba(1,1,1,0.6)
+ *   Border radius xl: 16px  ·  Border radius lg: 12px
+ */
+
+.dashboard-page-new {
+  --primary:        #FBAF00;
+  --black:          #010101;
+  --bg:             #F5F5F5;
+  --white:          #FFFFFF;
+  --text-primary:   #010101;
+  --text-secondary: rgba(1, 1, 1, 0.6);
+  --border:         #E0E0E0;
+  --radius-xl:      16px;
+  --radius-lg:      12px;
+  --font:           'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --shadow-sm:      0 2px 6px rgba(1, 1, 1, 0.06);
+  --shadow-md:      0 4px 10px rgba(1, 1, 1, 0.08);
+  --shadow-hero:    0 8px 20px rgba(1, 1, 1, 0.20);
+
+  background: var(--bg);
+  min-height: calc(100vh - 56px);
+  padding: 24px 16px 80px;
+  max-width: 560px;
+  margin: 0 auto;
+  font-family: var(--font);
+}
+
+/* ── Greeting ── */
+.dash-greeting {
+  margin-bottom: 16px;
+}
+.dash-greeting-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+}
+.dash-greeting-name {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 2px 0 0;
+  line-height: 1.15;
+}
+
+/* ── Hero card — black background ── */
+.dash-hero-card {
+  background: var(--black);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-hero);
+}
+.dash-hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.dash-hero-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Streak badge */
+.dash-streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(251, 175, 0, 0.15);
+  padding: 6px 10px;
+  border-radius: 12px;
+}
+.dash-streak-badge span {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font);
+}
+
+.dash-hero-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+.dash-hero-sub {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+/* Buttons inside hero */
+.dash-btn-practice {
+  width: 100%;
+  padding: 14px;
+  background: #FFFFFF;
+  color: var(--black);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+  letter-spacing: 0.2px;
+}
+.dash-btn-practice:hover { opacity: 0.9; }
+
+.dash-hero-or {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-family: var(--font);
+  margin: 10px 0;
+}
+
+.dash-btn-training {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: var(--black);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+  letter-spacing: 0.2px;
+}
+.dash-btn-training:hover { opacity: 0.9; }
+
+/* ── Stats card ── */
+.dash-stats-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: 24px 16px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-md);
+}
+.dash-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.dash-stat-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--black);
+  font-family: var(--font);
+  line-height: 1.1;
+}
+.dash-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-family: var(--font);
+}
+.dash-stat-divider {
+  width: 1.5px;
+  height: 40px;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Info cards row (two columns) ── */
+.dash-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.dash-info-card {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.dash-card-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-family: var(--font);
+}
+
+/* Motivation — italic quote */
+.dash-quote-text {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--black);
+  line-height: 1.55;
+  margin: 0 0 8px;
+  font-family: var(--font);
+}
+.dash-quote-author {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: var(--font);
+}
+
+/* Tip of the Day */
+.dash-tip-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0 0 4px;
+  font-family: var(--font);
+  line-height: 1.4;
+}
+.dash-tip-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+  font-family: var(--font);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .dashboard-page-new {
+    padding: 16px 12px 60px;
+  }
+  .dash-greeting-name { font-size: 28px; }
+  .dash-stat-value    { font-size: 28px; }
+}

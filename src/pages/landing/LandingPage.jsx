@@ -198,6 +198,14 @@ function StatPill({ value, label }) {
 /* ═══════════════════════════════════════════════════════
    LANDING PAGE
    ═══════════════════════════════════════════════════════ */
+/* Smooth-scroll helper — scrolls to a section ref accounting for fixed nav height */
+function scrollToSection(ref) {
+  if (!ref?.current) return;
+  const navHeight = 60;
+  const top = ref.current.getBoundingClientRect().top + window.scrollY - navHeight;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
@@ -209,6 +217,13 @@ export default function LandingPage() {
   const growthRef = useRef(null);
   const ctaRef = useRef(null);
 
+  const sectionRefs = [problemRef, solutionRef, featuresRef, trustRef, growthRef, ctaRef];
+
+  useEffect(() => {
+    // Scroll to top on mount so animations always play fresh
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -216,16 +231,27 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
+    // Pre-mark sections already visible on mount (handles browser back-nav)
+    sectionRefs.forEach((r) => {
+      if (r.current) {
+        const rect = r.current.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.88) {
+          r.current.classList.add('in-view');
+        }
+      }
+    });
+
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((e) => {
         if (e.isIntersecting) e.target.classList.add('in-view');
       }),
-      { threshold: 0.12 }
+      { threshold: 0.1, rootMargin: '-60px 0px 0px 0px' }
     );
-    [problemRef, solutionRef, featuresRef, trustRef, growthRef, ctaRef].forEach((r) => {
+    sectionRefs.forEach((r) => {
       if (r.current) observer.observe(r.current);
     });
     return () => observer.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -240,11 +266,11 @@ export default function LandingPage() {
           </div>
 
           <ul className="nav-links">
-            <li><a href="#problem">About</a></li>
-            <li><a href="#solution">Solution</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#trust">Science</a></li>
-            <li><a href="#growth">Progress</a></li>
+            <li><button onClick={() => scrollToSection(problemRef)} className="nav-link-btn">About</button></li>
+            <li><button onClick={() => scrollToSection(solutionRef)} className="nav-link-btn">Solution</button></li>
+            <li><button onClick={() => scrollToSection(featuresRef)} className="nav-link-btn">Features</button></li>
+            <li><button onClick={() => scrollToSection(trustRef)} className="nav-link-btn">Science</button></li>
+            <li><button onClick={() => scrollToSection(growthRef)} className="nav-link-btn">Progress</button></li>
           </ul>
 
           <div className="nav-actions">
@@ -285,23 +311,25 @@ export default function LandingPage() {
               <button className="btn-primary" onClick={() => navigate(ROUTES.REGISTER)}>
                 Start Practicing — It&apos;s Free
               </button>
-              <a href="#features" className="btn-ghost">See How It Works</a>
-              <a
-                href="https://expo.dev/accounts/kidlatpogi/projects/Bigkas/builds"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-android"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <path d="M17.523 2.226l1.392-2.415a.288.288 0 00-.499-.288L17.01 1.953C15.5 1.235 13.81.84 12 .84s-3.5.395-5.01 1.113L5.584-.477a.288.288 0 00-.499.288l1.392 2.415C3.038 4.267.72 8.168.72 12.6h22.56c0-4.432-2.318-8.333-5.757-10.374zM7.2 9.6a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm9.6 0a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM.72 13.8v8.4a1.8 1.8 0 003.6 0v-8.4H.72zm19.56 0v8.4a1.8 1.8 0 003.6 0v-8.4h-3.6zm-16.2 0v10.2a2.1 2.1 0 002.1 2.1h1.2v3.3a1.8 1.8 0 003.6 0v-3.3h2.04v3.3a1.8 1.8 0 003.6 0v-3.3h1.2a2.1 2.1 0 002.1-2.1V13.8H4.08z" fill="currentColor"/>
-                </svg>
-                Download for Android
-              </a>
+              <a href="#features" className="btn-ghost" onClick={(e) => { e.preventDefault(); scrollToSection(featuresRef); }}>See How It Works</a>
             </div>
             <div className="hero-stats">
               <StatPill value="200+" label="Behavioral Indicators" />
               <StatPill value="85%" label="Avg. Score Improvement" />
               <StatPill value="0" label="Special Hardware Needed" />
+            </div>
+            <div className="hero-android">
+              <a
+                href="https://expo.dev/accounts/kidlatpogi/projects/Bigkas/builds"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-android-subtle"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M17.523 2.226l1.392-2.415a.288.288 0 00-.499-.288L17.01 1.953C15.5 1.235 13.81.84 12 .84s-3.5.395-5.01 1.113L5.584-.477a.288.288 0 00-.499.288l1.392 2.415C3.038 4.267.72 8.168.72 12.6h22.56c0-4.432-2.318-8.333-5.757-10.374zM7.2 9.6a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm9.6 0a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM.72 13.8v8.4a1.8 1.8 0 003.6 0v-8.4H.72zm19.56 0v8.4a1.8 1.8 0 003.6 0v-8.4h-3.6zm-16.2 0v10.2a2.1 2.1 0 002.1 2.1h1.2v3.3a1.8 1.8 0 003.6 0v-3.3h2.04v3.3a1.8 1.8 0 003.6 0v-3.3h1.2a2.1 2.1 0 002.1-2.1V13.8H4.08z" fill="currentColor"/>
+                </svg>
+                Download for Android
+              </a>
             </div>
           </div>
 
@@ -628,11 +656,11 @@ export default function LandingPage() {
             <p className="footer-copy">&copy; 2026 Bigkas AI &mdash; Built for Filipino Speakers.</p>
           </div>
           <div className="footer-links">
-            <a href="#problem">About</a>
-            <a href="#solution">Solution</a>
-            <a href="#features">Features</a>
-            <a href="#trust">Science</a>
-            <a href="#growth">Progress</a>
+            <button onClick={() => scrollToSection(problemRef)} className="footer-link-btn">About</button>
+            <button onClick={() => scrollToSection(solutionRef)} className="footer-link-btn">Solution</button>
+            <button onClick={() => scrollToSection(featuresRef)} className="footer-link-btn">Features</button>
+            <button onClick={() => scrollToSection(trustRef)} className="footer-link-btn">Science</button>
+            <button onClick={() => scrollToSection(growthRef)} className="footer-link-btn">Progress</button>
           </div>
           <div className="footer-right">
             <button className="btn-nav-solid small" onClick={() => navigate(ROUTES.REGISTER)}>

@@ -7,10 +7,12 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  NICKNAME: '/nickname',
   DASHBOARD: '/dashboard',
   PRACTICE: '/practice',
   HISTORY: '/history',
   PROFILE: '/profile',
+  SETTINGS: '/settings',
   SESSION_DETAIL: '/session/:sessionId',
   SESSION_RESULT: '/session/:sessionId/result',
 };
