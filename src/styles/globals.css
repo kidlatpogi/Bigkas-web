@@ -184,6 +184,18 @@ ol {
   outline-color: #FBAF00;
 }
 
+/* Theme transition — smooth color changes on toggle */
+html,
+body,
+.landing,
+.auth-page,
+.navbar,
+.main-content {
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Utility classes */
 .visually-hidden {
   position: absolute;
