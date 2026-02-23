@@ -2,6 +2,9 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthContext } from '../context/useAuthContext';
 import { ROUTES } from '../utils/constants';
 
+// Landing Page
+import LandingPage from '../pages/landing/LandingPage';
+
 // Auth Pages
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
@@ -93,11 +96,11 @@ function AppRouter() {
         <Route path={ROUTES.SESSION_RESULT} element={<SessionResultPage />} />
       </Route>
 
-      {/* Redirect root to dashboard or login */}
-      <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+      {/* Landing Page — public root */}
+      <Route path={ROUTES.HOME} element={<LandingPage />} />
 
-      {/* 404 - Redirect to dashboard */}
-      <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+      {/* 404 - Redirect to landing */}
+      <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
     </Routes>
   );
 }
