@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
+import googleLogo from '../../assets/Google-Logo.png';
 import './AuthPages.css';
 
 /**
@@ -144,6 +145,11 @@ function LoginPage() {
             <span className="auth-divider-text">or</span>
             <span className="auth-divider-line" />
           </div>
+
+          <button type="button" className="auth-google-btn" onClick={() => alert('Google Sign-In coming soon!')}>
+            <img src={googleLogo} alt="Google" className="auth-google-logo" />
+            Continue with Google
+          </button>
 
           <div className="auth-footer">
             <p className="auth-footer-label">ALREADY HAVE AN ACCOUNT?</p>
