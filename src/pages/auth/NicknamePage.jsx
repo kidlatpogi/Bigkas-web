@@ -59,7 +59,7 @@ function NicknamePage() {
         </div>
 
         {/* Heading */}
-        <h1 className="nickname-title">Add your nickname</h1>
+        <h1 className="nickname-title">Add your<br />nickname</h1>
 
         {/* Subtitle */}
         <p className="nickname-subtitle">
