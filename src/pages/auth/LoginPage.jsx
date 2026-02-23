@@ -133,7 +133,7 @@ function LoginPage() {
               className="auth-submit-btn"
               disabled={isLoading}
             >
-              {isLoading ? 'SIGNING IN...' : 'SIGN IN'}
+              {isLoading ? 'LOGGING IN...' : 'LOG IN'}
             </button>
           </form>
 

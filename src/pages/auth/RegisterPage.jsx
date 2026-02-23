@@ -157,7 +157,7 @@ function RegisterPage() {
               className="auth-submit-btn"
               disabled={isLoading}
             >
-              {isLoading ? 'SIGNING UP...' : 'SIGN UP'}
+              {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
             </button>
           </form>
 

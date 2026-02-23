@@ -245,7 +245,7 @@ export default function LandingPage() {
 
           <div className="nav-actions">
             <button className="btn-nav-outline" onClick={() => navigate(ROUTES.LOGIN)}>
-              Sign In
+              Log In
             </button>
             <button className="btn-nav-solid" onClick={() => navigate(ROUTES.REGISTER)}>
               Get Started
