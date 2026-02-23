@@ -1,106 +1,130 @@
 /**
- * Theme configuration for styled-components or CSS-in-JS
+ * Theme configuration — matches Bigkas-mobile design tokens
+ * Source: https://github.com/kidlatpogi/Bigkas-mobile/tree/main/src/styles
  */
 
 export const theme = {
   colors: {
+    // Primary — Brand yellow
     primary: {
-      main: '#4F46E5',
-      dark: '#4338CA',
-      light: '#818CF8',
-      contrast: '#FFFFFF',
+      main: '#FBAF00',
+      dark: '#D59300',
+      light: '#FFC340',
+      contrast: '#010101',
     },
+    // Secondary — Black
     secondary: {
-      main: '#10B981',
-      dark: '#059669',
-      light: '#34D399',
+      main: '#010101',
+      light: '#2A2A2A',
       contrast: '#FFFFFF',
     },
-    accent: '#F59E0B',
+    // Neutral grays
+    gray: {
+      100: '#F5F5F5',
+      200: '#E9E9E9',
+      300: '#D5D5D5',
+      400: '#B0B0B0',
+      500: '#8C8C8C',
+      600: '#6E6E6E',
+      700: '#4B4B4B',
+      800: '#2E2E2E',
+      900: '#1A1A1A',
+    },
     background: {
-      default: '#F9FAFB',
+      default: '#F5F5F5',
       paper: '#FFFFFF',
-      hover: '#F3F4F6',
+      hover: '#E9E9E9',
     },
     text: {
-      primary: '#111827',
-      secondary: '#6B7280',
-      muted: '#9CA3AF',
-      disabled: '#D1D5DB',
+      primary: '#010101',
+      secondary: 'rgba(1, 1, 1, 0.6)',
+      muted: 'rgba(1, 1, 1, 0.45)',
+      inverse: '#FFFFFF',
+      disabled: '#B0B0B0',
     },
-    border: '#E5E7EB',
-    divider: '#D1D5DB',
+    border: '#E2E2E2',
+    borderDark: '#010101',
+    divider: '#E9E9E9',
     status: {
-      error: '#EF4444',
+      error: '#ff0000',
       warning: '#F59E0B',
-      success: '#10B981',
+      success: '#22C55E',
       info: '#3B82F6',
     },
   },
-  
+
+  // Spacing scale — 4px grid
   spacing: {
-    xs: '0.25rem',
-    sm: '0.5rem',
-    md: '1rem',
-    lg: '1.5rem',
-    xl: '2rem',
-    '2xl': '3rem',
+    xs: '4px',
+    sm: '8px',
+    md: '16px',
+    lg: '24px',
+    xl: '32px',
+    xxl: '48px',
+    xxxl: '64px',
   },
-  
+
+  // Padding presets
+  padding: {
+    screen: '16px',
+    card: '16px',
+    button: '12px',
+    input: '12px',
+  },
+
   borderRadius: {
-    sm: '0.25rem',
-    md: '0.5rem',
-    lg: '0.75rem',
-    xl: '1rem',
+    sm: '4px',
+    md: '8px',
+    lg: '12px',
+    xl: '16px',
     full: '9999px',
   },
-  
+
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
     md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
   },
-  
+
   typography: {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     fontSize: {
-      xs: '0.75rem',
-      sm: '0.875rem',
-      base: '1rem',
-      lg: '1.125rem',
-      xl: '1.25rem',
-      '2xl': '1.5rem',
-      '3xl': '1.875rem',
-      '4xl': '2.25rem',
+      xs: '12px',
+      sm: '14px',
+      md: '16px',
+      lg: '18px',
+      xl: '20px',
+      xxl: '24px',
+      xxxl: '32px',
+      display: '40px',
     },
     fontWeight: {
-      normal: 400,
+      regular: 400,
       medium: 500,
       semibold: 600,
       bold: 700,
     },
     lineHeight: {
-      tight: 1.25,
+      tight: 1.2,
       normal: 1.5,
       relaxed: 1.75,
     },
   },
-  
+
   transitions: {
     fast: '150ms ease',
     base: '200ms ease',
     slow: '300ms ease',
   },
-  
+
   breakpoints: {
     xs: '320px',
     sm: '640px',
     md: '768px',
     lg: '1024px',
     xl: '1280px',
-    '2xl': '1536px',
   },
-  
+
   zIndex: {
     dropdown: 1000,
     sticky: 1100,
@@ -116,18 +140,19 @@ export const darkTheme = {
   colors: {
     ...theme.colors,
     background: {
-      default: '#111827',
-      paper: '#1F2937',
-      hover: '#374151',
+      default: '#1A1A1A',
+      paper: '#2E2E2E',
+      hover: '#4B4B4B',
     },
     text: {
-      primary: '#F9FAFB',
-      secondary: '#D1D5DB',
-      muted: '#9CA3AF',
-      disabled: '#6B7280',
+      primary: '#FFFFFF',
+      secondary: 'rgba(255, 255, 255, 0.6)',
+      muted: 'rgba(255, 255, 255, 0.45)',
+      inverse: '#010101',
+      disabled: '#6E6E6E',
     },
-    border: '#374151',
-    divider: '#4B5563',
+    border: '#4B4B4B',
+    divider: '#4B4B4B',
   },
 };
 

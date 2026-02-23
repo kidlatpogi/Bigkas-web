@@ -2,6 +2,9 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuthContext } from '../context/useAuthContext';
 import { ROUTES } from '../utils/constants';
 
+// Landing Page
+import LandingPage from '../pages/landing/LandingPage';
+
 // Auth Pages
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
@@ -18,6 +21,7 @@ import SessionResultPage from '../pages/session/SessionResultPage';
 
 // Components
 import Navbar from '../components/common/Navbar';
+import ModeSwitcher from '../components/common/ModeSwitcher';
 
 /**
  * Protected Route Wrapper
@@ -76,7 +80,9 @@ function PublicRoute() {
  */
 function AppRouter() {
   return (
-    <Routes>
+    <>
+      <ModeSwitcher />
+      <Routes>
       {/* Public Routes - accessible only when not logged in */}
       <Route element={<PublicRoute />}>
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
@@ -93,12 +99,13 @@ function AppRouter() {
         <Route path={ROUTES.SESSION_RESULT} element={<SessionResultPage />} />
       </Route>
 
-      {/* Redirect root to dashboard or login */}
-      <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+      {/* Landing Page — public root */}
+      <Route path={ROUTES.HOME} element={<LandingPage />} />
 
-      {/* 404 - Redirect to dashboard */}
-      <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+      {/* 404 - Redirect to landing */}
+      <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
     </Routes>
+    </>
   );
 }
 

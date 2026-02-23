@@ -6,65 +6,54 @@ import { ROUTES } from '../../utils/constants';
 import './AuthPages.css';
 
 /**
- * Register Page Component
+ * Register Page — 1:1 from Figma screenshot
+ * Split layout: left branding panel + right form panel
  */
 function RegisterPage() {
   const navigate = useNavigate();
   const { register, isLoading } = useAuthContext();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-    
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!isValidEmail(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.errors[0];
     }
-    
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
     const result = await register({
       name: formData.name,
       email: formData.email,
       password: formData.password,
     });
-    
     if (result.success) {
       navigate(ROUTES.DASHBOARD);
     } else {
@@ -74,91 +63,108 @@ function RegisterPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-header">
-          <h1 className="auth-title">Create Account</h1>
-          <p className="auth-subtitle">Join Bigkas and start practicing</p>
+      {/* ── Left branding panel ── */}
+      <div className="auth-brand-panel">
+        <button
+          className="auth-back-btn"
+          onClick={() => navigate(ROUTES.HOME)}
+          aria-label="Back"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M13 4l-6 6 6 6" stroke="#010101" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        <div className="auth-brand-content">
+          <h1 className="auth-brand-name">BIGKAS</h1>
+          <p className="auth-brand-tagline">PUBLIC SPEAKING COACH</p>
+          <div className="auth-brand-line" />
+
+          <ul className="auth-brand-features">
+            <li>
+              <span className="feature-num">01</span>
+              <span className="feature-text">SPEECH ANALYSIS</span>
+            </li>
+            <li>
+              <span className="feature-num">02</span>
+              <span className="feature-text">CONFIDENCE SCORING</span>
+            </li>
+            <li>
+              <span className="feature-num">03</span>
+              <span className="feature-text">RHETORIC DESIGN</span>
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {errors.submit && (
-            <div className="auth-error-banner">{errors.submit}</div>
-          )}
+      {/* ── Right form panel ── */}
+      <div className="auth-form-panel">
+        <div className="auth-form-container">
+          <h2 className="auth-form-title">CREATE ACCOUNT</h2>
 
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              className={`form-input ${errors.name ? 'form-input-error' : ''}`}
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your name"
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {errors.submit && (
+              <div className="auth-error-banner">{errors.submit}</div>
+            )}
+
+            <div className="form-group">
+              <label htmlFor="name" className="form-label">FULL NAME</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className={`form-input ${errors.name ? 'form-input-error' : ''}`}
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="FIRST LAST"
+                disabled={isLoading}
+              />
+              {errors.name && <span className="form-error">{errors.name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">EMAIL ADDRESS</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className={`form-input ${errors.email ? 'form-input-error' : ''}`}
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="NAME@DOMAIN.COM"
+                disabled={isLoading}
+              />
+              {errors.email && <span className="form-error">{errors.email}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">PASSWORD</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className={`form-input ${errors.password ? 'form-input-error' : ''}`}
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                disabled={isLoading}
+              />
+              {errors.password && <span className="form-error">{errors.password}</span>}
+            </div>
+
+            <button
+              type="submit"
+              className="auth-submit-btn"
               disabled={isLoading}
-            />
-            {errors.name && <span className="form-error">{errors.name}</span>}
+            >
+              {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <p className="auth-footer-label">ALREADY HAVE AN ACCOUNT?</p>
+            <Link to={ROUTES.LOGIN} className="auth-link">LOGIN</Link>
           </div>
-
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className={`form-input ${errors.email ? 'form-input-error' : ''}`}
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              disabled={isLoading}
-            />
-            {errors.email && <span className="form-error">{errors.email}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className={`form-input ${errors.password ? 'form-input-error' : ''}`}
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              disabled={isLoading}
-            />
-            {errors.password && <span className="form-error">{errors.password}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              className={`form-input ${errors.confirmPassword ? 'form-input-error' : ''}`}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              disabled={isLoading}
-            />
-            {errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
-          </div>
-
-          <button 
-            type="submit" 
-            className="auth-submit-btn"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          <p>
-            Already have an account?{' '}
-            <Link to={ROUTES.LOGIN} className="auth-link">Sign in</Link>
-          </p>
         </div>
       </div>
     </div>
