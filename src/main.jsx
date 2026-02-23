@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { SessionProvider } from './context/SessionContext';
 import AppRouter from './routes/AppRouter';
@@ -16,11 +17,13 @@ import './index.css';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <SessionProvider>
-          <AppRouter />
-        </SessionProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <SessionProvider>
+            <AppRouter />
+          </SessionProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,
 );

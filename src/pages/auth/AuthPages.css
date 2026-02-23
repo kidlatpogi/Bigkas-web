@@ -290,6 +290,93 @@
 }
 
 /* ═══════════════════════════════════════════
+   DARK MODE — Auth pages
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .auth-page {
+  background: #121212;
+}
+
+[data-theme="dark"] .auth-brand-panel {
+  background: #1E1E1E;
+  border-right-color: #2E2E2E;
+}
+
+[data-theme="dark"] .auth-form-panel {
+  background: #1E1E1E;
+}
+
+[data-theme="dark"] .auth-back-btn {
+  border-color: #3A3A3A;
+}
+[data-theme="dark"] .auth-back-btn:hover {
+  border-color: #F0F0F0;
+}
+[data-theme="dark"] .auth-back-btn svg path {
+  stroke: #F0F0F0;
+}
+
+[data-theme="dark"] .auth-brand-name {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .auth-brand-tagline {
+  color: rgba(240, 240, 240, 0.7);
+}
+
+[data-theme="dark"] .feature-text {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .auth-form-title {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .form-label {
+  color: rgba(240, 240, 240, 0.8);
+}
+
+[data-theme="dark"] .form-input {
+  color: #F0F0F0;
+  border-bottom-color: #3A3A3A;
+}
+
+[data-theme="dark"] .form-input::placeholder {
+  color: #5A5A5A;
+}
+
+[data-theme="dark"] .auth-submit-btn {
+  color: #F0F0F0;
+}
+[data-theme="dark"] .auth-submit-btn:hover:not(:disabled) {
+  color: #010101;
+}
+
+[data-theme="dark"] .auth-forgot-link {
+  color: rgba(240, 240, 240, 0.8);
+}
+[data-theme="dark"] .auth-forgot-link:hover {
+  color: #FBAF00;
+}
+
+[data-theme="dark"] .auth-divider-line {
+  background: #3A3A3A;
+}
+[data-theme="dark"] .auth-divider-text {
+  color: #5A5A5A;
+}
+
+[data-theme="dark"] .auth-footer-label {
+  color: #5A5A5A;
+}
+
+[data-theme="dark"] .auth-link {
+  color: #F0F0F0;
+}
+[data-theme="dark"] .auth-link:hover {
+  color: #FBAF00;
+}
+
+/* ═══════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════ */
 @media (max-width: 900px) {

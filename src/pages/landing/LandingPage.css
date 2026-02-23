@@ -220,6 +220,25 @@
   transition: all 0.3s;
 }
 
+/* Theme toggle button */
+.btn-theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-theme-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 /* ═══════════════════════════════════════════
    HERO — 100vh · Black card bg (matches mobile)
    ═══════════════════════════════════════════ */
@@ -1007,6 +1026,102 @@
 @keyframes scrollPulse {
   0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
   50% { opacity: 1; transform: scaleY(1); }
+}
+
+/* ═══════════════════════════════════════════
+   DARK MODE — Landing overrides
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .landing {
+  --bg: #121212;
+  --surface: #1E1E1E;
+  --white: #1E1E1E;
+  --gray-100: #1A1A1A;
+  --gray-200: #2A2A2A;
+  --gray-300: #3A3A3A;
+  --gray-400: #5A5A5A;
+  --gray-500: #7A7A7A;
+  --gray-800: #E0E0E0;
+  --gray-900: #F0F0F0;
+  --border: #2E2E2E;
+  --text-primary: #F0F0F0;
+  --text-secondary: rgba(240, 240, 240, 0.65);
+  --text-muted: rgba(240, 240, 240, 0.4);
+  --text-inverse: #F0F0F0;
+  --secondary: #1A1A1A;
+  --secondary-light: #2A2A2A;
+
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .landing-nav {
+  background: rgba(18, 18, 18, 0.96);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .hero-bg {
+  background:
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(251,175,0,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 30%, rgba(240,240,240,0.02) 0%, transparent 60%),
+    var(--bg);
+}
+
+[data-theme="dark"] .dashboard-card {
+  background: #0A0A0A;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .problem-section,
+[data-theme="dark"] .features-section,
+[data-theme="dark"] .growth-section {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .solution-section,
+[data-theme="dark"] .trust-section,
+[data-theme="dark"] .cta-section {
+  background: #0F0F0F;
+}
+
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .pillar,
+[data-theme="dark"] .trust-card,
+[data-theme="dark"] .growth-card,
+[data-theme="dark"] .bridge-text,
+[data-theme="dark"] .problem-stats-card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .feature-card-visual {
+  background: #151515;
+}
+
+[data-theme="dark"] .fm {
+  background: #252525;
+}
+
+[data-theme="dark"] .cta-card {
+  background: #0A0A0A;
+}
+
+[data-theme="dark"] .landing-footer {
+  background: var(--bg);
+  border-top-color: var(--border);
+}
+
+[data-theme="dark"] .landing-nav.nav-open .nav-links,
+[data-theme="dark"] .landing-nav.nav-open .nav-actions {
+  background: var(--bg);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .bio-bar {
+  background: #2A2A2A;
+}
+
+[data-theme="dark"] .trust-badge {
+  background: rgba(251,175,0,0.08);
 }
 
 /* ═══════════════════════════════════════════
