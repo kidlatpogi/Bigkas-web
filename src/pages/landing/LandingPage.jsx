@@ -242,6 +242,7 @@ export default function LandingPage() {
 
           <ul className="nav-links">
             <li><a href="#problem">About</a></li>
+            <li><a href="#solution">Solution</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#trust">Science</a></li>
             <li><a href="#growth">Progress</a></li>
@@ -400,7 +401,7 @@ export default function LandingPage() {
       </section>
 
       {/* ══════ THE SOLUTION — 100vh ══════ */}
-      <section className="solution-section" ref={solutionRef}>
+      <section id="solution" className="solution-section" ref={solutionRef}>
         <div className="section-wrap">
           <span className="section-overline center">The Solution</span>
           <h2 className="section-heading center">
@@ -636,6 +637,7 @@ export default function LandingPage() {
           </div>
           <div className="footer-links">
             <a href="#problem">About</a>
+            <a href="#solution">Solution</a>
             <a href="#features">Features</a>
             <a href="#trust">Science</a>
             <a href="#growth">Progress</a>
