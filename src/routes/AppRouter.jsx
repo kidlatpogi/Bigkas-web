@@ -21,6 +21,7 @@ import SessionResultPage from '../pages/session/SessionResultPage';
 
 // Components
 import Navbar from '../components/common/Navbar';
+import ModeSwitcher from '../components/common/ModeSwitcher';
 
 /**
  * Protected Route Wrapper
@@ -79,7 +80,9 @@ function PublicRoute() {
  */
 function AppRouter() {
   return (
-    <Routes>
+    <>
+      <ModeSwitcher />
+      <Routes>
       {/* Public Routes - accessible only when not logged in */}
       <Route element={<PublicRoute />}>
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
@@ -102,6 +105,7 @@ function AppRouter() {
       {/* 404 - Redirect to landing */}
       <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
     </Routes>
+    </>
   );
 }
 
