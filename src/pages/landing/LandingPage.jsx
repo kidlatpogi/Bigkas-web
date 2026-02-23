@@ -93,10 +93,12 @@ const HEATMAP_DOTS = Array.from({ length: 24 }, (_, i) => {
 });
 
 function HeatmapViz() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   return (
     <div className="heatmap-viz">
       <svg viewBox="0 0 100 72" preserveAspectRatio="xMidYMid meet">
-        <ellipse cx="50" cy="36" rx="28" ry="34" fill="none" stroke="rgba(1,1,1,0.08)" strokeWidth="0.5" />
+        <ellipse cx="50" cy="36" rx="28" ry="34" fill="none" stroke={isDark ? 'rgba(255,255,255,0.12)' : 'rgba(1,1,1,0.08)'} strokeWidth="0.5" />
         <ellipse cx="38" cy="28" rx="6" ry="4" fill="rgba(251,175,0,0.15)" />
         <ellipse cx="62" cy="28" rx="6" ry="4" fill="rgba(251,175,0,0.15)" />
         {HEATMAP_DOTS.map((d, i) => (
@@ -105,7 +107,7 @@ function HeatmapViz() {
             cx={d.x}
             cy={d.y}
             r={d.size / 2}
-            fill={d.opacity > 0.6 ? 'rgba(251,175,0,0.5)' : 'rgba(1,1,1,0.1)'}
+            fill={d.opacity > 0.6 ? 'rgba(251,175,0,0.5)' : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(1,1,1,0.1)')}
             className="heatmap-dot"
             style={{ animationDelay: `${i * 0.05}s` }}
           />
