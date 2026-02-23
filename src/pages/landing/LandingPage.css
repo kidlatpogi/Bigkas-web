@@ -630,13 +630,14 @@
   gap: 12px;
   min-height: 180px;
   justify-content: center;
-  flex-shrink: 0;
+  flex: 1;
 }
 .feature-card-body {
   padding: 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 .feature-card-icon {
   margin-bottom: 12px;
