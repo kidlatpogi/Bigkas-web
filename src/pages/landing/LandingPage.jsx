@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
+import bigkasLogo from '../../assets/Temporary Logo.png';
 import './LandingPage.css';
 
 /* ═══════════════════════════════════════════════════════
@@ -231,15 +232,8 @@ export default function LandingPage() {
       <nav className="landing-nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="logo-mark">
-              <svg width="24" height="24" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="11" fill="#FBAF00" />
-                <rect x="7" y="9" width="2" height="8" rx="1" fill="#010101" />
-                <rect x="11" y="6" width="2" height="14" rx="1" fill="#010101" />
-                <rect x="15" y="10" width="2" height="6" rx="1" fill="#010101" />
-              </svg>
-            </div>
-            <span className="logo-text">BIGKAS</span>
+            <img src={bigkasLogo} alt="Bigkas logo" className="logo-img" />
+            <span className="logo-text">Bigkas</span>
           </div>
 
           <ul className="nav-links">
@@ -612,7 +606,10 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <div className="footer-inner">
           <div className="footer-left">
-            <span className="footer-logo">BIGKAS</span>
+            <div className="footer-logo-group">
+              <img src={bigkasLogo} alt="Bigkas logo" className="footer-logo-img" />
+              <span className="footer-logo">Bigkas</span>
+            </div>
             <p className="footer-copy">&copy; 2026 Bigkas AI &mdash; Built for Filipino Speakers.</p>
           </div>
           <div className="footer-links">
