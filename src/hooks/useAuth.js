@@ -1,17 +1,10 @@
 import { useAuthContext } from '../context/useAuthContext';
 
 /**
- * Custom hook for authentication
- * Wraps AuthContext with additional utilities
+ * Thin wrapper — returns the full AuthContext value.
  */
 export function useAuth() {
-  const auth = useAuthContext();
-
-  return {
-    ...auth,
-    // Additional helper methods can be added here
-    isLoggedIn: auth.isAuthenticated,
-  };
+  return useAuthContext();
 }
 
 export default useAuth;

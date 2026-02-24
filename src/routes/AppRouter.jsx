@@ -12,18 +12,27 @@ import NicknamePage from '../pages/auth/NicknamePage';
 
 // Main Pages
 import DashboardPage from '../pages/main/DashboardPage';
-import PracticePage from '../pages/main/PracticePage';
+import ScriptsPage from '../pages/main/ScriptsPage';
+import ProgressPage from '../pages/main/ProgressPage';
 import HistoryPage from '../pages/main/HistoryPage';
+import AllSessionsPage from '../pages/main/AllSessionsPage';
 import ProfilePage from '../pages/main/ProfilePage';
+import EditProfilePage from '../pages/main/EditProfilePage';
 import SettingsPage from '../pages/main/SettingsPage';
+import ChangePasswordPage from '../pages/main/ChangePasswordPage';
+import AccountSettingsPage from '../pages/main/AccountSettingsPage';
+import TrainingSetupPage from '../pages/main/TrainingSetupPage';
+import TrainingPage from '../pages/main/TrainingPage';
+import ScriptEditorPage from '../pages/main/ScriptEditorPage';
+import GenerateScriptPage from '../pages/main/GenerateScriptPage';
 
 // Session Pages
 import SessionDetailPage from '../pages/session/SessionDetailPage';
 import SessionResultPage from '../pages/session/SessionResultPage';
+import DetailedFeedbackPage from '../pages/session/DetailedFeedbackPage';
 
 // Components
 import Navbar from '../components/common/Navbar';
-import ModeSwitcher from '../components/common/ModeSwitcher';
 
 /**
  * Protected Route Wrapper
@@ -110,38 +119,59 @@ function PublicRoute() {
  */
 function AppRouter() {
   return (
-    <>
-      <ModeSwitcher />
-      <Routes>
-        {/* Public Routes - accessible only when not logged in */}
-        <Route element={<PublicRoute />}>
-          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
-        </Route>
+    <Routes>
+      {/* Public Routes - accessible only when not logged in */}
+      <Route element={<PublicRoute />}>
+        <Route path={ROUTES.LOGIN}    element={<LoginPage />} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+      </Route>
 
-        {/* Nickname Route — authenticated users without a nickname */}
-        <Route element={<NicknameRoute />}>
-          <Route path={ROUTES.NICKNAME} element={<NicknamePage />} />
-        </Route>
+      {/* Nickname Route — authenticated users without a nickname */}
+      <Route element={<NicknameRoute />}>
+        <Route path={ROUTES.NICKNAME} element={<NicknamePage />} />
+      </Route>
 
-        {/* Protected Routes - require authentication + nickname */}
-        <Route element={<ProtectedRoute />}>
-          <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-          <Route path={ROUTES.PRACTICE} element={<PracticePage />} />
-          <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
-          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-          <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
-          <Route path={ROUTES.SESSION_DETAIL} element={<SessionDetailPage />} />
-          <Route path={ROUTES.SESSION_RESULT} element={<SessionResultPage />} />
-        </Route>
+      {/* Protected Routes - require authentication + nickname */}
+      <Route element={<ProtectedRoute />}>
+        {/* Dashboard */}
+        <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
 
-        {/* Landing Page — public root */}
-        <Route path={ROUTES.HOME} element={<LandingPage />} />
+        {/* Scripts */}
+        <Route path={ROUTES.SCRIPTS}            element={<ScriptsPage />} />
+        <Route path={ROUTES.SCRIPT_EDITOR}      element={<ScriptEditorPage />} />
+        <Route path={ROUTES.SCRIPT_EDITOR_EDIT} element={<ScriptEditorPage />} />
+        <Route path={ROUTES.GENERATE_SCRIPT}    element={<GenerateScriptPage />} />
 
-        {/* 404 - Redirect to landing */}
-        <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
-      </Routes>
-    </>
+        {/* Training */}
+        <Route path={ROUTES.TRAINING_SETUP} element={<TrainingSetupPage />} />
+        <Route path={ROUTES.TRAINING}       element={<TrainingPage />} />
+
+        {/* History / Progress */}
+        <Route path={ROUTES.HISTORY}      element={<HistoryPage />} />
+        <Route path={ROUTES.ALL_SESSIONS} element={<AllSessionsPage />} />
+        <Route path={ROUTES.PROGRESS}     element={<ProgressPage />} />
+
+        {/* Profile */}
+        <Route path={ROUTES.PROFILE}      element={<ProfilePage />} />
+        <Route path={ROUTES.EDIT_PROFILE} element={<EditProfilePage />} />
+
+        {/* Settings */}
+        <Route path={ROUTES.SETTINGS}         element={<SettingsPage />} />
+        <Route path={ROUTES.CHANGE_PASSWORD}  element={<ChangePasswordPage />} />
+        <Route path={ROUTES.ACCOUNT_SETTINGS} element={<AccountSettingsPage />} />
+
+        {/* Session */}
+        <Route path={ROUTES.SESSION_DETAIL}    element={<SessionDetailPage />} />
+        <Route path={ROUTES.SESSION_RESULT}    element={<SessionResultPage />} />
+        <Route path={ROUTES.DETAILED_FEEDBACK} element={<DetailedFeedbackPage />} />
+      </Route>
+
+      {/* Landing Page — public root */}
+      <Route path={ROUTES.HOME} element={<LandingPage />} />
+
+      {/* 404 - Redirect to landing */}
+      <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
+    </Routes>
   );
 }
 

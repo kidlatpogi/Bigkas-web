@@ -1,23 +1,221 @@
 /**
  * Session Pages Styles
+ * Builds on InnerPages.css
  */
 
-.session-page {
-  padding: var(--spacing-lg);
-  max-width: 800px;
-  margin: 0 auto;
+/* ── Score circle ── */
+.score-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  border: 6px solid #FBAF00;
 }
 
-.back-link {
+.score-circle-num {
+  font-size: 40px;
+  font-weight: 800;
+  color: #010101;
+  line-height: 1;
+}
+
+.score-circle-label {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ── Result summary ── */
+.result-summary {
+  font-size: 15px;
+  color: #555;
+  text-align: center;
+  line-height: 1.6;
+  margin: 8px 0 24px;
+}
+
+/* ── Metric card ── */
+.metric-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.metric-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #010101;
+}
+
+.progress-track {
+  height: 8px;
+  background: #EBEBEB;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-track-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.metric-note {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Session detail cards ── */
+.detail-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 8px;
+}
+
+.practiced-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #010101;
+  background: #F8F8F8;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0F0F0;
+  font-size: 14px;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row-key {
+  color: #888;
+}
+
+.info-row-val {
+  font-weight: 600;
+  color: #010101;
+}
+
+/* ── Flow chart ── */
+.flow-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 90px;
+  margin-bottom: 10px;
+}
+
+.flow-bar-col {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.flow-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 6px;
+}
+
+.flow-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #888;
+  flex-wrap: wrap;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   display: inline-block;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-md);
 }
 
-.back-link:hover {
-  color: var(--color-primary);
+.legend-dot.green  { background: #34C759; }
+.legend-dot.yellow { background: #FBAF00; }
+.legend-dot.red    { background: #FF3B30; }
+
+/* ── Timestamped feedback ── */
+.feedback-item {
+  border-left: 4px solid #FBAF00;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: #FAFAFA;
+  border-radius: 0 10px 10px 0;
 }
+
+.feedback-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.feedback-text {
+  font-size: 14px;
+  color: #444;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Pitch / waveform bars (result page) ── */
+.pitch-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 56px;
+  flex: 1;
+}
+
+.pitch-bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  background: #FBAF00;
+}
+
+/* ── Feedback link chevron ── */
+.view-feedback-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  cursor: pointer;
+  border-top: 1px solid #F0F0F0;
+  margin-top: 8px;
+}
+
+.view-feedback-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #010101;
+}
+
+.view-feedback-arrow {
+  font-size: 20px;
+  color: #AAAAAA;
+}
+
 
 /* Session Details */
 .session-details {

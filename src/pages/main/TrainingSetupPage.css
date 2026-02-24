@@ -1,0 +1,78 @@
+.btn-link {
+  background: none;
+  border: none;
+  color: #FBAF00;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.form-hint {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.script-preview-card {
+  margin-bottom: 16px;
+  border-left: 4px solid #FBAF00;
+  padding-left: 16px;
+}
+
+.script-preview-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #010101;
+  margin: 0 0 6px;
+}
+
+.script-preview-content {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Focus options */
+.focus-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.focus-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 2px solid #E0E0E0;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.focus-option input[type="radio"] {
+  margin-top: 2px;
+  accent-color: #FBAF00;
+  flex-shrink: 0;
+}
+
+.focus-option.selected {
+  border-color: #FBAF00;
+  background: rgba(251,175,0,0.06);
+}
+
+.focus-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #010101;
+  margin: 0 0 2px;
+}
+
+.focus-desc {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}

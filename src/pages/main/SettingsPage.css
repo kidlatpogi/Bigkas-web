@@ -1,0 +1,49 @@
+/* SettingsPage.css */
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 8px 4px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.settings-storage-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.settings-text-btn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid #F0F0F0;
+  text-align: left;
+  padding: 14px 4px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #010101;
+  transition: background 0.15s;
+  width: 100%;
+}
+
+.settings-text-btn:last-child {
+  border-bottom: none;
+}
+
+.settings-text-btn:hover {
+  background: #F5F5F5;
+}
+
+.settings-text-btn.danger {
+  color: #FF3B30;
+}

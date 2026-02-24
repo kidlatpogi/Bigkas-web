@@ -129,19 +129,8 @@ export default function DashboardPage() {
         <h1 className="dash-greeting-name">{displayName}</h1>
       </div>
 
-      {/* ── Hero card — "Ready to speak?" (black card, mirrors mobile heroCard) ── */}
+      {/* ── Hero card — "Ready to speak?" (black card, centered) ── */}
       <div className="dash-hero-card">
-        {/* Header row: mic icon + streak badge */}
-        <div className="dash-hero-header">
-          <div className="dash-hero-icon">
-            <MicIcon size={28} color="#FBAF00" />
-          </div>
-          <div className="dash-streak-badge">
-            <FlameIcon size={14} color="#FBAF00" />
-            <span>{streakCount} day streak</span>
-          </div>
-        </div>
-
         {/* Copy */}
         <h2 className="dash-hero-title">Ready to speak?</h2>
         <p className="dash-hero-sub">Ready when you are.</p>

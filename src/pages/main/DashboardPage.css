@@ -1,9 +1,9 @@
 /**
- * DashboardPage — 1:1 copy of mobile DashboardScreen
- * Design tokens from Bigkas-mobile repository:
+ * DashboardPage — 1:1 Figma desktop design (node 364:1412)
+ * Design tokens:
  *   Primary: #FBAF00  ·  Black: #010101  ·  Background: #F5F5F5
- *   White: #FFFFFF    ·  Text secondary: rgba(1,1,1,0.6)
- *   Border radius xl: 16px  ·  Border radius lg: 12px
+ *   White: #FFFFFF    ·  Info card bg: #EBEBEB
+ *   Border radius: 20px  ·  Content width: 800px
  */
 
 .dashboard-page-new {
@@ -11,20 +11,27 @@
   --black:          #010101;
   --bg:             #F5F5F5;
   --white:          #FFFFFF;
+  --card-bg:        #EBEBEB;
   --text-primary:   #010101;
   --text-secondary: rgba(1, 1, 1, 0.6);
   --border:         #E0E0E0;
-  --radius-xl:      16px;
-  --radius-lg:      12px;
+  --radius-card:    20px;
   --font:           'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --shadow-sm:      0 2px 6px rgba(1, 1, 1, 0.06);
-  --shadow-md:      0 4px 10px rgba(1, 1, 1, 0.08);
-  --shadow-hero:    0 8px 20px rgba(1, 1, 1, 0.20);
+  --shadow-card:    0px 2px 3px 0px rgba(0,0,0,0.10),
+                    0px 6px 6px 0px rgba(0,0,0,0.09),
+                    0px 13px 8px 0px rgba(0,0,0,0.05),
+                    0px 24px 10px 0px rgba(0,0,0,0.01),
+                    0px 38px 10px 0px rgba(0,0,0,0);
+  --shadow-info:    0px 3px 7px 0px rgba(0,0,0,0.10),
+                    0px 13px 13px 0px rgba(0,0,0,0.09),
+                    0px 28px 17px 0px rgba(0,0,0,0.05),
+                    0px 50px 20px 0px rgba(0,0,0,0.01),
+                    0px 78px 22px 0px rgba(0,0,0,0);
 
   background: var(--bg);
-  min-height: calc(100vh - 56px);
-  padding: 24px 16px 80px;
-  max-width: 560px;
+  min-height: calc(100vh - 50px);
+  padding: 50px 0 80px;
+  max-width: 800px;
   margin: 0 auto;
   font-family: var(--font);
 }
@@ -34,83 +41,67 @@
   margin-bottom: 16px;
 }
 .dash-greeting-text {
-  font-size: 16px;
+  font-size: 32px;
   font-weight: 500;
   color: var(--text-secondary);
-  font-style: italic;
+  font-style: normal;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.2;
+  white-space: pre-wrap;
 }
 .dash-greeting-name {
-  font-size: 34px;
+  font-size: 56px;
   font-weight: 700;
   color: var(--black);
-  margin: 2px 0 0;
-  line-height: 1.15;
+  margin: 0;
+  line-height: 1.1;
 }
 
 /* ── Hero card — black background ── */
 .dash-hero-card {
   background: var(--black);
-  border-radius: var(--radius-xl);
-  padding: 24px;
-  margin-bottom: 8px;
-  box-shadow: var(--shadow-hero);
-}
-.dash-hero-header {
+  border-radius: var(--radius-card);
+  padding: 17px 24px 24px;
+  margin-bottom: 30px;
+  min-height: 245px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-.dash-hero-icon {
-  width: 40px;
-  height: 40px;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 /* Streak badge */
 .dash-streak-badge {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(251, 175, 0, 0.15);
-  padding: 6px 10px;
-  border-radius: 12px;
-}
-.dash-streak-badge span {
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 700;
-  font-family: var(--font);
+  display: none; /* hidden in Figma desktop design */
 }
 
 .dash-hero-title {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: #FFFFFF;
-  margin: 0 0 4px;
+  margin: 0 0 8px;
   line-height: 1.2;
+  text-align: center;
 }
 .dash-hero-sub {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
   margin: 0 0 24px;
   line-height: 1.5;
+  text-align: center;
 }
 
 /* Buttons inside hero */
 .dash-btn-practice {
-  width: 100%;
-  padding: 14px;
+  width: 306px;
+  height: 50px;
+  padding: 0;
   background: #FFFFFF;
   color: var(--black);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 8px;
   cursor: pointer;
   font-family: var(--font);
   transition: opacity 0.2s;
@@ -120,21 +111,23 @@
 
 .dash-hero-or {
   text-align: center;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 13px;
+  color: rgba(255, 255, 255, 0.70);
+  font-size: 16px;
+  font-weight: 500;
   font-family: var(--font);
-  margin: 10px 0;
+  margin: 14px 0;
 }
 
 .dash-btn-training {
-  width: 100%;
-  padding: 14px;
+  width: 306px;
+  height: 50px;
+  padding: 0;
   background: var(--primary);
   color: var(--black);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 8px;
   cursor: pointer;
   font-family: var(--font);
   transition: opacity 0.2s;
@@ -148,100 +141,131 @@
   align-items: center;
   justify-content: space-evenly;
   background: var(--white);
-  border-radius: var(--radius-xl);
-  padding: 24px 16px;
-  margin-bottom: 8px;
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-card);
+  padding: 40px 16px;
+  margin-bottom: 30px;
+  min-height: 245px;
+  box-shadow: var(--shadow-card);
 }
 .dash-stat {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 .dash-stat-value {
-  font-size: 34px;
+  font-size: 64px;
   font-weight: 700;
   color: var(--black);
   font-family: var(--font);
-  line-height: 1.1;
+  line-height: 1;
 }
 .dash-stat-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: var(--black);
   font-family: var(--font);
+  text-transform: uppercase;
 }
 .dash-stat-divider {
-  width: 1.5px;
-  height: 40px;
+  width: 1px;
+  height: 150px;
   background: var(--primary);
   flex-shrink: 0;
+  opacity: 0.8;
 }
 
 /* ── Info cards row (two columns) ── */
 .dash-info-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 .dash-info-card {
-  background: var(--white);
-  border-radius: var(--radius-xl);
-  padding: 16px;
-  box-shadow: var(--shadow-sm);
+  background: var(--card-bg);
+  border-radius: var(--radius-card);
+  padding: 24px 30px;
+  box-shadow: var(--shadow-info);
+  min-height: 245px;
+  display: flex;
+  flex-direction: column;
 }
 .dash-card-label {
   display: block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
+  color: rgba(1,1,1,0.80);
+  margin-bottom: 14px;
   font-family: var(--font);
+  text-align: center;
 }
 
 /* Motivation — italic quote */
 .dash-quote-text {
-  font-size: 13px;
+  font-size: 24px;
   font-style: italic;
   color: var(--black);
-  line-height: 1.55;
+  line-height: 1.45;
   margin: 0 0 8px;
   font-family: var(--font);
 }
 .dash-quote-author {
-  font-size: 13px;
-  color: var(--text-secondary);
+  font-size: 24px;
+  color: var(--black);
   font-family: var(--font);
 }
 
 /* Tip of the Day */
 .dash-tip-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--black);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   font-family: var(--font);
   line-height: 1.4;
 }
 .dash-tip-body {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.55;
+  font-size: 15px;
+  color: var(--black);
+  line-height: 1.5;
   margin: 0;
   font-family: var(--font);
 }
 
 /* ── Responsive ── */
-@media (max-width: 480px) {
+@media (max-width: 900px) {
   .dashboard-page-new {
-    padding: 16px 12px 60px;
+    max-width: 100%;
+    padding: 32px 24px 80px;
   }
-  .dash-greeting-name { font-size: 28px; }
-  .dash-stat-value    { font-size: 28px; }
+  .dash-greeting-text { font-size: 24px; }
+  .dash-greeting-name { font-size: 42px; }
+  .dash-stat-value    { font-size: 48px; }
+  .dash-quote-text,
+  .dash-quote-author  { font-size: 18px; }
 }
+
+@media (max-width: 600px) {
+  .dashboard-page-new {
+    padding: 24px 16px 60px;
+  }
+  .dash-greeting-text { font-size: 20px; }
+  .dash-greeting-name { font-size: 34px; }
+  .dash-stat-value    { font-size: 36px; }
+  .dash-stat-label    { font-size: 12px; }
+  .dash-stat-divider  { height: 80px; }
+  .dash-info-row {
+    grid-template-columns: 1fr;
+  }
+  .dash-btn-practice,
+  .dash-btn-training {
+    width: 100%;
+  }
+  .dash-quote-text,
+  .dash-quote-author  { font-size: 16px; }
+}
+/* end */
