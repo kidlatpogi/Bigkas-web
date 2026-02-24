@@ -1,34 +1,44 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
-import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './SettingsPage.css';
 
-const MIC_OPTIONS = ['Default', 'External Microphone', 'Bluetooth Headset'];
-const CAM_OPTIONS = ['Front Camera', 'Back Camera'];
+const MIC_OPTIONS = [
+  'Default — Built-in Microphone',
+  'Bluetooth Microphone',
+  'External Microphone',
+];
+const CAM_OPTIONS = [
+  'Front Camera',
+  'Back Camera',
+];
+
+/* ── Chevron icon ── */
+const ChevronIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6"/>
+  </svg>
+);
 
 function SettingsPage() {
-  const navigate = useNavigate();
   const { logout } = useAuthContext();
 
-  const [mic, setMic] = useState(() => localStorage.getItem('pref_mic') || 'Default');
-  const [cam, setCam] = useState(() => localStorage.getItem('pref_cam') || 'Front Camera');
-  const [saved, setSaved] = useState(false);
+  const [mic, setMic] = useState(() => localStorage.getItem('pref_mic') || MIC_OPTIONS[0]);
+  const [cam, setCam] = useState(() => localStorage.getItem('pref_cam') || CAM_OPTIONS[0]);
 
-  const handleSave = () => {
-    localStorage.setItem('pref_mic', mic);
-    localStorage.setItem('pref_cam', cam);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleMicChange = (e) => {
+    setMic(e.target.value);
+    localStorage.setItem('pref_mic', e.target.value);
   };
 
-  const handleClearCache = () => {
-    if (window.confirm('Clear local cache? This will reset preferences.')) {
-      localStorage.clear();
-      setMic('Default');
-      setCam('Front Camera');
-    }
+  const handleCamChange = (e) => {
+    setCam(e.target.value);
+    localStorage.setItem('pref_cam', e.target.value);
+  };
+
+  const handleTestAV = () => {
+    alert('Audio / Video test feature coming soon!');
   };
 
   const handleLogout = async () => {
@@ -38,53 +48,57 @@ function SettingsPage() {
   };
 
   return (
-    <div className="inner-page">
-      <div className="inner-page-header">
+    <div className="inner-page settings-page">
+      <div className="inner-page-header" style={{ marginBottom: 28 }}>
         <h1 className="inner-page-title">Settings</h1>
       </div>
 
-      {saved && <div className="page-success">Preferences saved!</div>}
-
       {/* Hardware section */}
-      <p className="section-label">Hardware</p>
-      <div className="page-card" style={{ marginBottom: 16 }}>
-        <div className="form-group" style={{ marginBottom: 12 }}>
-          <label className="form-label">Microphone Source</label>
-          <select
-            className="form-select"
-            value={mic}
-            onChange={(e) => setMic(e.target.value)}
-          >
-            {MIC_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-          </select>
+      <p className="settings-section-label">HARDWARE</p>
+
+      <div className="settings-card">
+        {/* Microphone */}
+        <div className="settings-field">
+          <label className="settings-field-label">MICROPHONE SOURCE</label>
+          <div className="settings-select-wrap">
+            <select
+              className="settings-select"
+              value={mic}
+              onChange={handleMicChange}
+            >
+              {MIC_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            <ChevronIcon />
+          </div>
         </div>
 
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Camera</label>
-          <select
-            className="form-select"
-            value={cam}
-            onChange={(e) => setCam(e.target.value)}
-          >
-            {CAM_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-          </select>
+        <div className="settings-divider" />
+
+        {/* Camera */}
+        <div className="settings-field">
+          <label className="settings-field-label">CAMERA SOURCE</label>
+          <div className="settings-select-wrap">
+            <select
+              className="settings-select"
+              value={cam}
+              onChange={handleCamChange}
+            >
+              {CAM_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+            <ChevronIcon />
+          </div>
         </div>
       </div>
 
-      <button className="btn-primary" style={{ width: '100%', marginBottom: 24 }} onClick={handleSave}>
-        Save Preferences
+      {/* Test A/V button */}
+      <button className="settings-btn-test" onClick={handleTestAV}>
+        TEST AUDIO / VIDEO
       </button>
 
-      {/* Storage section */}
-      <p className="section-label">Storage</p>
-      <div className="page-card settings-storage-card">
-        <button className="settings-text-btn" onClick={handleClearCache}>
-          Clear Local Cache
-        </button>
-        <button className="settings-text-btn danger" onClick={handleLogout}>
-          Log Out
-        </button>
-      </div>
+      {/* Log out */}
+      <button className="settings-btn-logout" onClick={handleLogout}>
+        Log Out
+      </button>
     </div>
   );
 }

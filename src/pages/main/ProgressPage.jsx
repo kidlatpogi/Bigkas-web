@@ -165,7 +165,6 @@ function ProgressPage() {
 
       {!isLoading && recentSessions.length === 0 && (
         <div className="empty-state">
-          <span className="empty-icon">📊</span>
           <p className="empty-title">No sessions yet</p>
           <p className="empty-desc">Start practicing to track your progress.</p>
         </div>

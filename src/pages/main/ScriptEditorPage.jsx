@@ -25,9 +25,10 @@ function ScriptEditorPage() {
     (async () => {
       setIsLoading(true);
       try {
-        const data = await getScript(scriptId);
-        setTitle(data.title || '');
-        setContent(data.content || '');
+        const { data, error: sbErr } = await getScript(scriptId);
+        if (sbErr) throw sbErr;
+        setTitle(data?.title || '');
+        setContent(data?.content || '');
       } catch {
         setError('Failed to load script.');
       } finally {
@@ -52,7 +53,7 @@ function ScriptEditorPage() {
         await updateScript(scriptId, { title: title.trim(), content: content.trim() });
       } else {
         await createScript({
-          user_id: user.id,
+          userId: user.id,
           title: title.trim(),
           content: content.trim(),
           type: 'self-authored',
@@ -106,7 +107,7 @@ function ScriptEditorPage() {
           onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
           rows={12}
         />
-        <span className="char-count">{content.length}/{MAX_CHARS}</span>
+        <span className="char-count">{content.length} characters</span>
       </div>
 
       {/* Actions */}

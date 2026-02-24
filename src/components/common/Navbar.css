@@ -38,7 +38,6 @@
   width: 30px;
   height: 30px;
   object-fit: contain;
-  filter: brightness(0);
 }
 
 .brand-text {
@@ -76,6 +75,35 @@
 .nav-link-active {
   color: #010101;
   font-weight: 700;
+}
+
+/* ── Right area (theme btn + hamburger) ── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Theme toggle ── */
+.navbar-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(1, 1, 1, 0.06);
+  color: #010101;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.navbar-theme-btn:hover {
+  background: rgba(251, 175, 0, 0.15);
+  color: #FBAF00;
+  transform: scale(1.08);
 }
 
 /* ── Hamburger button (hidden on desktop) ── */
@@ -189,15 +217,23 @@
   .navbar-hamburger { display: flex; }
 }
 
-
-.navbar {
-  background-color: #FFFFFF;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0px 8px 18px 0px rgba(0,0,0,0.10), 0px 34px 34px 0px rgba(0,0,0,0.09), 0px 76px 45px 0px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ── Dark mode ── */
+[data-theme="dark"] .navbar {
+  background: #1E1E1E;
+  border-bottom-color: rgba(255,255,255,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
+[data-theme="dark"] .brand-text { color: #F0F0F0; }
+[data-theme="dark"] .nav-link   { color: rgba(240,240,240,0.45); }
+[data-theme="dark"] .nav-link:hover   { color: #F0F0F0; background: rgba(255,255,255,0.07); }
+[data-theme="dark"] .nav-link-active  { color: #F0F0F0; }
+[data-theme="dark"] .navbar-hamburger span { background: #F0F0F0; }
+[data-theme="dark"] .navbar-drawer { background: #1E1E1E; border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .drawer-link   { color: rgba(240,240,240,0.55); }
+[data-theme="dark"] .drawer-link:hover  { color: #F0F0F0; background: rgba(255,255,255,0.06); }
+[data-theme="dark"] .drawer-link-active { color: #FBAF00; background: rgba(251,175,0,0.12); }
+[data-theme="dark"] .navbar-theme-btn   { background: rgba(255,255,255,0.1); color: #F0F0F0; }
+[data-theme="dark"] .navbar-theme-btn:hover { background: rgba(251,175,0,0.2); color: #FBAF00; }
 
 .navbar-container {
   max-width: 1440px;

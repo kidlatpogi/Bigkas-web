@@ -36,6 +36,46 @@
   font-family: var(--font);
 }
 
+/* ── Top bar — profile avatar button ── */
+.dash-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.dash-top-bar-spacer {
+  flex: 1;
+}
+
+.dash-profile-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #FBAF00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #F5F5F5;
+  color: rgba(1, 1, 1, 0.55);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.dash-profile-btn:hover {
+  border-color: #010101;
+  transform: scale(1.05);
+}
+
+.dash-profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
 /* ── Greeting ── */
 .dash-greeting {
   margin-bottom: 16px;
@@ -181,6 +221,11 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  color: #010101;
+}
+.dash-stat-icon {
+  margin-bottom: 2px;
+  opacity: 0.8;
 }
 .dash-stat-value {
   font-size: 64px;
@@ -212,7 +257,7 @@
   gap: 10px;
 }
 .dash-info-card {
-  background: var(--card-bg);
+  background: #FFFFFF;
   border-radius: var(--radius-card);
   padding: 24px 30px;
   box-shadow: var(--shadow-info);
@@ -297,3 +342,29 @@
   .dash-quote-author  { font-size: 16px; }
 }
 /* end */
+
+/* ── Dark mode ── */
+[data-theme="dark"] .dashboard-page-new {
+  --black: #F0F0F0;
+  --bg: #121212;
+  --white: #1E1E1E;
+  --card-bg: #1E1E1E;
+  --text-primary: #F0F0F0;
+  --text-secondary: rgba(240, 240, 240, 0.6);
+  --border: #2E2E2E;
+}
+[data-theme="dark"] .dash-greeting-text { color: rgba(240,240,240,0.6); }
+[data-theme="dark"] .dash-greeting-name { color: #F0F0F0; }
+[data-theme="dark"] .dash-stats-card  { background: #1E1E1E; }
+[data-theme="dark"] .dash-stat-value  { color: #F0F0F0; }
+[data-theme="dark"] .dash-stat-label  { color: rgba(240,240,240,0.7); }
+[data-theme="dark"] .dash-stat-divider { background: #FBAF00; }
+[data-theme="dark"] .dash-info-card   { background: #1E1E1E; }
+[data-theme="dark"] .dash-card-label  { color: rgba(240,240,240,0.8); }
+[data-theme="dark"] .dash-quote-text  { color: #F0F0F0; }
+[data-theme="dark"] .dash-quote-author { color: rgba(240,240,240,0.7); }
+[data-theme="dark"] .dash-tip-title   { color: #F0F0F0; }
+[data-theme="dark"] .dash-tip-body    { color: rgba(240,240,240,0.8); }
+[data-theme="dark"] .dash-profile-btn { background: #1E1E1E; color: rgba(240,240,240,0.55); }
+[data-theme="dark"] .dash-stat        { color: #FBAF00; }
+[data-theme="dark"] .dash-stat-value  { color: #F0F0F0; }

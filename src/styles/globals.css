@@ -209,6 +209,27 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Circular theme reveal animation (adapted from Portfolio repo) ── */
+.theme-anim {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  --x: 50vw;
+  --y: 50vh;
+  --r: 0px;
+  --anim-bg: #F5F5F5;
+  clip-path: circle(0px at var(--x) var(--y));
+  transition: clip-path 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  background: var(--anim-bg);
+}
+.theme-anim.active {
+  clip-path: circle(var(--r) at var(--x) var(--y));
+}
+
 /* Offset for fixed navbar when scrolling to sections */
 section[id] {
   scroll-margin-top: 80px;

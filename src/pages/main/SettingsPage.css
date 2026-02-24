@@ -1,49 +1,164 @@
-/* SettingsPage.css */
+/* ── SettingsPage.css ── */
 
-.section-label {
-  font-size: 12px;
-  font-weight: 600;
+.settings-page {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Section label ── */
+.settings-section-label {
+  font-size: 11px;
+  font-weight: 700;
   color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0 0 8px 4px;
+  letter-spacing: 0.1em;
+  margin: 0 0 10px 4px;
 }
 
-.form-label {
+/* ── Settings card ── */
+.settings-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1.5px solid #E8E8E8;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.settings-field {
+  padding: 14px 16px;
+}
+
+.settings-field-label {
   display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: #555;
-  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
 }
 
-.settings-storage-card {
+.settings-divider {
+  height: 1px;
+  background: #F0F0F0;
+  margin: 0;
+}
+
+/* ── Select wrapper ── */
+.settings-select-wrap {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  align-items: center;
 }
 
-.settings-text-btn {
-  background: none;
-  border: none;
-  border-bottom: 1px solid #F0F0F0;
-  text-align: left;
-  padding: 14px 4px;
-  font-size: 15px;
-  cursor: pointer;
-  color: #010101;
-  transition: background 0.15s;
+.settings-select {
   width: 100%;
+  padding: 11px 36px 11px 12px;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #010101;
+  background: #F8F8F8;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
 }
 
-.settings-text-btn:last-child {
-  border-bottom: none;
+.settings-select:focus {
+  border-color: #FBAF00;
 }
 
-.settings-text-btn:hover {
-  background: #F5F5F5;
+.settings-select-wrap svg {
+  position: absolute;
+  right: 10px;
+  color: #888;
+  pointer-events: none;
+  flex-shrink: 0;
 }
 
-.settings-text-btn.danger {
-  color: #FF3B30;
+/* ── Test Audio/Video button ── */
+.settings-btn-test {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1.5px solid #010101;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #010101;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+  margin-bottom: 28px;
 }
+
+.settings-btn-test:hover {
+  background: #010101;
+  color: #fff;
+}
+
+/* ── Log out button ── */
+.settings-btn-logout {
+  width: 100%;
+  padding: 15px;
+  background: #FF0019;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+
+.settings-btn-logout:hover {
+  opacity: 0.88;
+}
+
+.settings-btn-logout:active {
+  transform: scale(0.98);
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .settings-card {
+  background: #242424;
+  border-color: #333;
+}
+
+[data-theme="dark"] .settings-field-label {
+  color: #666;
+}
+
+[data-theme="dark"] .settings-divider {
+  background: #333;
+}
+
+[data-theme="dark"] .settings-select {
+  background: #1e1e1e;
+  border-color: #333;
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .settings-select:focus {
+  border-color: #FBAF00;
+}
+
+[data-theme="dark"] .settings-btn-test {
+  border-color: #F0F0F0;
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .settings-btn-test:hover {
+  background: #F0F0F0;
+  color: #010101;
+}
+
+[data-theme="dark"] .settings-section-label {
+  color: #666;
+}
+

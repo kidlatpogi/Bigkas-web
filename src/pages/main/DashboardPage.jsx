@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { useSessions } from '../../hooks/useSessions';
 import { ROUTES } from '../../utils/constants';
@@ -66,11 +66,51 @@ function MicIcon({ size = 28, color = '#FBAF00' }) {
   );
 }
 
-/** Ionicons "flame" icon */
+/** Ionicons "flame" icon (streak) */
 function FlameIcon({ size = 14, color = '#FBAF00' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true">
       <path d="M12 2C9 7.5 6 11.5 6 15.5a6 6 0 0012 0c0-2.8-1.6-5.5-3.2-8-1.1 2-1.4 3.8-1.8 5.5C11.2 10.5 10.5 7 12 2z" />
+    </svg>
+  );
+}
+
+/** Ionicons "calendar" icon (today) */
+function CalendarIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="dash-stat-icon">
+      <rect x="3" y="4" width="18" height="18" rx="3" ry="3"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+  );
+}
+
+/** Ionicons "star" icon (avg score) */
+function StarIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="dash-stat-icon">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  );
+}
+
+/** Ionicons "flame" icon (stat version, bigger) */
+function FlameStatIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="dash-stat-icon">
+      <path d="M12 2C9 7.5 6 11.5 6 15.5a6 6 0 0012 0c0-2.8-1.6-5.5-3.2-8-1.1 2-1.4 3.8-1.8 5.5C11.2 10.5 10.5 7 12 2z" />
+    </svg>
+  );
+}
+
+/** Person icon for avatar button */
+function PersonIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
     </svg>
   );
 }
@@ -102,12 +142,47 @@ export default function DashboardPage() {
 
   const todayCount = useMemo(() => {
     if (!sessions?.length) return 0;
-    const today = new Date().toDateString();
-    return sessions.filter((s) => new Date(s.created_at).toDateString() === today).length;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    return sessions.filter((s) => {
+      const d = new Date(s.created_at); d.setHours(0, 0, 0, 0);
+      return d.getTime() === today.getTime();
+    }).length;
   }, [sessions]);
 
-  const averageScore = 84;   // placeholder — will use real data when API is wired
-  const streakCount  = 3;    // placeholder
+  /**
+   * averageScore — computed from sessions' confidence_score (0–100 scale).
+   * Mirrors mobile DashboardScreen.jsx averageScore logic.
+   */
+  const averageScore = useMemo(() => {
+    if (!sessions?.length) return 0;
+    const total = sessions.reduce((sum, s) => sum + (s.confidence_score ?? s.score ?? 0), 0);
+    return Math.round(total / sessions.length);
+  }, [sessions]);
+
+  /**
+   * streakCount — consecutive days with at least one session, counting
+   * backward from today. Mirrors mobile DashboardScreen.jsx streakCount logic.
+   */
+  const streakCount = useMemo(() => {
+    if (!sessions?.length) return 0;
+    const dateSet = new Set(
+      sessions.map((s) => {
+        const d = new Date(s.created_at);
+        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      })
+    );
+    let streak = 0;
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+    const todayKey = `${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`;
+    if (!dateSet.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
+    while (true) {
+      const key = `${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`;
+      if (dateSet.has(key)) { streak++; cursor.setDate(cursor.getDate() - 1); }
+      else break;
+    }
+    return streak;
+  }, [sessions]);
 
   /* ── Load data on mount ── */
   useEffect(() => {
@@ -122,6 +197,22 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-page-new">
+
+      {/* ── Top bar: profile avatar button ── */}
+      <div className="dash-top-bar">
+        <div className="dash-top-bar-spacer" />
+        <Link to={ROUTES.PROFILE} className="dash-profile-btn" aria-label="Go to Profile">
+          {user?.user_metadata?.avatar_url || user?.avatar_url ? (
+            <img
+              src={user.user_metadata?.avatar_url || user.avatar_url}
+              alt="Profile"
+              className="dash-profile-avatar"
+            />
+          ) : (
+            <PersonIcon />
+          )}
+        </Link>
+      </div>
 
       {/* ── Greeting ── */}
       <div className="dash-greeting">
@@ -163,16 +254,19 @@ export default function DashboardPage() {
       {/* ── Stats row (Today · Avg Score · Streak) ── */}
       <div className="dash-stats-card">
         <div className="dash-stat">
+          <CalendarIcon size={24} />
           <span className="dash-stat-value">{String(todayCount).padStart(2, '0')}</span>
           <span className="dash-stat-label">TODAY</span>
         </div>
         <div className="dash-stat-divider" />
         <div className="dash-stat">
+          <StarIcon size={24} />
           <span className="dash-stat-value">{averageScore}</span>
           <span className="dash-stat-label">AVG SCORE</span>
         </div>
         <div className="dash-stat-divider" />
         <div className="dash-stat">
+          <FlameStatIcon size={24} />
           <span className="dash-stat-value">{String(streakCount).padStart(2, '0')}</span>
           <span className="dash-stat-label">STREAK</span>
         </div>
