@@ -43,3 +43,10 @@ export const scriptsApi = {
 };
 
 export default scriptsApi;
+
+// Named exports for convenient destructured imports
+export const getScripts    = (userId, type)      => scriptsApi.getScripts(userId, type);
+export const getScript     = (scriptId)          => scriptsApi.getScript(scriptId);
+export const createScript  = (payload)           => scriptsApi.createScript(payload);
+export const updateScript  = (scriptId, payload) => scriptsApi.updateScript(scriptId, payload);
+export const deleteScript  = (scriptId)          => scriptsApi.deleteScript(scriptId);

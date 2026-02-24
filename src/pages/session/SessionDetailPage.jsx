@@ -121,25 +121,3 @@ function SessionDetailPage() {
 }
 
 export default SessionDetailPage;
-
-        {currentSession.audioUrl && (
-          <Card className="session-audio-card">
-            <h2 className="card-title">Your Recording</h2>
-            <audio controls src={currentSession.audioUrl} className="session-audio" />
-          </Card>
-        )}
-
-        <div className="session-actions">
-          <Link to={`/session/${sessionId}/result`} className="action-btn action-btn-primary">
-            View Analysis Results
-          </Link>
-          <Link to="/practice" className="action-btn action-btn-secondary">
-            Practice Again
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default SessionDetailPage;
