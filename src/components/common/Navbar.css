@@ -1,22 +1,245 @@
 /**
- * Navbar — matches Bigkas main-app screenshot
- * Left: waveform logo + brand name
- * Right: text nav links (Home · Script · Progress · Profile · Settings)
+ * Navbar — Bigkas Web
+ * White background, sticky top, responsive hamburger for mobile ≤ 768 px
  */
 
+/* ── Base ── */
 .navbar {
-  background-color: #1A1A1A;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.08),
+    0px 8px 18px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200;
 }
 
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
-  height: 56px;
+  padding: 0 32px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Brand ── */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.navbar-logo-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.brand-text {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #010101;
+  letter-spacing: -0.3px;
+}
+
+/* ── Desktop nav links ── */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-link {
+  padding: 7px 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(1, 1, 1, 0.45);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #010101;
+  background: rgba(1, 1, 1, 0.05);
+}
+
+.nav-link-active {
+  color: #010101;
+  font-weight: 700;
+}
+
+/* ── Right area (theme btn + hamburger) ── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Theme toggle ── */
+.navbar-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(1, 1, 1, 0.06);
+  color: #010101;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.navbar-theme-btn:hover {
+  background: rgba(251, 175, 0, 0.15);
+  color: #FBAF00;
+  transform: scale(1.08);
+}
+
+/* ── Hamburger button (hidden on desktop) ── */
+.navbar-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.navbar-hamburger:hover { background: rgba(1, 1, 1, 0.05); }
+
+.navbar-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #010101;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+
+/* Animate to × when open */
+.navbar-hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.navbar-hamburger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.navbar-hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Mobile drawer ── */
+.navbar-drawer {
+  display: none;
+  flex-direction: column;
+  background: #FFFFFF;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 8px 16px 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-drawer.drawer-open {
+  display: flex;
+  max-height: 400px;
+}
+
+.drawer-link {
+  padding: 14px 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(1, 1, 1, 0.55);
+  text-decoration: none;
+  border-radius: 10px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.drawer-link:hover {
+  color: #010101;
+  background: rgba(1, 1, 1, 0.04);
+  font-weight: 700;
+}
+
+.drawer-link-active {
+  color: #FBAF00;
+  background: rgba(251, 175, 0, 0.08);
+  font-weight: 700;
+}
+
+.drawer-logout {
+  margin: 8px 16px 0;
+  padding: 13px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #FF3B30;
+  background: rgba(255, 59, 48, 0.06);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.drawer-logout:hover { background: rgba(255, 59, 48, 0.12); }
+
+/* ── Backdrop overlay ── */
+.navbar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 99;
+  animation: fadeInBackdrop 0.18s ease;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 20px;
+  }
+  .navbar-links   { display: none; }
+  .navbar-hamburger { display: flex; }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .navbar {
+  background: #1E1E1E;
+  border-bottom-color: rgba(255,255,255,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .brand-text { color: #F0F0F0; }
+[data-theme="dark"] .nav-link   { color: rgba(240,240,240,0.45); }
+[data-theme="dark"] .nav-link:hover   { color: #F0F0F0; background: rgba(255,255,255,0.07); }
+[data-theme="dark"] .nav-link-active  { color: #F0F0F0; }
+[data-theme="dark"] .navbar-hamburger span { background: #F0F0F0; }
+[data-theme="dark"] .navbar-drawer { background: #1E1E1E; border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .drawer-link   { color: rgba(240,240,240,0.55); }
+[data-theme="dark"] .drawer-link:hover  { color: #F0F0F0; background: rgba(255,255,255,0.06); }
+[data-theme="dark"] .drawer-link-active { color: #FBAF00; background: rgba(251,175,0,0.12); }
+[data-theme="dark"] .navbar-theme-btn   { background: rgba(255,255,255,0.1); color: #F0F0F0; }
+[data-theme="dark"] .navbar-theme-btn:hover { background: rgba(251,175,0,0.2); color: #FBAF00; }
+
+.navbar-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 30px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -34,14 +257,15 @@
   width: 28px;
   height: 28px;
   object-fit: contain;
+  /* no filter — keep original gold/yellow colour of logo */
 }
 
 .brand-text {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: #FFFFFF;
-  letter-spacing: 0.5px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #010101;
+  letter-spacing: 0;
 }
 
 /* ── Nav links ── */
@@ -54,22 +278,35 @@
 .nav-link {
   padding: 6px 14px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.55);
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(1,1,1,0.40);
   border-radius: 6px;
   transition: color 0.18s, background 0.18s;
   text-decoration: none;
 }
 
 .nav-link:hover {
-  color: #FFFFFF;
-  background: rgba(255,255,255,0.07);
+  color: #010101;
+  background: rgba(1,1,1,0.05);
 }
 
 .nav-link-active {
-  color: #FFFFFF;
+  color: #FBAF00;
   font-weight: 700;
+  position: relative;
+}
+
+.nav-link-active::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -3px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: #FBAF00;
 }
 
 /* Mobile — hide links, show only brand */

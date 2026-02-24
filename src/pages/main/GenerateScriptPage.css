@@ -1,0 +1,72 @@
+.prompt-row {
+  position: relative;
+}
+
+.shuffle-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #FBAF00;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.shuffle-btn:hover {
+  opacity: 0.8;
+}
+
+/* Chips */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.chip {
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 1.5px solid #E0E0E0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip.active {
+  background: #FBAF00;
+  border-color: #FBAF00;
+  color: #010101;
+  font-weight: 700;
+}
+
+.chip:hover:not(.active) {
+  border-color: #AAAAAA;
+}
+
+/* Generate modal */
+.generate-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@media (min-width: 600px) {
+  .generate-modal {
+    width: 540px;
+  }
+}
+
+.btn-row .btn-secondary,
+.btn-row .btn-primary {
+  flex: 1;
+}

@@ -1,100 +1,95 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
+import { buildRoute, getScoreTier } from '../../utils/constants';
 import { formatDate, formatDuration } from '../../utils/formatters';
-import Card from '../../components/common/Card';
-import './MainPages.css';
+import './InnerPages.css';
 
-/**
- * History Page Component
- * Shows list of past practice sessions
- */
 function HistoryPage() {
-  const { sessions, fetchSessions, isLoading, error } = useSessionContext();
+  const navigate = useNavigate();
+  const { sessions, fetchSessions, loadMoreSessions, isLoading, hasMore, error } = useSessionContext();
 
   useEffect(() => {
-    fetchSessions();
+    fetchSessions(1, true);
   }, [fetchSessions]);
 
   return (
-    <div className="history-page">
-      <div className="page-header">
-        <h1 className="page-title">Practice History</h1>
-        <p className="page-subtitle">Review your past practice sessions</p>
+    <div className="inner-page">
+      <div className="inner-page-header">
+        <h1 className="inner-page-title">History</h1>
+        <span style={{ fontSize: 14, color: '#888' }}>
+          {sessions.length > 0 ? `${sessions.length} session${sessions.length !== 1 ? 's' : ''}` : ''}
+        </span>
       </div>
 
-      <div className="history-content">
-        {isLoading && (
-          <div className="loading-state">
-            <p>Loading sessions...</p>
-          </div>
-        )}
+      {isLoading && sessions.length === 0 && (
+        <div className="page-loading">Loading sessions…</div>
+      )}
 
-        {error && (
-          <div className="error-state">
-            <p>{error}</p>
-          </div>
-        )}
+      {error && !isLoading && (
+        <div className="page-error">{error}</div>
+      )}
 
-        {!isLoading && !error && sessions.length === 0 && (
-          <Card className="empty-state-card">
-            <div className="empty-state">
-              <span className="empty-icon">📝</span>
-              <h2>No Sessions Yet</h2>
-              <p>Start practicing to see your history here</p>
-              <Link to="/practice" className="empty-action-link">
-                Start Practice
-              </Link>
+      {!isLoading && !error && sessions.length === 0 && (
+        <div className="empty-state">
+          <span className="empty-icon">📝</span>
+          <p className="empty-title">No sessions yet</p>
+          <p className="empty-desc">Start practicing to see your history here.</p>
+          <button
+            className="btn-primary"
+            style={{ marginTop: 16 }}
+            onClick={() => navigate('/scripts')}
+          >
+            Start Practice
+          </button>
+        </div>
+      )}
+
+      <div className="sessions-list">
+        {sessions.map((s) => {
+          const score = s.confidence_score ?? 0;
+          const tier  = getScoreTier(score);
+          return (
+            <div
+              key={s.id}
+              className="session-row"
+              onClick={() => navigate(buildRoute.sessionDetail(s.id))}
+            >
+              <div className="session-row-info">
+                <p className="session-row-text">
+                  {s.target_text?.slice(0, 70) || 'Practice session'}
+                </p>
+                <p className="session-row-date">
+                  {formatDate(s.created_at)}
+                  {s.duration_sec ? ` · ${formatDuration(s.duration_sec)}` : ''}
+                </p>
+              </div>
+              <span
+                className="score-badge"
+                style={{ background: tier.color + '22', color: tier.color }}
+              >
+                {score}
+              </span>
             </div>
-          </Card>
-        )}
-
-        {sessions.length > 0 && (
-          <div className="sessions-list">
-            {sessions.map((session) => (
-              <Card key={session.id} className="session-card">
-                <div className="session-info">
-                  <h3 className="session-text">{session.text}</h3>
-                  <div className="session-meta">
-                    <span className="session-date">
-                      {formatDate(session.createdAt)}
-                    </span>
-                    {session.duration && (
-                      <span className="session-duration">
-                        {formatDuration(session.duration)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="session-score">
-                  {session.score !== undefined && (
-                    <span className={`score-badge score-${getScoreLevel(session.score)}`}>
-                      {Math.round(session.score)}%
-                    </span>
-                  )}
-                </div>
-                <Link 
-                  to={`/session/${session.id}`} 
-                  className="session-link"
-                >
-                  View Details →
-                </Link>
-              </Card>
-            ))}
-          </div>
-        )}
+          );
+        })}
       </div>
+
+      {hasMore && (
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <button
+            className="btn-secondary"
+            style={{ width: 'auto', padding: '10px 28px' }}
+            onClick={loadMoreSessions}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Loading…' : 'Load More'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-/**
- * Get score level for styling
- */
-function getScoreLevel(score) {
-  if (score >= 80) return 'high';
-  if (score >= 50) return 'medium';
-  return 'low';
-}
-
 export default HistoryPage;
+

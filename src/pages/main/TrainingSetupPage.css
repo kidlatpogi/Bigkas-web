@@ -1,0 +1,156 @@
+.btn-link {
+  background: none;
+  border: none;
+  color: #FBAF00;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Center the Training Setup page */
+.training-setup-page {
+  max-width: 600px;
+}
+
+.training-setup-header {
+  justify-content: center;
+  position: relative;
+}
+
+.training-setup-header .inner-page-back {
+  position: absolute;
+  left: 0;
+}
+
+.training-setup-header .inner-page-title {
+  text-align: center;
+  flex: 1;
+}
+
+/* Generate Speech button for auto-generated tab */
+.training-generate-btn {
+  width: 100%;
+  height: 52px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+.form-hint {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.script-preview-card {
+  margin-bottom: 16px;
+  border-left: 4px solid #FBAF00;
+  padding-left: 16px;
+}
+
+.script-preview-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #010101;
+  margin: 0 0 6px;
+}
+
+.script-preview-content {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Focus options */
+.focus-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.focus-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 18px;
+  border-radius: 14px;
+  border: 2px solid #E8E8E8;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.focus-option.selected {
+  border-color: #FBAF00;
+  background: rgba(251, 175, 0, 0.05);
+}
+
+/* Custom radio circle */
+.focus-radio-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #CCCCCC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.focus-option.selected .focus-radio-circle {
+  border-color: #FBAF00;
+  background: #FBAF00;
+}
+
+.focus-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FFFFFF;
+}
+
+.focus-option-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.focus-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #010101;
+  margin: 0 0 3px;
+}
+
+.focus-desc {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Dark mode */
+[data-theme="dark"] .focus-option {
+  background: #1E1E1E;
+  border-color: #2E2E2E;
+}
+
+[data-theme="dark"] .focus-option.selected {
+  border-color: #FBAF00;
+  background: rgba(251,175,0,0.08);
+}
+
+[data-theme="dark"] .focus-radio-circle {
+  border-color: #444;
+}
+
+[data-theme="dark"] .focus-label {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .focus-desc {
+  color: rgba(255,255,255,0.5);
+}

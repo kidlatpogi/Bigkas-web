@@ -1,156 +1,125 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { sessionApi } from '../../api/sessionApi';
-import { formatPercentage } from '../../utils/formatters';
-import Card from '../../components/common/Card';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { getScoreTier, buildRoute, ROUTES } from '../../utils/constants';
+import { formatDuration } from '../../utils/formatters';
+import '../main/InnerPages.css';
 import './SessionPages.css';
 
-/**
- * Session Result Page
- * Shows pronunciation analysis results
- */
 function SessionResultPage() {
+  const navigate = useNavigate();
   const { sessionId } = useParams();
-  const [results, setResults] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { state } = useLocation();
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const data = await sessionApi.getSessionResults(sessionId);
-        setResults(data);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load results');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Result data is passed via navigation state from TrainingPage/analyseAndSave
+  const result = state || {};
+  const score  = result.confidence_score ?? 0;
+  const tier   = getScoreTier(score);
 
-    if (sessionId) {
-      fetchResults();
-    }
-  }, [sessionId]);
+  // Derived metrics
+  const acousticScore  = result.acoustic_score  ?? Math.round(score * 0.95);
+  const fluencyScore   = result.fluency_score   ?? Math.round(score * 0.9);
+  const wpm            = result.wpm             ?? 120;
+  const durationSec    = result.duration_sec    ?? 0;
 
-  if (isLoading) {
-    return (
-      <div className="session-page">
-        <div className="loading-state">Analyzing pronunciation...</div>
-      </div>
-    );
-  }
+  // Simulated pitch bars
+  const pitchBars = Array.from({ length: 20 }, () =>
+    Math.max(12, Math.round((score / 100) * 48 * (0.6 + Math.random() * 0.6)))
+  );
 
-  if (error) {
-    return (
-      <div className="session-page">
-        <div className="error-state">
-          <p>{error}</p>
-          <Link to="/history" className="back-link">← Back to History</Link>
-        </div>
-      </div>
-    );
-  }
+  const pitchTier = getScoreTier(acousticScore);
+  const paceTier  = wpm >= 120 && wpm <= 160 ? { label: 'Good', color: '#34C759' }
+                  : { label: 'Needs Work', color: '#FF9500' };
 
   return (
-    <div className="session-page">
-      <div className="page-header">
-        <Link to={`/session/${sessionId}`} className="back-link">← Back to Session</Link>
-        <h1 className="page-title">Analysis Results</h1>
+    <div className="inner-page">
+      {/* Header */}
+      <div className="inner-page-header">
+        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <h1 className="inner-page-title">Analysis Result</h1>
       </div>
 
-      <div className="results-content">
-        {/* Overall Score */}
-        <Card className="score-card">
-          <div className="overall-score">
-            <div className={`score-circle score-${getScoreLevel(results?.overallScore || 0)}`}>
-              <span className="score-number">{Math.round(results?.overallScore || 0)}</span>
-              <span className="score-label">Score</span>
-            </div>
-            <div className="score-message">
-              {getScoreMessage(results?.overallScore || 0)}
-            </div>
-          </div>
-        </Card>
-
-        {/* Detailed Metrics */}
-        <Card className="metrics-card">
-          <h2 className="card-title">Detailed Analysis</h2>
-          <div className="metrics-grid">
-            <div className="metric-item">
-              <span className="metric-label">Pronunciation Accuracy</span>
-              <div className="metric-bar">
-                <div 
-                  className="metric-fill" 
-                  style={{ width: formatPercentage(results?.pronunciationAccuracy || 0) }}
-                />
-              </div>
-              <span className="metric-value">
-                {formatPercentage(results?.pronunciationAccuracy || 0)}
-              </span>
-            </div>
-            
-            <div className="metric-item">
-              <span className="metric-label">Fluency</span>
-              <div className="metric-bar">
-                <div 
-                  className="metric-fill" 
-                  style={{ width: formatPercentage(results?.fluency || 0) }}
-                />
-              </div>
-              <span className="metric-value">
-                {formatPercentage(results?.fluency || 0)}
-              </span>
-            </div>
-
-            <div className="metric-item">
-              <span className="metric-label">Intonation</span>
-              <div className="metric-bar">
-                <div 
-                  className="metric-fill" 
-                  style={{ width: formatPercentage(results?.intonation || 0) }}
-                />
-              </div>
-              <span className="metric-value">
-                {formatPercentage(results?.intonation || 0)}
-              </span>
-            </div>
-          </div>
-        </Card>
-
-        {/* Feedback */}
-        {results?.feedback && (
-          <Card className="feedback-card">
-            <h2 className="card-title">Feedback</h2>
-            <p className="feedback-text">{results.feedback}</p>
-          </Card>
-        )}
-
-        {/* Actions */}
-        <div className="result-actions">
-          <Link to="/practice" className="action-btn action-btn-primary">
-            Practice Again
-          </Link>
-          <Link to="/history" className="action-btn action-btn-secondary">
-            View All History
-          </Link>
+      {/* Overall score */}
+      <div className="page-card" style={{ textAlign: 'center', marginBottom: 16 }}>
+        <div className="score-circle" style={{ borderColor: tier.color }}>
+          <span className="score-circle-num">{score}</span>
+          <span className="score-circle-label">/100</span>
         </div>
+        <p style={{ fontSize: 16, fontWeight: 700, color: tier.color, margin: '8px 0 4px' }}>
+          {tier.label}
+        </p>
+        <p className="result-summary">
+          {score >= 85 ? 'Outstanding! Your speech was clear and fluent.'
+          : score >= 65 ? 'Good job! A few areas to polish for even better results.'
+          : score >= 45 ? 'Keep going! Regular practice will push your score higher.'
+          : 'Don\'t give up. Every session makes you stronger.'}
+        </p>
+      </div>
+
+      {/* Pitch stability card */}
+      <div className="page-card" style={{ marginBottom: 16 }}>
+        <div className="metric-card-top">
+          <span className="metric-label">Pitch Stability</span>
+          <span className="score-badge" style={{ background: pitchTier.color + '22', color: pitchTier.color }}>
+            {pitchTier.label}
+          </span>
+        </div>
+        <div className="pitch-bars">
+          {pitchBars.map((h, i) => (
+            <div key={i} className="pitch-bar" style={{ height: h, background: pitchTier.color }} />
+          ))}
+        </div>
+      </div>
+
+      {/* Speaking pace card */}
+      <div className="page-card" style={{ marginBottom: 16 }}>
+        <div className="metric-card-top">
+          <span className="metric-label">Speaking Pace</span>
+          <span className="score-badge" style={{ background: paceTier.color + '22', color: paceTier.color }}>
+            {paceTier.label}
+          </span>
+        </div>
+        <p style={{ fontSize: 24, fontWeight: 800, color: '#010101', margin: '6px 0 4px' }}>
+          {wpm} <span style={{ fontSize: 14, fontWeight: 400, color: '#888' }}>wpm</span>
+        </p>
+        <div className="progress-track" style={{ margin: '6px 0' }}>
+          <div
+            className="progress-track-fill"
+            style={{ width: `${Math.min(100, (wpm / 180) * 100)}%`, background: paceTier.color }}
+          />
+        </div>
+        <p style={{ fontSize: 12, color: '#888', margin: 0 }}>Ideal range: 120–160 wpm</p>
+      </div>
+
+      {/* Duration */}
+      {durationSec > 0 && (
+        <div className="page-card" style={{ marginBottom: 16 }}>
+          <div className="info-row" style={{ borderBottom: 'none', padding: 0 }}>
+            <span className="info-row-key">Session Duration</span>
+            <span className="info-row-val">{formatDuration(durationSec)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* View detailed feedback row */}
+      <div
+        className="view-feedback-row"
+        onClick={() => navigate(buildRoute.detailedFeedback(sessionId), { state: result })}
+      >
+        <span className="view-feedback-label">View Detailed Feedback</span>
+        <span className="view-feedback-arrow">›</span>
+      </div>
+
+      {/* Actions */}
+      <div className="btn-row" style={{ marginTop: 24 }}>
+        <button className="btn-secondary" onClick={() => navigate(ROUTES.TRAINING_SETUP)}>
+          Train Again
+        </button>
+        <button className="btn-primary" onClick={() => navigate(ROUTES.SCRIPTS)}>
+          Practice Again
+        </button>
       </div>
     </div>
   );
 }
 
-function getScoreLevel(score) {
-  if (score >= 80) return 'high';
-  if (score >= 50) return 'medium';
-  return 'low';
-}
-
-function getScoreMessage(score) {
-  if (score >= 90) return 'Excellent! Your pronunciation is outstanding!';
-  if (score >= 80) return 'Great job! Keep up the good work!';
-  if (score >= 70) return 'Good progress! A little more practice will help.';
-  if (score >= 50) return 'Nice try! Focus on the highlighted areas.';
-  return 'Keep practicing! Every attempt makes you better.';
-}
-
 export default SessionResultPage;
+

@@ -24,7 +24,7 @@
   
   --color-accent: #F59E0B;
   
-  --color-background: #F9FAFB;
+  --color-background: #F5F5F5;
   --color-surface: #FFFFFF;
   --color-surface-hover: #F3F4F6;
   
@@ -62,14 +62,15 @@
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
+  --font-size-xs:   0.75rem;    /* 12px — captions, labels */
+  --font-size-sm:   0.875rem;   /* 14px — secondary text */
+  --font-size-base: 1rem;       /* 16px — body (learnui.design minimum) */
+  --font-size-lg:   1.125rem;   /* 18px — large body */
+  --font-size-xl:   1.25rem;    /* 20px — h4 */
+  --font-size-2xl:  1.5rem;     /* 24px — h3 */
+  --font-size-3xl:  2rem;       /* 32px — h2 */
+  --font-size-4xl:  2.5rem;     /* 40px — h1 page titles */
+  --font-size-5xl:  3rem;       /* 48px — hero headings */
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -184,19 +185,27 @@ ol {
   outline-color: #FBAF00;
 }
 
-/* Theme transition — smooth color changes on toggle */
+/* Main content area — no top nav, content sits at the top */
+.main-content {
+  min-height: 100vh;
+  /* Extra bottom padding so content clears the floating bottom nav */
+  padding-bottom: 100px;
+}
+
+/* Theme transition — smooth colour changes on all elements */
 html,
 body,
-.landing,
-.auth-page,
-.navbar,
-.main-content,
 * {
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               fill 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               stroke 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* During the circular reveal animation: disable all transitions so theme switches instantly under the overlay */
+html[data-no-transition] *:not(.theme-anim) {
+  transition: none !important;
 }
 
 /* Prevent flicker by ensuring root theme persists */
@@ -207,6 +216,39 @@ html {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* ── Circular theme reveal animation — 1:1 from Portfolio repo ── */
+/* Source: kidlatpogi/Portfolio  src/CSS/App.css */
+.theme-anim {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: normal;
+  --x: 50px;
+  --y: 50px;
+  --r: 0px;
+  --anim-bg: #ffffff;
+  /* Initially clipped to a tiny point at the button */
+  clip-path: circle(0px at var(--x) var(--y));
+  transition: clip-path 560ms cubic-bezier(.2, .9, .2, 1), opacity 320ms linear;
+  background: var(--anim-bg);
+  opacity: 1;
+}
+
+.theme-anim.active {
+  /* Expand to full radius computed from button position */
+  clip-path: circle(var(--r) at var(--x) var(--y));
+}
+
+.theme-anim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 /* Offset for fixed navbar when scrolling to sections */

@@ -1,182 +1,142 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
-import authApi from '../api/authApi';
+import { supabase } from '../lib/supabase';
 
 /**
- * Authentication Context
- * Provides user state and auth actions throughout the app
+ * Authentication Context — backed by Supabase Auth
  */
-
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser]       = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError]     = useState(null);
 
-  // Check for existing auth on mount
-  useEffect(() => {
-    const initializeAuth = async () => {
-      // Check for demo mode (when no backend is available)
-      const demoMode = localStorage.getItem('demoMode') === 'true';
-      
-      if (demoMode) {
-        // Load demo user data
-        const demoUser = JSON.parse(localStorage.getItem('demoUser') || '{"id":"demo","name":"Demo User","email":"demo@example.com"}');
-        setUser(demoUser);
-        setIsLoading(false);
-        return;
-      }
-      
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const userData = await authApi.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          console.error('Failed to restore auth session:', error);
-          localStorage.removeItem('authToken');
-        }
-      }
-      setIsLoading(false);
+  /* ── Build user object from Supabase session ── */
+  const buildUser = (supaSession) => {
+    if (!supaSession) return null;
+    const u    = supaSession.user || supaSession;
+    const meta = u?.user_metadata || {};
+    return {
+      id:         u.id,
+      email:      u.email,
+      name:       meta.full_name || meta.name || u.email?.split('@')[0] || 'User',
+      nickname:   meta.nickname || null,
+      avatar_url: meta.avatar_url || null,
+      createdAt:  u.created_at,
     };
+  };
 
-    initializeAuth();
+  /* ── Restore session on mount ── */
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(buildUser(session));
+      setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(buildUser(session));
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  /**
-   * Login user
-   * @param {string} email 
-   * @param {string} password 
-   */
+  /* ── Login ── */
   const login = useCallback(async (email, password) => {
     setIsLoading(true);
-    try {
-      // Check if backend is available - if not, use demo mode
-      const demoUser = { id: 'demo', name: 'Demo User', email };
-      
-      try {
-        const response = await authApi.login(email, password);
-        const { token, user: userData } = response;
-        
-        localStorage.setItem('authToken', token);
-        localStorage.removeItem('demoMode');
-        setUser(userData);
-        
-        return { success: true, user: userData };
-      } catch (error) {
-        // If login fails due to no backend, allow demo mode
-        if (error.message.includes('Network') || error.code === 'ERR_NETWORK') {
-          console.warn('Backend not available, using demo mode');
-          localStorage.setItem('demoMode', 'true');
-          localStorage.setItem('demoUser', JSON.stringify(demoUser));
-          setUser(demoUser);
-          return { success: true, user: demoUser };
-        }
-        
-        const message = error.response?.data?.message || 'Login failed';
-        return { success: false, error: message };
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setError(null);
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(false);
+    if (err) { setError(err.message); return { success: false, error: err.message }; }
+    return { success: true, user: buildUser(data.session) };
   }, []);
 
-  /**
-   * Register new user
-   * @param {Object} userData - { email, password, name, ... }
-   */
-  const register = useCallback(async (userData) => {
+  /* ── Register ── */
+  const register = useCallback(async ({ name, email, password }) => {
     setIsLoading(true);
-    try {
-      const demoUser = { id: 'demo', name: userData.name, email: userData.email };
-      
-      try {
-        const response = await authApi.register(userData);
-        const { token, user: newUser } = response;
-        
-        localStorage.setItem('authToken', token);
-        localStorage.removeItem('demoMode');
-        setUser(newUser);
-        
-        return { success: true, user: newUser };
-      } catch (error) {
-        // If register fails due to no backend, allow demo mode
-        if (error.message.includes('Network') || error.code === 'ERR_NETWORK') {
-          console.warn('Backend not available, using demo mode');
-          localStorage.setItem('demoMode', 'true');
-          localStorage.setItem('demoUser', JSON.stringify(demoUser));
-          setUser(demoUser);
-          return { success: true, user: demoUser };
-        }
-        
-        const message = error.response?.data?.message || 'Registration failed';
-        return { success: false, error: message };
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setError(null);
+    const { data, error: err } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    });
+    setIsLoading(false);
+    if (err) { setError(err.message); return { success: false, error: err.message }; }
+    if (!data.session) return { success: true, requiresEmailConfirmation: true };
+    return { success: true, user: buildUser(data.session) };
   }, []);
 
-  /**
-   * Logout current user
-   */
+  /* ── Logout ── */
   const logout = useCallback(async () => {
     setIsLoading(true);
-    try {
-      // Only call logout API if not in demo mode
-      if (localStorage.getItem('demoMode') !== 'true') {
-        await authApi.logout();
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('demoMode');
-      localStorage.removeItem('demoUser');
-      setUser(null);
-      setIsLoading(false);
-    }
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsLoading(false);
   }, []);
 
-  /**
-   * Update user nickname — stored locally and in user metadata.
-   * Triggers re-render so NicknameRoute auto-redirects to Dashboard.
-   * @param {string} nickname
-   * @returns {Promise<{ success: boolean, error?: string }>}
-   */
+  /* ── Update nickname ── */
   const updateNickname = useCallback(async (nickname) => {
     const trimmed = nickname.trim();
     if (!trimmed) return { success: false, error: 'Nickname is required' };
-
-    try {
-      // Optimistically update local state so routing reacts immediately
-      setUser((prev) => ({ ...prev, nickname: trimmed }));
-
-      // Persist in localStorage (demo mode) — real implementation would call Supabase
-      const demoUser = JSON.parse(localStorage.getItem('demoUser') || '{}');
-      localStorage.setItem('demoUser', JSON.stringify({ ...demoUser, nickname: trimmed }));
-
-      return { success: true };
-    } catch (error) {
-      console.error('updateNickname error:', error);
-      return { success: false, error: 'Failed to set nickname. Please try again.' };
-    }
+    const { data, error: err } = await supabase.auth.updateUser({ data: { nickname: trimmed } });
+    if (err) return { success: false, error: err.message };
+    setUser((prev) => ({ ...prev, nickname: trimmed, ...buildUser({ user: data.user }) }));
+    return { success: true };
   }, []);
 
+  /* ── Update profile ── */
+  const updateProfile = useCallback(async ({ name, avatarUrl }) => {
+    const updates = {};
+    if (name)       updates.full_name  = name;
+    if (avatarUrl)  updates.avatar_url = avatarUrl;
+    const { data, error: err } = await supabase.auth.updateUser({ data: updates });
+    if (err) return { success: false, error: err.message };
+    setUser(buildUser({ user: data.user }));
+    return { success: true };
+  }, []);
+
+  /* ── Change password ── */
+  const changePassword = useCallback(async (newPassword) => {
+    const { error: err } = await supabase.auth.updateUser({ password: newPassword });
+    if (err) return { success: false, error: err.message };
+    return { success: true };
+  }, []);
+
+  /* ── Upload avatar ── */
+  const uploadAvatar = useCallback(async (file) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return { success: false, error: 'Not authenticated' };
+    const ext  = file.name.split('.').pop();
+    const path = `${session.user.id}/avatar.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from('avatars').upload(path, file, { upsert: true });
+    if (upErr) return { success: false, error: upErr.message };
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+    return { success: true, url: publicUrl };
+  }, []);
+
+  /* ── Delete account ── */
+  const deleteAccount = useCallback(async (password) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return { success: false, error: 'Not authenticated' };
+    const { error: reAuthErr } = await supabase.auth.signInWithPassword({
+      email: session.user.email, password,
+    });
+    if (reAuthErr) return { success: false, error: 'Incorrect password' };
+    await supabase.from('sessions').delete().eq('user_id', session.user.id);
+    await supabase.from('scripts').delete().eq('user_id', session.user.id);
+    await supabase.auth.signOut();
+    return { success: true };
+  }, []);
+
+  const clearError = useCallback(() => setError(null), []);
+
   const value = {
-    user,
-    isLoading,
-    isAuthenticated: !!user,
-    login,
-    logout,
-    register,
-    updateNickname,
+    user, isLoading, isAuthenticated: !!user, error,
+    login, logout, register, updateNickname, updateProfile,
+    changePassword, uploadAvatar, deleteAccount, clearError,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export default AuthContext;
