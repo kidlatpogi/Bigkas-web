@@ -2,12 +2,13 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import './BottomNav.css';
 
-/* ─── Ionicons-style SVG icons ─── */
+/* ─── Ionicons 5 SVG icons (512×512 viewBox, matching TAB_ICONS in mobile) ─── */
 
+/** document-text / document-text-outline */
 function IconScripts({ filled }) {
   return filled ? (
     <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
-      <path d="M428.54 188L336 95.47A48 48 0 00302.09 80H144a64 64 0 00-64 64v224a64 64 0 0064 64h224a64 64 0 0064-64V221.91A48 48 0 00428.54 188zM288 112l96 96h-80a16 16 0 01-16-16zm144 256a48 48 0 01-48 48H144a48 48 0 01-48-48V144a48 48 0 0148-48h128v80a32 32 0 0032 32h80zM176 288a16 16 0 000 32h160a16 16 0 000-32zm0 64a16 16 0 000 32h160a16 16 0 000-32zm0-128a16 16 0 000 32h80a16 16 0 000-32z"/>
+      <path d="M400 0H112a48.05 48.05 0 00-48 48v416a48.05 48.05 0 0048 48h288a48.05 48.05 0 0048-48V48A48.05 48.05 0 00400 0zM160 80h192a16 16 0 010 32H160a16 16 0 010-32zm0 96h192a16 16 0 010 32H160a16 16 0 010-32zm224 144H128a16 16 0 010-32h256a16 16 0 010 32zm0 80H128a16 16 0 010-32h256a16 16 0 010 32z"/>
     </svg>
   ) : (
     <svg width="24" height="24" viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -17,6 +18,7 @@ function IconScripts({ filled }) {
   );
 }
 
+/** stats-chart / stats-chart-outline */
 function IconProgress({ filled }) {
   return filled ? (
     <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
@@ -29,41 +31,44 @@ function IconProgress({ filled }) {
   );
 }
 
+/** home / home-outline */
 function IconHome({ filled }) {
   return filled ? (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    <svg width="28" height="28" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+      <path d="M261.56 101.28a8 8 0 00-11.06 0L66.4 277.15a8 8 0 00-2.47 5.79L63.9 448a32 32 0 0032 32H192a16 16 0 0016-16V328a8 8 0 018-8h80a8 8 0 018 8v136a16 16 0 0016 16h96.11a32 32 0 0031.89-32V282.94a8 8 0 00-2.47-5.79z"/>
+      <path d="M490.91 244.15l-74.8-71.56V64a16 16 0 00-16-16h-48a16 16 0 00-16 16v32l-57.92-55.38C272.77 35.14 264.71 32 256 32c-8.68 0-16.72 3.09-22.14 8.63L21.09 244.16a16 16 0 00-1.09 22.58L25.32 273a16 16 0 0022.58 1.09L256 80.62l208.1 193.47a16 16 0 0022.58-1.09l5.32-6.26a16 16 0 00-1.09-22.65z"/>
     </svg>
   ) : (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
+    <svg width="28" height="28" viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M80 212v236a16 16 0 0016 16h96V328a24 24 0 0124-24h80a24 24 0 0124 24v136h96a16 16 0 0016-16V212"/>
+      <path d="M480 256L266.89 52c-5-5.28-16.69-5.34-21.78 0L48 256M400 179V64h-48v69"/>
     </svg>
   );
 }
 
+/** person / person-outline */
 function IconPerson({ filled }) {
   return filled ? (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+      <path d="M256 256a112 112 0 10-112-112 112 112 0 00112 112zm0 32c-69.42 0-208 42.88-208 128v64h416v-64c0-85.12-138.58-128-208-128z"/>
     </svg>
   ) : (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M344 144c-3.92 52.87-44 96-88 96s-84.15-43.12-88-96c-4-55 35-96 88-96s92 42 88 96z"/>
+      <path d="M256 304c-87 0-176 48-176 128v16h352v-16c0-80-89-128-176-128z"/>
     </svg>
   );
 }
 
+/** settings / settings-outline */
 function IconSettings({ filled }) {
   return filled ? (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M19.14 12.94A7.28 7.28 0 0019.2 12a7.28 7.28 0 00-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96a7.04 7.04 0 00-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.04 7.04 0 00-1.62.94l-2.39-.96a.488.488 0 00-.59.22L2.74 9.87a.48.48 0 00.12.61l2.03 1.58A7.15 7.15 0 004.8 12c0 .31.02.63.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.3.59.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.04 7.04 0 001.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 00-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 110-7.2 3.6 3.6 0 010 7.2z"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+      <path d="M470.39 300l-.47-.38-31.56-18.22a188.78 188.78 0 000-51.83l31.56-18.22c6-3.51 9.19-10.51 7.68-17.19-10.13-42.86-29.47-80.87-56.84-110.43a14.87 14.87 0 00-17.37-2.93l-31.56 18.22a188.08 188.08 0 00-44.86-25.89V38.42a14.88 14.88 0 00-11.86-14.56c-44.16-9.59-89.86-9.16-132.29 0a14.88 14.88 0 00-11.86 14.56v36.13a188.08 188.08 0 00-44.86 25.89L95 82.22a14.87 14.87 0 00-17.37 2.93c-27.37 29.56-46.71 67.57-56.84 110.43-1.51 6.68 1.68 13.68 7.68 17.19l31.56 18.22a188.78 188.78 0 000 51.83L28.47 300.62c-6 3.51-9.19 10.51-7.68 17.19 10.12 42.86 29.46 80.87 56.84 110.43a14.87 14.87 0 0017.37 2.93l31.56-18.22a188.08 188.08 0 0044.86 25.89v36.13a14.88 14.88 0 0011.86 14.56c44.16 9.59 89.86 9.16 132.29 0a14.88 14.88 0 0011.86-14.56v-36.13a188.08 188.08 0 0044.86-25.89l31.56 18.22a14.87 14.87 0 0017.37-2.93c27.37-29.56 46.71-67.57 56.84-110.43 1.51-6.68-1.68-13.68-7.68-17.22zM256 336a80 80 0 110-160 80 80 0 010 160z"/>
     </svg>
   ) : (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M262.29 192.31a64 64 0 1057.4 57.4 64.13 64.13 0 00-57.4-57.4zM416.39 256a154.34 154.34 0 01-1.53 20.79l45.21 35.46a10.81 10.81 0 012.45 13.75l-42.77 74a10.81 10.81 0 01-13.14 4.59l-44.9-18.08a16.11 16.11 0 00-15.17 1.75A164.48 164.48 0 01325 400.8a15.94 15.94 0 00-8.82 12.14l-6.73 47.89a11.08 11.08 0 01-10.68 9.17h-85.54a11.11 11.11 0 01-10.69-8.87l-6.72-47.82a16.07 16.07 0 00-9-12.22 155.3 155.3 0 01-21.46-12.57 16 16 0 00-15.11-1.71l-44.89 18.07a10.81 10.81 0 01-13.14-4.58l-42.77-74a10.8 10.8 0 012.45-13.75l38.21-30a16.05 16.05 0 006-12.61v-4.43a16.05 16.05 0 00-6.05-12.61l-38.21-30a10.8 10.8 0 01-2.45-13.75l42.77-74a10.81 10.81 0 0113.14-4.59l44.9 18.08a16.11 16.11 0 0015.17-1.75A164.48 164.48 0 01187 111.2a15.94 15.94 0 008.82-12.14l6.73-47.89A11.08 11.08 0 01213.23 42h85.54a11.11 11.11 0 0110.69 8.87l6.72 47.82a16.07 16.07 0 009 12.22 155.3 155.3 0 0121.46 12.57 16 16 0 0015.11 1.71l44.89-18.07a10.81 10.81 0 0113.14 4.58l42.77 74a10.8 10.8 0 01-2.45 13.75l-38.21 30a16.05 16.05 0 00-6.05 12.61z"/>
     </svg>
   );
 }
