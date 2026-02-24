@@ -1,0 +1,78 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 64px;
+  padding: 0 8px;
+  background: #FFFFFF;
+  border-radius: 32px;
+  box-shadow:
+    0 8px 32px rgba(1, 1, 1, 0.13),
+    0 2px 8px rgba(1, 1, 1, 0.06);
+  min-width: 280px;
+}
+
+.bottom-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 48px;
+  border-radius: 24px;
+  color: rgba(1, 1, 1, 0.4);
+  text-decoration: none;
+  transition: color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.bottom-nav-item:hover {
+  color: rgba(1, 1, 1, 0.65);
+}
+
+.bottom-nav-item.active {
+  color: #010101;
+}
+
+/* Center Home tab — slightly larger touch target */
+.bottom-nav-center {
+  width: 60px;
+  color: rgba(1, 1, 1, 0.4);
+}
+
+.bottom-nav-center.active {
+  color: #010101;
+}
+
+/* Dark mode */
+[data-theme="dark"] .bottom-nav {
+  background: #1E1E1E;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .bottom-nav-item {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="dark"] .bottom-nav-item:hover {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme="dark"] .bottom-nav-item.active {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .bottom-nav-center {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+[data-theme="dark"] .bottom-nav-center.active {
+  color: #F0F0F0;
+}

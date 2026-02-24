@@ -200,6 +200,7 @@ export default function DashboardPage() {
               src={user.avatar_url}
               alt="Profile"
               className="dash-profile-avatar"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           ) : (
             <PersonIcon />
@@ -231,7 +232,7 @@ export default function DashboardPage() {
         {/* CTA buttons */}
         <button
           className="dash-btn-practice"
-          onClick={() => navigate(ROUTES.TRAINING_SETUP)}
+          onClick={() => navigate(ROUTES.PRACTICE)}
         >
           Start Practice
         </button>

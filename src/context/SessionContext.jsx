@@ -57,7 +57,19 @@ export function SessionProvider({ children }) {
       .order('created_at', { ascending: false })
       .range(from, from + PAGE_SIZE - 1);
     dispatch({ type: 'SET_LOADING', payload: false });
-    if (error) { dispatch({ type: 'SET_ERROR', payload: error.message }); return { success: false, error: error.message }; }
+    if (error) {
+      // Table doesn't exist yet — treat as empty; stop console spam
+      const tableGone = error.code === '42P01' ||
+        error.message?.toLowerCase().includes('does not exist') ||
+        error.message?.toLowerCase().includes('relation') ||
+        error?.status === 404;
+      if (tableGone) {
+        dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0 } });
+        return { success: true };
+      }
+      dispatch({ type: 'SET_ERROR', payload: error.message });
+      return { success: false, error: error.message };
+    }
     const next = { sessions: data ?? [], page, total: count ?? 0 };
     dispatch({ type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS', payload: next });
     return { success: true };

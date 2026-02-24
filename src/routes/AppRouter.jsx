@@ -32,8 +32,11 @@ import SessionDetailPage from '../pages/session/SessionDetailPage';
 import SessionResultPage from '../pages/session/SessionResultPage';
 import DetailedFeedbackPage from '../pages/session/DetailedFeedbackPage';
 
+// Main Pages (continued)
+import PracticePage from '../pages/main/PracticePage';
+
 // Components
-import Navbar from '../components/common/Navbar';
+import BottomNav from '../components/common/BottomNav';
 
 /**
  * Protected Route Wrapper
@@ -64,10 +67,10 @@ function ProtectedRoute() {
 
   return (
     <>
-      <Navbar />
       <main className="main-content">
         <Outlet />
       </main>
+      <BottomNav />
     </>
   );
 }
@@ -145,6 +148,9 @@ function AppRouter() {
         <Route path={ROUTES.SCRIPT_EDITOR}      element={<ScriptEditorPage />} />
         <Route path={ROUTES.SCRIPT_EDITOR_EDIT} element={<ScriptEditorPage />} />
         <Route path={ROUTES.GENERATE_SCRIPT}    element={<GenerateScriptPage />} />
+
+        {/* Practice */}
+        <Route path={ROUTES.PRACTICE}       element={<PracticePage />} />
 
         {/* Training */}
         <Route path={ROUTES.TRAINING_SETUP} element={<TrainingSetupPage />} />

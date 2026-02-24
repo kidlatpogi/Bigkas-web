@@ -24,7 +24,7 @@
   
   --color-accent: #F59E0B;
   
-  --color-background: #F9FAFB;
+  --color-background: #F5F5F5;
   --color-surface: #FFFFFF;
   --color-surface-hover: #F3F4F6;
   
@@ -184,13 +184,16 @@ ol {
   outline-color: #FBAF00;
 }
 
-/* Theme transition — smooth color changes; suppressed during circular reveal animation */
+/* Main content area — no top nav, content sits at the top */
+.main-content {
+  min-height: 100vh;
+  /* Extra bottom padding so content clears the floating bottom nav */
+  padding-bottom: 100px;
+}
+
+/* Theme transition — smooth colour changes on all elements */
 html,
 body,
-.landing,
-.auth-page,
-.navbar,
-.main-content,
 * {
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -215,7 +218,8 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ── Circular theme reveal animation (adapted from Portfolio repo) ── */
+/* ── Circular theme reveal animation — 1:1 from Portfolio repo ── */
+/* Source: kidlatpogi/Portfolio  src/CSS/App.css */
 .theme-anim {
   position: fixed;
   left: 0;
@@ -224,16 +228,27 @@ html {
   height: 100vh;
   pointer-events: none;
   z-index: 9999;
-  --x: 50vw;
-  --y: 50vh;
+  mix-blend-mode: normal;
+  --x: 50px;
+  --y: 50px;
   --r: 0px;
-  --anim-bg: #F5F5F5;
+  --anim-bg: #ffffff;
+  /* Initially clipped to a tiny point at the button */
   clip-path: circle(0px at var(--x) var(--y));
-  transition: clip-path 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  transition: clip-path 560ms cubic-bezier(.2, .9, .2, 1), opacity 320ms linear;
   background: var(--anim-bg);
+  opacity: 1;
 }
+
 .theme-anim.active {
+  /* Expand to full radius computed from button position */
   clip-path: circle(var(--r) at var(--x) var(--y));
+}
+
+.theme-anim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 /* Offset for fixed navbar when scrolling to sections */

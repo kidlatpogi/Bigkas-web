@@ -1,0 +1,313 @@
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/useAuthContext';
+import { getScripts } from '../../api/scriptsApi';
+import { ROUTES } from '../../utils/constants';
+import { SYSTEM_PREWRITTEN_SPEECHES, RANDOM_TOPICS } from '../../utils/practiceData';
+import './PracticePage.css';
+
+/* ─── Icons ─── */
+function IconShuffle() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FBAF00"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="16 3 21 3 21 8"/>
+      <line x1="4" y1="20" x2="21" y2="3"/>
+      <polyline points="21 16 21 21 16 21"/>
+      <line x1="15" y1="15" x2="21" y2="21"/>
+    </svg>
+  );
+}
+
+function IconDoc() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(1,1,1,0.35)"
+      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>
+  );
+}
+
+function IconClose() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  );
+}
+
+function IconBack() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  );
+}
+
+/* ─── Tab options (mirrors mobile PracticeScreen) ─── */
+const TABS = [
+  { value: 'prewritten',  label: 'Pre-written' },
+  { value: 'randomizer',  label: 'Randomizer' },
+  { value: 'generate',    label: 'Generate' },
+];
+
+/**
+ * PracticePage — web adaptation of PracticeScreen.jsx (Bigkas-mobile).
+ *
+ * Tabs:
+ *  Pre-written — system speeches + user self-authored scripts
+ *  Randomizer  — random topic card + shuffle button
+ *  Generate    — navigate to /scripts/generate; shows auto-generated scripts below
+ */
+export default function PracticePage() {
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
+
+  const [selectedTab, setSelectedTab] = useState('prewritten');
+  const [scripts, setScripts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  /* Teleprompter preview modal */
+  const [previewScript, setPreviewScript] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  /* Randomiser */
+  const [randomTopic, setRandomTopic] = useState(() => RANDOM_TOPICS[0]);
+
+  /* Load user scripts from Supabase */
+  const loadScripts = useCallback(async () => {
+    if (!user?.id) return;
+    setIsLoading(true);
+    try {
+      const { data } = await getScripts(user.id, null);
+      setScripts(Array.isArray(data) ? data : []);
+    } catch {
+      setScripts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    loadScripts();
+  }, [loadScripts]);
+
+  /* Shuffle randomiser */
+  const shuffleRandomTopic = useCallback(() => {
+    const idx = Math.floor(Math.random() * RANDOM_TOPICS.length);
+    setRandomTopic(RANDOM_TOPICS[idx]);
+  }, []);
+
+  /* Visible scripts per tab */
+  const visibleScripts = useMemo(() => {
+    if (selectedTab === 'prewritten') {
+      const userScripts = scripts.filter((s) => s.type === 'self-authored');
+      return [...SYSTEM_PREWRITTEN_SPEECHES, ...userScripts];
+    }
+    if (selectedTab === 'generate') {
+      return scripts.filter((s) => s.type === 'auto-generated');
+    }
+    return [];
+  }, [scripts, selectedTab]);
+
+  /* Open teleprompter modal */
+  const handleScriptPress = (script) => {
+    setPreviewScript(script);
+    setShowPreview(true);
+  };
+
+  /* Start practice with previewed script */
+  const handleStartPractice = () => {
+    if (!previewScript) return;
+    setShowPreview(false);
+    navigate(ROUTES.TRAINING, {
+      state: {
+        script: previewScript,
+        focus: 'scripted',
+        entryPoint: 'practice',
+      },
+    });
+  };
+
+  /* Start randomiser practice */
+  const handleStartRandomTopic = () => {
+    if (!randomTopic) return;
+    navigate(ROUTES.TRAINING, {
+      state: {
+        freeTopic: randomTopic.title,
+        freeSpeechContext: randomTopic.body,
+        focus: 'free',
+        entryPoint: 'practice',
+      },
+    });
+  };
+
+  return (
+    <div className="practice-page">
+      <div className="practice-wrap">
+
+        {/* Back button */}
+        <button className="practice-back" onClick={() => navigate(-1)} aria-label="Go back">
+          <IconBack />
+        </button>
+
+        {/* Header */}
+        <h1 className="practice-title">Practice{'\n'}Setup</h1>
+        <p className="practice-sub">
+          Choose a speech to preview, generate your own, or try a random topic!
+        </p>
+
+        {/* Tabs */}
+        <div className="practice-tabs" role="tablist">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              role="tab"
+              aria-selected={selectedTab === tab.value}
+              className={`practice-tab-btn${selectedTab === tab.value ? ' active' : ''}`}
+              onClick={() => setSelectedTab(tab.value)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Pre-written tab ── */}
+        {selectedTab === 'prewritten' && (
+          <div className="practice-list">
+            {isLoading ? (
+              <div className="practice-spinner" aria-label="Loading" />
+            ) : visibleScripts.length === 0 ? (
+              <div className="practice-empty">
+                <IconDoc />
+                <p>No scripts yet. Write one from the Scripts tab or generate one!</p>
+              </div>
+            ) : (
+              visibleScripts.map((script) => (
+                <button
+                  key={script.id}
+                  className="practice-script-card"
+                  onClick={() => handleScriptPress(script)}
+                >
+                  <span className="practice-script-title">{script.title}</span>
+                  <p className="practice-script-preview">
+                    {(script.content || script.body || '').slice(0, 120)}
+                    {(script.content || script.body || '').length > 120 ? '…' : ''}
+                  </p>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* ── Randomiser tab ── */}
+        {selectedTab === 'randomizer' && (
+          <div className="practice-rand-wrap">
+            <div className="practice-rand-card">
+              <div className="practice-rand-icon"><IconShuffle /></div>
+              <h3 className="practice-rand-title">{randomTopic?.title || 'Surprise Topic'}</h3>
+              <p className="practice-rand-body">
+                {randomTopic?.body || 'Press shuffle to get a random topic!'}
+              </p>
+              <div className="practice-rand-actions">
+                <button className="practice-btn-outline" onClick={shuffleRandomTopic}>
+                  Shuffle
+                </button>
+                <button className="practice-btn-primary" onClick={handleStartRandomTopic}>
+                  Start
+                </button>
+              </div>
+            </div>
+            <p className="practice-rand-hint">
+              Get a surprise topic and practice speaking about it!
+            </p>
+          </div>
+        )}
+
+        {/* ── Generate tab ── */}
+        {selectedTab === 'generate' && (
+          <div className="practice-list">
+            <button
+              className="practice-btn-primary practice-generate-btn"
+              onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
+            >
+              Generate Speech
+            </button>
+
+            {visibleScripts.length > 0 && (
+              <p className="practice-section-label">Your Generated Scripts</p>
+            )}
+            {visibleScripts.map((script) => (
+              <button
+                key={script.id}
+                className="practice-script-card"
+                onClick={() => handleScriptPress(script)}
+              >
+                <span className="practice-script-title">{script.title}</span>
+                <p className="practice-script-preview">
+                  {(script.content || '').slice(0, 120)}
+                  {(script.content || '').length > 120 ? '…' : ''}
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Cancel */}
+        <button className="practice-btn-outline practice-cancel-btn" onClick={() => navigate(-1)}>
+          Cancel
+        </button>
+      </div>
+
+      {/* ── Teleprompter Preview Modal ── */}
+      {showPreview && (
+        <div
+          className="practice-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Script preview"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowPreview(false); }}
+        >
+          <div className="practice-modal">
+            {/* Header */}
+            <div className="practice-modal-header">
+              <h3 className="practice-modal-script-title">
+                {previewScript?.title || 'Script Preview'}
+              </h3>
+              <button
+                className="practice-modal-close"
+                onClick={() => setShowPreview(false)}
+                aria-label="Close preview"
+              >
+                <IconClose />
+              </button>
+            </div>
+
+            {/* Script content */}
+            <div className="practice-modal-scroll">
+              <p className="practice-modal-text">
+                {previewScript?.content || previewScript?.body || 'No content available.'}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="practice-modal-actions">
+              <button className="practice-btn-outline" onClick={() => setShowPreview(false)}>
+                Close
+              </button>
+              <button className="practice-btn-primary" onClick={handleStartPractice}>
+                Start Practice
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

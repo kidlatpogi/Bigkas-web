@@ -137,7 +137,12 @@ function ProfilePage() {
             type="button"
           >
             {formData.avatarUri ? (
-              <img src={formData.avatarUri} alt="Avatar" className="profile-avatar-img" />
+              <img
+                src={formData.avatarUri}
+                alt="Avatar"
+                className="profile-avatar-img"
+                onError={() => setFormData(prev => ({ ...prev, avatarUri: null }))}
+              />
             ) : (
               <div className="profile-avatar-placeholder">{initials}</div>
             )}
