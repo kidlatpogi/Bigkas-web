@@ -6,29 +6,25 @@ import './BottomNav.css';
 
 function IconScripts({ filled }) {
   return filled ? (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M18 2H9C7.34 2 6 3.34 6 5v1H5C3.34 6 2 7.34 2 9v10c0 1.66 1.34 3 3 3h10c1.66 0 3-1.34 3-3v-1h1c1.66 0 3-1.34 3-3V6c0-2.21-1.79-4-4-4zm-5 18H5c-.55 0-1-.45-1-1V9c0-.55.45-1 1-1h1v8c0 1.66 1.34 3 3 3h5v1c0 .55-.45 1-1 1zm7-4H9c-.55 0-1-.45-1-1V6c0-1.1.9-2 2-2h9c1.1 0 2 .9 2 2v8c0 .55-.45 1-1 1z"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+      <path d="M428.54 188L336 95.47A48 48 0 00302.09 80H144a64 64 0 00-64 64v224a64 64 0 0064 64h224a64 64 0 0064-64V221.91A48 48 0 00428.54 188zM288 112l96 96h-80a16 16 0 01-16-16zm144 256a48 48 0 01-48 48H144a48 48 0 01-48-48V144a48 48 0 0148-48h128v80a32 32 0 0032 32h80zM176 288a16 16 0 000 32h160a16 16 0 000-32zm0 64a16 16 0 000 32h160a16 16 0 000-32zm0-128a16 16 0 000 32h80a16 16 0 000-32z"/>
     </svg>
   ) : (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M416 221.25V416a48 48 0 01-48 48H144a48 48 0 01-48-48V96a48 48 0 0148-48h98.75a32 32 0 0122.62 9.37l141.26 141.26A32 32 0 01416 221.25z"/>
+      <path d="M256 56v120a32 32 0 0032 32h120M176 288h160M176 368h160M176 208h80"/>
     </svg>
   );
 }
 
 function IconProgress({ filled }) {
   return filled ? (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M3 18v-6l6-3 4 2 8-5v12H3z" opacity="0.3"/>
-      <path d="M3.5 18.5l5.5-8 4 2.5 5.5-8M3 18h18"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+      <path d="M496 432H16a16 16 0 000 32h480a16 16 0 000-32zM160 240h-48a32 32 0 00-32 32v160h112V272a32 32 0 00-32-32zM304 96h-48a32 32 0 00-32 32v304h112V128a32 32 0 00-32-32zM448 288h-48a32 32 0 00-32 32v112h112V320a32 32 0 00-32-32z"/>
     </svg>
   ) : (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+    <svg width="24" height="24" viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M480 432H32M192 192H112a32 32 0 00-32 32v208h144V224a32 32 0 00-32-32zM336 96h-80a32 32 0 00-32 32v304h144V128a32 32 0 00-32-32zM480 288h-80a32 32 0 00-32 32v112h144V320a32 32 0 00-32-32z"/>
     </svg>
   );
 }

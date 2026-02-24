@@ -210,7 +210,6 @@ export default function PracticePage() {
         {selectedTab === 'randomizer' && (
           <div className="practice-rand-wrap">
             <div className="practice-rand-card">
-              <div className="practice-rand-icon"><IconShuffle /></div>
               <h3 className="practice-rand-title">{randomTopic?.title || 'Surprise Topic'}</h3>
               <p className="practice-rand-body">
                 {randomTopic?.body || 'Press shuffle to get a random topic!'}
@@ -260,7 +259,7 @@ export default function PracticePage() {
         )}
 
         {/* Cancel */}
-        <button className="practice-btn-outline practice-cancel-btn" onClick={() => navigate(-1)}>
+        <button className="practice-cancel-link" onClick={() => navigate(-1)}>
           Cancel
         </button>
       </div>

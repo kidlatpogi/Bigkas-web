@@ -96,7 +96,6 @@ function ScriptsPage() {
 
       {!isLoading && !error && scripts.length === 0 && (
         <div className="empty-state">
-          <span className="empty-icon">📄</span>
           <p className="empty-title">No scripts yet</p>
           <p className="empty-desc">
             {activeTab === 'self'

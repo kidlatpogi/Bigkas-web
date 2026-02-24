@@ -37,6 +37,7 @@ import PracticePage from '../pages/main/PracticePage';
 
 // Components
 import BottomNav from '../components/common/BottomNav';
+import ThemeToggleBtn from '../components/common/ThemeToggleBtn';
 
 /**
  * Protected Route Wrapper
@@ -67,6 +68,7 @@ function ProtectedRoute() {
 
   return (
     <>
+      <ThemeToggleBtn />
       <main className="main-content">
         <Outlet />
       </main>

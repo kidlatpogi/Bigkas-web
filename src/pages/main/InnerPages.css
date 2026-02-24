@@ -180,8 +180,7 @@
 }
 
 .btn-primary:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
+  opacity: 0.85;
 }
 
 .btn-primary:active {

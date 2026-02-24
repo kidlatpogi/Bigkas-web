@@ -6,8 +6,8 @@
 /* Wrapper — fixed, top-right corner, above all content */
 .theme-toggle-wrap {
   position: fixed;
-  top: calc(5rem + 15px);
-  right: 2rem;
+  top: 1.25rem;
+  right: 1.5rem;
   z-index: 2050;
 }
 
@@ -78,16 +78,16 @@
 /* Mobile — shrink slightly */
 @media (max-width: 640px) {
   .theme-toggle-wrap {
-    top: 5.25rem;
-    right: 1rem;
+    top: 0.75rem;
+    right: 0.75rem;
   }
   .theme-toggle-btn {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
   }
   .theme-toggle-btn svg,
   .theme-toggle-btn img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 }

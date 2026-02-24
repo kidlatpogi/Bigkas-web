@@ -7,8 +7,8 @@ import './InnerPages.css';
 import './TrainingSetupPage.css';
 
 const FOCUS_OPTIONS = [
-  { value: 'scripted', label: 'Scripted Accuracy', desc: 'Read and match the script as closely as possible.' },
-  { value: 'free',     label: 'Free Speech',       desc: 'Speak freely about the selected topic.' },
+  { value: 'scripted', label: 'Scripted Accuracy', desc: 'Strict adherence to text for pronunciation. AI will track every word you say.' },
+  { value: 'free',     label: 'Free Speech',       desc: 'Impromptu speaking style. Focus on flow, tone, and pacing.' },
 ];
 
 function TrainingSetupPage() {
@@ -59,8 +59,8 @@ function TrainingSetupPage() {
   };
 
   return (
-    <div className="inner-page">
-      <div className="inner-page-header">
+    <div className="inner-page training-setup-page">
+      <div className="inner-page-header training-setup-header">
         <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
@@ -82,38 +82,49 @@ function TrainingSetupPage() {
         </button>
       </div>
 
-      {/* Script dropdown */}
-      <div className="form-group">
-        <label className="form-label">Choose Script</label>
-        {isLoading ? (
-          <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
-        ) : (
-          <select
-            className="form-select"
-            value={selectedScript?.id || ''}
-            onChange={(e) => {
-              const s = scripts.find(sc => sc.id === e.target.value);
-              setSelectedScript(s || null);
-            }}
+      {/* Script selection */}
+      {activeTab === 'auto-generated' ? (
+        <div className="form-group">
+          <button
+            className="btn-primary training-generate-btn"
+            onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
           >
-            <option value="">— Select a script —</option>
-            {scripts.map((s) => (
-              <option key={s.id} value={s.id}>{s.title || 'Untitled Script'}</option>
-            ))}
-          </select>
-        )}
-        {!isLoading && scripts.length === 0 && (
-          <p className="form-hint">
-            No scripts found.{' '}
-            <button
-              className="btn-link"
-              onClick={() => navigate(ROUTES.SCRIPTS)}
+            Generate Speech
+          </button>
+        </div>
+      ) : (
+        <div className="form-group">
+          <label className="form-label">Choose Script</label>
+          {isLoading ? (
+            <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
+          ) : (
+            <select
+              className="form-select"
+              value={selectedScript?.id || ''}
+              onChange={(e) => {
+                const s = scripts.find(sc => sc.id === e.target.value);
+                setSelectedScript(s || null);
+              }}
             >
-              Create one
-            </button>
-          </p>
-        )}
-      </div>
+              <option value="">— Select a script —</option>
+              {scripts.map((s) => (
+                <option key={s.id} value={s.id}>{s.title || 'Untitled Script'}</option>
+              ))}
+            </select>
+          )}
+          {!isLoading && scripts.length === 0 && (
+            <p className="form-hint">
+              No scripts found.{' '}
+              <button
+                className="btn-link"
+                onClick={() => navigate(ROUTES.SCRIPTS)}
+              >
+                Create one
+              </button>
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Selected script preview */}
       {selectedScript && (
@@ -130,15 +141,15 @@ function TrainingSetupPage() {
       <p className="section-label" style={{ marginTop: 8 }}>Choose Your Focus</p>
       <div className="focus-options">
         {FOCUS_OPTIONS.map((opt) => (
-          <label key={opt.value} className={`focus-option ${focus === opt.value ? 'selected' : ''}`}>
-            <input
-              type="radio"
-              name="focus"
-              value={opt.value}
-              checked={focus === opt.value}
-              onChange={() => setFocus(opt.value)}
-            />
-            <div>
+          <label
+            key={opt.value}
+            className={`focus-option ${focus === opt.value ? 'selected' : ''}`}
+            onClick={() => setFocus(opt.value)}
+          >
+            <div className="focus-radio-circle">
+              {focus === opt.value && <div className="focus-radio-dot" />}
+            </div>
+            <div className="focus-option-text">
               <p className="focus-label">{opt.label}</p>
               <p className="focus-desc">{opt.desc}</p>
             </div>

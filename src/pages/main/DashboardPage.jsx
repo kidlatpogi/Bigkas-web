@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { useSessions } from '../../hooks/useSessions';
@@ -120,6 +120,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { sessions, fetchSessions } = useSessions();
+  const [avatarError, setAvatarError] = useState(false);
 
   /* ── Daily content (no external API — computed locally, no CORS) ── */
   const quote = useMemo(() => getDailyQuote(), []);
@@ -195,12 +196,12 @@ export default function DashboardPage() {
       <div className="dash-top-bar">
         <div className="dash-top-bar-spacer" />
         <Link to={ROUTES.PROFILE} className="dash-profile-btn" aria-label="Go to Profile">
-          {user?.avatar_url ? (
+          {user?.avatar_url && !avatarError ? (
             <img
               src={user.avatar_url}
               alt="Profile"
               className="dash-profile-avatar"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              onError={() => setAvatarError(true)}
             />
           ) : (
             <PersonIcon />

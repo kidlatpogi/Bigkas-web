@@ -6,14 +6,14 @@
 .practice-page {
   min-height: calc(100vh - 80px);
   background: var(--bg, #F5F5F5);
-  padding: 48px 16px 120px;
+  padding: 48px 24px 120px;
   display: flex;
   justify-content: center;
 }
 
 .practice-wrap {
   width: 100%;
-  max-width: 420px;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
 }
@@ -165,6 +165,8 @@
 /* Generate button */
 .practice-generate-btn {
   width: 100%;
+  height: 52px;
+  font-size: 16px;
   margin-bottom: 20px;
 }
 
@@ -185,16 +187,6 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-}
-
-.practice-rand-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: rgba(251, 175, 0, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .practice-rand-title {
@@ -263,10 +255,23 @@
 
 .practice-btn-outline:hover { border-color: #010101; }
 
-.practice-cancel-btn {
-  width: 100%;
-  margin-top: auto;
+/* Cancel link — small, centered, text-only */
+.practice-cancel-link {
+  background: none;
+  border: none;
+  color: rgba(1, 1, 1, 0.45);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  padding: 12px;
+  margin-top: 8px;
+  align-self: center;
+  transition: color 0.15s;
 }
+
+.practice-cancel-link:hover { color: #010101; }
 
 /* ── Teleprompter Preview Modal ── */
 .practice-modal-overlay {
@@ -383,3 +388,5 @@
 [data-theme="dark"] .practice-modal-text  { color: #E0E0E0; }
 [data-theme="dark"] .practice-modal-close { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-section-label { color: rgba(255,255,255,0.4); }
+[data-theme="dark"] .practice-cancel-link  { color: rgba(255,255,255,0.4); }
+[data-theme="dark"] .practice-cancel-link:hover { color: #F0F0F0; }
