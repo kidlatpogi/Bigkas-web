@@ -73,7 +73,8 @@ function Navbar() {
       </div>
 
       {/* Mobile drawer */}
-      <div className={`navbar-drawer${open ? ' drawer-open' : ''}`} aria-hidden={!open}>
+      {open && <div className="navbar-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />}
+      <div className={`navbar-drawer${open ? ' drawer-open' : ''}`} inert={!open ? '' : undefined}>
         {NAV_LINKS.map(({ label, to }) => (
           <Link
             key={to}

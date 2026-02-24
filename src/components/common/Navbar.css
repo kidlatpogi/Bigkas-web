@@ -137,10 +137,15 @@
   transition: color 0.15s, background 0.15s;
 }
 
-.drawer-link:hover,
-.drawer-link-active {
+.drawer-link:hover {
   color: #010101;
   background: rgba(1, 1, 1, 0.04);
+  font-weight: 700;
+}
+
+.drawer-link-active {
+  color: #FBAF00;
+  background: rgba(251, 175, 0, 0.08);
   font-weight: 700;
 }
 
@@ -160,6 +165,20 @@
 }
 
 .drawer-logout:hover { background: rgba(255, 59, 48, 0.12); }
+
+/* ── Backdrop overlay ── */
+.navbar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 99;
+  animation: fadeInBackdrop 0.18s ease;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
@@ -202,7 +221,7 @@
   width: 28px;
   height: 28px;
   object-fit: contain;
-  filter: brightness(0); /* ensure black icon on white navbar */
+  /* no filter — keep original gold/yellow colour of logo */
 }
 
 .brand-text {
@@ -237,8 +256,21 @@
 }
 
 .nav-link-active {
-  color: #010101;
-  font-weight: 600;
+  color: #FBAF00;
+  font-weight: 700;
+  position: relative;
+}
+
+.nav-link-active::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -3px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: #FBAF00;
 }
 
 /* Mobile — hide links, show only brand */

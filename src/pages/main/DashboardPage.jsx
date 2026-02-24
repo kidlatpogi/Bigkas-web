@@ -131,21 +131,30 @@ export default function DashboardPage() {
 
       {/* ── Hero card — "Ready to speak?" (black card, centered) ── */}
       <div className="dash-hero-card">
+        {/* Header row — mic icon circle + streak badge */}
+        <div className="dash-hero-header">
+          <div className="dash-hero-icon"><MicIcon /></div>
+          <div className="dash-streak-badge">
+            <FlameIcon />
+            <span>{streakCount} day streak</span>
+          </div>
+        </div>
+
         {/* Copy */}
         <h2 className="dash-hero-title">Ready to speak?</h2>
-        <p className="dash-hero-sub">Ready when you are.</p>
+        <p className="dash-hero-sub">Practice makes perfect! Start your daily session and improve your public speaking skills.</p>
 
         {/* CTA buttons */}
         <button
           className="dash-btn-practice"
-          onClick={() => navigate(ROUTES.PRACTICE)}
+          onClick={() => navigate(ROUTES.TRAINING_SETUP)}
         >
           Start Practice
         </button>
         <p className="dash-hero-or">or</p>
         <button
           className="dash-btn-training"
-          onClick={() => navigate(ROUTES.PRACTICE)}
+          onClick={() => navigate(ROUTES.TRAINING_SETUP)}
         >
           Start Training
         </button>

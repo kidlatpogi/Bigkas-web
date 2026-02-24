@@ -3,9 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { buildRoute, getScoreTier } from '../../utils/constants';
 import { formatDate, formatDuration } from '../../utils/formatters';
+import BackButton from '../../components/common/BackButton';
+import FilterTabs from '../../components/common/FilterTabs';
 import './InnerPages.css';
 
-const FILTER_TABS = ['All', 'Today', 'This Week', 'This Month'];
+const FILTER_TABS = [
+  { label: 'All',        value: 'All' },
+  { label: 'Today',      value: 'Today' },
+  { label: 'This Week',  value: 'This Week' },
+  { label: 'This Month', value: 'This Month' },
+];
 
 function AllSessionsPage() {
   const navigate = useNavigate();
@@ -38,22 +45,16 @@ function AllSessionsPage() {
   return (
     <div className="inner-page">
       <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <BackButton />
         <h1 className="inner-page-title">All Sessions</h1>
       </div>
 
       {/* Filter tabs */}
-      <div className="tabs" style={{ overflowX: 'auto', width: '100%' }}>
-        {FILTER_TABS.map((t) => (
-          <button
-            key={t}
-            className={`tab-btn ${filter === t ? 'active' : ''}`}
-            onClick={() => setFilter(t)}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+      <FilterTabs
+        tabs={FILTER_TABS}
+        active={filter}
+        onChange={setFilter}
+      />
 
       {isLoading && sessions.length === 0 && (
         <div className="page-loading">Loading…</div>

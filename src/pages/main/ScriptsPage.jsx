@@ -4,6 +4,7 @@ import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts, deleteScript } from '../../api/scriptsApi';
 import { ROUTES, buildRoute } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
+import FilterTabs from '../../components/common/FilterTabs';
 import './InnerPages.css';
 import './ScriptsPage.css';
 
@@ -23,7 +24,8 @@ function ScriptsPage() {
     setError(null);
     try {
       const type = activeTab === 'self' ? 'self-authored' : 'auto-generated';
-      const data = await getScripts(user.id, type);
+      const { data, error: sbErr } = await getScripts(user.id, type);
+      if (sbErr) throw sbErr;
       setScripts(data || []);
     } catch {
       setError('Failed to load scripts.');
@@ -71,20 +73,14 @@ function ScriptsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="tabs">
-        <button
-          className={`tab-btn ${activeTab === 'self' ? 'active' : ''}`}
-          onClick={() => setActiveTab('self')}
-        >
-          Self-Authored
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'generated' ? 'active' : ''}`}
-          onClick={() => setActiveTab('generated')}
-        >
-          Auto-Generated
-        </button>
-      </div>
+      <FilterTabs
+        tabs={[
+          { label: 'Self-Authored', value: 'self' },
+          { label: 'Auto-Generated', value: 'generated' },
+        ]}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
 
       {/* Content */}
       {isLoading && (
