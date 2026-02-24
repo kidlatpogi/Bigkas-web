@@ -3,13 +3,16 @@
    Design tokens: primary #FBAF00 · black #010101 · white #FFFFFF
    ══════════════════════════════════════════════════════════════════════ */
 
-/* ── Page shell ── */
+/* ── Page shell — fixed full-screen, sits above BottomNav (z-index 1000) ── */
 .tp-page {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   background: #FFFFFF;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
 }
 
 /* ── Dark header bar ── */
@@ -72,7 +75,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0;
+  overflow: hidden;
 }
 
 /* Split layout: scripted mode → two columns */
@@ -85,14 +88,16 @@
 .tp-left {
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 12px;
+  padding: 14px 16px 16px;
+  gap: 10px;
   flex: 1;
+  overflow: hidden;
 }
 
 .tp-content--split .tp-left {
   flex: 0 0 55%;
   border-right: 1px solid #EBEBEB;
+  overflow: hidden;
 }
 
 /* Mode label + REC badge row */
@@ -134,14 +139,16 @@
   50% { opacity: 0; }
 }
 
-/* Camera */
+/* Camera — capped height so controls always fit */
 .tp-camera-wrap {
   border-radius: 16px;
   overflow: hidden;
   background: #111;
   aspect-ratio: 4 / 3;
   width: 100%;
+  max-height: 36vh;
   position: relative;
+  flex-shrink: 1;
 }
 
 .tp-camera {
@@ -160,21 +167,42 @@
   background: #1A1A1A;
 }
 
-/* Waveform — 50 thin bars */
+/* Idle overlay on top of <video> element */
+.tp-camera-idle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #111;
+}
+
+.tp-camera-idle-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Waveform — 50 bars */
 .tp-waveform {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  height: 64px;
+  height: 52px;
+  flex-shrink: 0;
 }
 
 .tp-wave-bar {
-  width: 3px;
+  width: 4px;
   background: #010101;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: height 0.08s ease;
   align-self: center;
+  min-height: 6px;
 }
 
 /* Status label */
@@ -186,7 +214,8 @@
   font-size: 13px;
   font-weight: 600;
   color: #010101;
-  min-height: 22px;
+  min-height: 20px;
+  flex-shrink: 0;
 }
 
 .tp-pulse-dot {
@@ -215,8 +244,9 @@
   flex-direction: row;
   align-items: flex-end;
   justify-content: space-around;
-  padding: 8px 0 4px;
+  padding: 6px 0 8px;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .tp-ctrl-col {
@@ -315,9 +345,10 @@
   flex: 0 0 45%;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 14px 16px;
   gap: 10px;
   background: #FAFAFA;
+  overflow: hidden;
 }
 
 .tp-script-header {
@@ -349,6 +380,7 @@
   border-left: 3px solid #FBAF00;
   padding-left: 12px;
   border-radius: 2px;
+  min-height: 0;  /* allow flexbox shrink */
 }
 
 .tp-teleprompter::-webkit-scrollbar { width: 4px; }
@@ -405,7 +437,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  z-index: 1300;
 }
 
 .tp-countdown-box {
@@ -513,7 +545,7 @@
 
 .tp-go-back-btn:hover { opacity: 0.88; }
 
-/* ── Settings modal ── */
+/* ── Settings modal — above BottomNav (z-index 1000) and tp-page (1100) ── */
 .tp-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -521,7 +553,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  z-index: 300;
+  z-index: 1200;
 }
 
 .tp-modal {
@@ -646,6 +678,7 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .tp-page { background: #0E0E0E; }
+[data-theme="dark"] .tp-camera-idle { background: #111; }
 
 [data-theme="dark"] .tp-mode-label { color: #F0F0F0; }
 [data-theme="dark"] .tp-status-label { color: #F0F0F0; }
