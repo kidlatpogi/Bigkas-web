@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { useSessions } from '../../hooks/useSessions';
@@ -23,34 +23,32 @@ const TIPS = [
   { title: 'Smile while speaking', body: 'A natural smile changes the shape of your mouth and makes your pronunciation warmer and clearer.' },
 ];
 
-/** Deterministic daily tip — same tip all day, rotates at midnight */
-function getDailyTip() {
+/** Curated motivational quotes — rotates daily, no external API needed */
+const QUOTES = [
+  { text: 'Courage is what it takes to stand up and speak.', author: 'Winston Churchill' },
+  { text: 'All great speakers were bad speakers at first.', author: 'Ralph Waldo Emerson' },
+  { text: 'The human brain starts working the moment you are born and never stops until you stand up to speak in public.', author: 'George Jessel' },
+  { text: 'It usually takes me more than three weeks to prepare a good impromptu speech.', author: 'Mark Twain' },
+  { text: 'There are always three speeches for every one you actually gave. The one you practiced, the one you gave, and the one you wish you gave.', author: 'Dale Carnegie' },
+  { text: 'Speech is power: speech is to persuade, to convert, to compel.', author: 'Ralph Waldo Emerson' },
+  { text: 'The right word may be effective, but no word was ever as effective as a rightly timed pause.', author: 'Mark Twain' },
+  { text: 'Take advantage of every opportunity to practice your communication skills.', author: 'Jim Rohn' },
+  { text: 'Think before you speak. Read before you think.', author: 'Fran Lebowitz' },
+  { text: 'To speak and to speak well are two things. A fool may talk, but a wise man speaks.', author: 'Ben Jonson' },
+  { text: 'Kind words can be short and easy to speak, but their echoes are truly endless.', author: 'Mother Teresa' },
+  { text: 'The most precious things in speech are the pauses.', author: 'Ralph Richardson' },
+  { text: 'Words are, of course, the most powerful drug used by mankind.', author: 'Rudyard Kipling' },
+  { text: 'You can speak well if your tongue can deliver the message of your heart.', author: 'John Ford' },
+];
+
+/** Deterministic daily selection — same all day, rotates at midnight */
+function getDailyIndex() {
   const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86_400_000);
-  return TIPS[dayOfYear % TIPS.length];
+  return Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86_400_000);
 }
 
-/**
- * Fetches a daily motivational quote from ZenQuotes API.
- * API: https://zenquotes.io/api/today | Docs: https://docs.zenquotes.io
- * Falls back to a hardcoded Churchill quote on failure.
- */
-async function fetchDailyQuote() {
-  try {
-    const res = await fetch('https://zenquotes.io/api/today');
-    if (!res.ok) throw new Error('Network error');
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return { text: data[0].q, author: data[0].a };
-    }
-    throw new Error('Empty response');
-  } catch {
-    return {
-      text: 'Courage is what it takes to stand up and speak.',
-      author: 'Winston Churchill',
-    };
-  }
-}
+function getDailyTip()   { return TIPS[getDailyIndex()   % TIPS.length]; }
+function getDailyQuote() { return QUOTES[getDailyIndex() % QUOTES.length]; }
 
 /* ─────────────────────────────────────────────────────────────
    Icon components (Ionicons-style SVG — from mobile app)
@@ -75,10 +73,10 @@ function FlameIcon({ size = 14, color = '#FBAF00' }) {
   );
 }
 
-/** Ionicons "calendar" icon (today) */
-function CalendarIcon({ size = 24 }) {
+/** Ionicons "calendar" icon — TODAY stat (color=#FBAF00 matching mobile) */
+function CalendarIcon({ size = 22, color = '#FBAF00' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="dash-stat-icon">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="dash-stat-icon">
       <rect x="3" y="4" width="18" height="18" rx="3" ry="3"/>
       <line x1="16" y1="2" x2="16" y2="6"/>
       <line x1="8" y1="2" x2="8" y2="6"/>
@@ -87,19 +85,19 @@ function CalendarIcon({ size = 24 }) {
   );
 }
 
-/** Ionicons "star" icon (avg score) */
-function StarIcon({ size = 24 }) {
+/** Ionicons "star" icon — AVG SCORE stat (filled, color=#FBAF00 matching mobile) */
+function StarIcon({ size = 22, color = '#FBAF00' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="dash-stat-icon">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" className="dash-stat-icon">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
     </svg>
   );
 }
 
-/** Ionicons "flame" icon (stat version, bigger) */
-function FlameStatIcon({ size = 24 }) {
+/** Ionicons "flame" icon — STREAK stat (filled, color=#FBAF00 matching mobile) */
+function FlameStatIcon({ size = 22, color = '#FBAF00' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="dash-stat-icon">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" className="dash-stat-icon">
       <path d="M12 2C9 7.5 6 11.5 6 15.5a6 6 0 0012 0c0-2.8-1.6-5.5-3.2-8-1.1 2-1.4 3.8-1.8 5.5C11.2 10.5 10.5 7 12 2z" />
     </svg>
   );
@@ -123,12 +121,9 @@ export default function DashboardPage() {
   const { user } = useAuthContext();
   const { sessions, fetchSessions } = useSessions();
 
-  /* ── Daily content state ── */
-  const [quote, setQuote] = useState({
-    text: 'Courage is what it takes to stand up and speak.',
-    author: 'Winston Churchill',
-  });
-  const tip = useMemo(() => getDailyTip(), []);
+  /* ── Daily content (no external API — computed locally, no CORS) ── */
+  const quote = useMemo(() => getDailyQuote(), []);
+  const tip   = useMemo(() => getDailyTip(),   []);
 
   /* ── Derived display values ── */
   const displayName = user?.nickname || user?.name?.split(' ')[0] || 'Speaker';
@@ -184,15 +179,13 @@ export default function DashboardPage() {
     return streak;
   }, [sessions]);
 
-  /* ── Load data on mount ── */
+  /* ── Load sessions on mount (once) ── */
   useEffect(() => {
     fetchSessions?.();
-    fetchDailyQuote().then(setQuote);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefresh = useCallback(() => {
     fetchSessions?.();
-    fetchDailyQuote().then(setQuote);
   }, [fetchSessions]);
 
   return (
@@ -202,9 +195,9 @@ export default function DashboardPage() {
       <div className="dash-top-bar">
         <div className="dash-top-bar-spacer" />
         <Link to={ROUTES.PROFILE} className="dash-profile-btn" aria-label="Go to Profile">
-          {user?.user_metadata?.avatar_url || user?.avatar_url ? (
+          {user?.avatar_url ? (
             <img
-              src={user.user_metadata?.avatar_url || user.avatar_url}
+              src={user.avatar_url}
               alt="Profile"
               className="dash-profile-avatar"
             />

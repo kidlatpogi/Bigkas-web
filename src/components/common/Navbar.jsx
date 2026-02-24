@@ -34,7 +34,7 @@ function Navbar() {
       ? location.pathname === path
       : location.pathname.startsWith(path);
 
-  /* Circular reveal animation (from Portfolio repo) */
+  /* Circular reveal animation (from Portfolio repo) — suppresses CSS transitions during switch */
   const handleThemeToggle = (e) => {
     if (document.body.dataset.themeAnimating === '1') return;
     const btn = e.currentTarget;
@@ -52,6 +52,8 @@ function Navbar() {
     overlay.style.setProperty('--r', `${radius}px`);
     overlay.style.setProperty('--anim-bg', theme === 'light' ? '#121212' : '#F5F5F5');
     document.body.dataset.themeAnimating = '1';
+    // Disable all CSS transitions so colors switch instantly under the overlay
+    document.documentElement.setAttribute('data-no-transition', '');
     document.body.appendChild(overlay);
 
     requestAnimationFrame(() => {
@@ -62,6 +64,10 @@ function Navbar() {
       toggleTheme();
       overlay.remove();
       delete document.body.dataset.themeAnimating;
+      // Re-enable transitions after a frame
+      requestAnimationFrame(() => {
+        document.documentElement.removeAttribute('data-no-transition');
+      });
     };
 
     overlay.addEventListener('transitionend', cleanup, { once: true });
@@ -138,7 +144,7 @@ function Navbar() {
 
       {/* Mobile drawer */}
       {open && <div className="navbar-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />}
-      <div className={`navbar-drawer${open ? ' drawer-open' : ''}`} inert={!open ? '' : undefined}>
+      <div className={`navbar-drawer${open ? ' drawer-open' : ''}`} inert={!open}>
         {NAV_LINKS.map(({ label, to }) => (
           <Link
             key={to}

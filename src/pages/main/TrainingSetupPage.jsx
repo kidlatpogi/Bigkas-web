@@ -28,8 +28,9 @@ function TrainingSetupPage() {
     setIsLoading(true);
     try {
       const type = activeTab === 'pre-written' ? 'self-authored' : 'auto-generated';
-      const data = await getScripts(user.id, type);
-      setScripts(data || []);
+      const { data, error } = await getScripts(user.id, type);
+      if (error) throw error;
+      setScripts(Array.isArray(data) ? data : []);
       setSelectedScript(null);
     } catch {
       setScripts([]);

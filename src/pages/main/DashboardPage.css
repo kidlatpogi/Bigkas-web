@@ -106,7 +106,7 @@
   min-height: 245px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 /* Streak badge */
@@ -148,7 +148,7 @@
   color: #FFFFFF;
   margin: 0 0 8px;
   line-height: 1.2;
-  text-align: center;
+  text-align: left;
 }
 .dash-hero-sub {
   font-size: 14px;
@@ -156,7 +156,7 @@
   color: rgba(255, 255, 255, 0.75);
   margin: 0 0 24px;
   line-height: 1.5;
-  text-align: center;
+  text-align: left;
 }
 
 /* Buttons inside hero */
@@ -225,7 +225,6 @@
 }
 .dash-stat-icon {
   margin-bottom: 2px;
-  opacity: 0.8;
 }
 .dash-stat-value {
   font-size: 64px;
@@ -279,17 +278,18 @@
 
 /* Motivation — italic quote */
 .dash-quote-text {
-  font-size: 24px;
+  font-size: 15px;
   font-style: italic;
   color: var(--black);
-  line-height: 1.45;
+  line-height: 1.55;
   margin: 0 0 8px;
   font-family: var(--font);
 }
 .dash-quote-author {
-  font-size: 24px;
-  color: var(--black);
+  font-size: 14px;
+  color: var(--text-secondary);
   font-family: var(--font);
+  font-weight: 600;
 }
 
 /* Tip of the Day */
@@ -302,9 +302,9 @@
   line-height: 1.4;
 }
 .dash-tip-body {
-  font-size: 15px;
-  color: var(--black);
-  line-height: 1.5;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
   margin: 0;
   font-family: var(--font);
 }
@@ -318,8 +318,6 @@
   .dash-greeting-text { font-size: 24px; }
   .dash-greeting-name { font-size: 42px; }
   .dash-stat-value    { font-size: 48px; }
-  .dash-quote-text,
-  .dash-quote-author  { font-size: 18px; }
 }
 
 @media (max-width: 600px) {
@@ -338,8 +336,6 @@
   .dash-btn-training {
     width: 100%;
   }
-  .dash-quote-text,
-  .dash-quote-author  { font-size: 16px; }
 }
 /* end */
 
@@ -362,7 +358,7 @@
 [data-theme="dark"] .dash-info-card   { background: #1E1E1E; }
 [data-theme="dark"] .dash-card-label  { color: rgba(240,240,240,0.8); }
 [data-theme="dark"] .dash-quote-text  { color: #F0F0F0; }
-[data-theme="dark"] .dash-quote-author { color: rgba(240,240,240,0.7); }
+[data-theme="dark"] .dash-quote-author { color: rgba(240,240,240,0.6); }
 [data-theme="dark"] .dash-tip-title   { color: #F0F0F0; }
 [data-theme="dark"] .dash-tip-body    { color: rgba(240,240,240,0.8); }
 [data-theme="dark"] .dash-profile-btn { background: #1E1E1E; color: rgba(240,240,240,0.55); }

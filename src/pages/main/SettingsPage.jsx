@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
+import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './SettingsPage.css';
 
@@ -22,6 +24,7 @@ const ChevronIcon = () => (
 );
 
 function SettingsPage() {
+  const navigate = useNavigate();
   const { logout } = useAuthContext();
 
   const [mic, setMic] = useState(() => localStorage.getItem('pref_mic') || MIC_OPTIONS[0]);
@@ -38,7 +41,7 @@ function SettingsPage() {
   };
 
   const handleTestAV = () => {
-    alert('Audio / Video test feature coming soon!');
+    navigate(ROUTES.AUDIO_TEST);
   };
 
   const handleLogout = async () => {

@@ -4,6 +4,7 @@ import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
 import googleLogo from '../../assets/Google-Logo.png';
+import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './AuthPages.css';
 
 /**
@@ -55,6 +56,7 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
+      <ThemeToggleBtn />
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
         <button

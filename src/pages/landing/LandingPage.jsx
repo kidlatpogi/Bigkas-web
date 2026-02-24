@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import { useTheme } from '../../context/useTheme';
 import bigkasLogo from '../../assets/Temporary Logo.png';
+import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './LandingPage.css';
 
 /* ═══════════════════════════════════════════════════════
@@ -256,6 +257,7 @@ export default function LandingPage() {
 
   return (
     <div className="landing">
+      <ThemeToggleBtn />
 
       {/* ══════ NAVIGATION ══════ */}
       <nav className="landing-nav">

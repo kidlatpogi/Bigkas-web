@@ -62,7 +62,6 @@ function AllSessionsPage() {
 
       {!isLoading && filtered.length === 0 && (
         <div className="empty-state">
-          <span className="empty-icon">📋</span>
           <p className="empty-title">No sessions</p>
           <p className="empty-desc">No sessions found for the selected period.</p>
         </div>

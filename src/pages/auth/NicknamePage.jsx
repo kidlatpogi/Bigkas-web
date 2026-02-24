@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuthContext } from '../../context/useAuthContext';
 import bigkasLogo from '../../assets/Temporary Logo.png';
+import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './NicknamePage.css';
 
 /**
@@ -50,6 +51,7 @@ function NicknamePage() {
 
   return (
     <div className="nickname-page">
+      <ThemeToggleBtn />
       <div className="nickname-container">
 
         {/* Brand logo */}

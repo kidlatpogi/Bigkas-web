@@ -25,6 +25,7 @@ import TrainingSetupPage from '../pages/main/TrainingSetupPage';
 import TrainingPage from '../pages/main/TrainingPage';
 import ScriptEditorPage from '../pages/main/ScriptEditorPage';
 import GenerateScriptPage from '../pages/main/GenerateScriptPage';
+import TestAudioVideoPage from '../pages/main/TestAudioVideoPage';
 
 // Session Pages
 import SessionDetailPage from '../pages/session/SessionDetailPage';
@@ -46,7 +47,8 @@ function ProtectedRoute() {
   if (isLoading) {
     return (
       <div className="loading-screen">
-        <p>Loading...</p>
+        <div className="loading-logo">Bigkas</div>
+        <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
   }
@@ -80,7 +82,8 @@ function NicknameRoute() {
   if (isLoading) {
     return (
       <div className="loading-screen">
-        <p>Loading...</p>
+        <div className="loading-logo">Bigkas</div>
+        <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
   }
@@ -101,7 +104,8 @@ function PublicRoute() {
   if (isLoading) {
     return (
       <div className="loading-screen">
-        <p>Loading...</p>
+        <div className="loading-logo">Bigkas</div>
+        <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
   }
@@ -159,6 +163,7 @@ function AppRouter() {
         <Route path={ROUTES.SETTINGS}         element={<SettingsPage />} />
         <Route path={ROUTES.CHANGE_PASSWORD}  element={<ChangePasswordPage />} />
         <Route path={ROUTES.ACCOUNT_SETTINGS} element={<AccountSettingsPage />} />
+        <Route path={ROUTES.AUDIO_TEST}       element={<TestAudioVideoPage />} />
 
         {/* Session */}
         <Route path={ROUTES.SESSION_DETAIL}    element={<SessionDetailPage />} />
