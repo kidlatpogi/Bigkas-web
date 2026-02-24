@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { useSessions } from '../../hooks/useSessions';
@@ -184,10 +184,6 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchSessions?.();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleRefresh = useCallback(() => {
-    fetchSessions?.();
-  }, [fetchSessions]);
 
   return (
     <div className="dashboard-page-new">

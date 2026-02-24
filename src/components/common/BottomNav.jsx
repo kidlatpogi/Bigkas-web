@@ -90,20 +90,21 @@ export default function BottomNav() {
 
   return (
     <nav className="bottom-nav" role="navigation" aria-label="Main navigation">
-      {TABS.map(({ to, label, Icon, center }) => {
-        const active = to === ROUTES.DASHBOARD
-          ? location.pathname === to
-          : location.pathname.startsWith(to);
+      {TABS.map((tab) => {
+        const TabIcon = tab.Icon;
+        const active = tab.to === ROUTES.DASHBOARD
+          ? location.pathname === tab.to
+          : location.pathname.startsWith(tab.to);
 
         return (
           <NavLink
-            key={to}
-            to={to}
-            className={`bottom-nav-item${center ? ' bottom-nav-center' : ''}${active ? ' active' : ''}`}
-            aria-label={label}
+            key={tab.to}
+            to={tab.to}
+            className={`bottom-nav-item${tab.center ? ' bottom-nav-center' : ''}${active ? ' active' : ''}`}
+            aria-label={tab.label}
             aria-current={active ? 'page' : undefined}
           >
-            <Icon filled={active} />
+            <TabIcon filled={active} />
           </NavLink>
         );
       })}

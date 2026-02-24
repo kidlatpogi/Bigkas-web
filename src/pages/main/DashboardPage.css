@@ -356,6 +356,19 @@
 }
 [data-theme="dark"] .dash-greeting-text { color: rgba(240,240,240,0.6); }
 [data-theme="dark"] .dash-greeting-name { color: #F0F0F0; }
+/* Hero card stays dark (black card) — override the --black token flip */
+[data-theme="dark"] .dash-hero-card {
+  background: #1A1A1A;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .dash-hero-title  { color: #FFFFFF; }
+[data-theme="dark"] .dash-hero-sub    { color: rgba(255,255,255,0.65); }
+[data-theme="dark"] .dash-hero-or     { color: rgba(255,255,255,0.55); }
+[data-theme="dark"] .dash-btn-practice {
+  background: rgba(255,255,255,0.12);
+  color: #FFFFFF;
+}
+[data-theme="dark"] .dash-btn-practice:hover { background: rgba(255,255,255,0.18); }
 [data-theme="dark"] .dash-stats-card  { background: #1E1E1E; }
 [data-theme="dark"] .dash-stat-value  { color: #F0F0F0; }
 [data-theme="dark"] .dash-stat-label  { color: rgba(240,240,240,0.7); }

@@ -204,8 +204,7 @@ body,
 }
 
 /* During the circular reveal animation: disable all transitions so theme switches instantly under the overlay */
-html[data-no-transition],
-html[data-no-transition] * {
+html[data-no-transition] *:not(.theme-anim) {
   transition: none !important;
 }
 

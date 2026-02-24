@@ -94,13 +94,13 @@ export default function TestAudioVideoPage() {
   }, []);
 
   /* ── Mic level polling via Web Audio API ── */
-  const pollLevel = useCallback(() => {
+  const pollLevel = useCallback(function poll() {
     if (!analyserRef.current) return;
     const data = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(data);
     const avg = data.reduce((a, b) => a + b, 0) / data.length;
     setAudioLevel(+(avg / 128).toFixed(3)); // 0–1 approx
-    animFrameRef.current = requestAnimationFrame(pollLevel);
+    animFrameRef.current = requestAnimationFrame(poll);
   }, []);
 
   /* ── Start mic test ── */

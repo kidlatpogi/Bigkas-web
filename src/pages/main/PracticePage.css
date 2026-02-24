@@ -255,23 +255,31 @@
 
 .practice-btn-outline:hover { border-color: #010101; }
 
-/* Cancel link — small, centered, text-only */
+/* Cancel — styled outlined button, full width */
 .practice-cancel-link {
-  background: none;
-  border: none;
-  color: rgba(1, 1, 1, 0.45);
-  font-size: 14px;
-  font-weight: 500;
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  border: 1.5px solid #D5D5D5;
+  border-radius: 10px;
+  color: rgba(1, 1, 1, 0.55);
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   text-align: center;
-  padding: 12px;
   margin-top: 8px;
-  align-self: center;
-  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
-.practice-cancel-link:hover { color: #010101; }
+.practice-cancel-link:hover {
+  border-color: #010101;
+  color: #010101;
+  background: rgba(1, 1, 1, 0.03);
+}
 
 /* ── Teleprompter Preview Modal ── */
 .practice-modal-overlay {
@@ -388,5 +396,5 @@
 [data-theme="dark"] .practice-modal-text  { color: #E0E0E0; }
 [data-theme="dark"] .practice-modal-close { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-section-label { color: rgba(255,255,255,0.4); }
-[data-theme="dark"] .practice-cancel-link  { color: rgba(255,255,255,0.4); }
-[data-theme="dark"] .practice-cancel-link:hover { color: #F0F0F0; }
+[data-theme="dark"] .practice-cancel-link  { color: rgba(255,255,255,0.45); border-color: #3A3A3A; }
+[data-theme="dark"] .practice-cancel-link:hover { border-color: #F0F0F0; color: #F0F0F0; background: rgba(255,255,255,0.04); }

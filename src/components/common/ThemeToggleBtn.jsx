@@ -35,13 +35,13 @@ function ThemeToggleBtn({ className = '' }) {
     overlay.style.setProperty('--anim-bg', targetBg);
 
     document.body.dataset.themeAnimating = '1';
-    // Suppress CSS colour transitions while overlay covers the screen
-    document.documentElement.setAttribute('data-no-transition', '');
     document.body.appendChild(overlay);
 
     requestAnimationFrame(() => { overlay.classList.add('active'); });
 
     const cleanup = () => {
+      // Suppress colour transitions while the theme switches under the overlay
+      document.documentElement.setAttribute('data-no-transition', '');
       toggleTheme();
       overlay.remove();
       delete document.body.dataset.themeAnimating;
@@ -50,7 +50,12 @@ function ThemeToggleBtn({ className = '' }) {
       });
     };
 
-    const onEnd = () => {
+    let cleaned = false;
+    const onEnd = (ev) => {
+      // Only react to the clip-path transition ending, not opacity or others
+      if (ev?.propertyName && ev.propertyName !== 'clip-path') return;
+      if (cleaned) return;
+      cleaned = true;
       cleanup();
       overlay.removeEventListener('transitionend', onEnd);
       overlay.removeEventListener('animationend',  onEnd);

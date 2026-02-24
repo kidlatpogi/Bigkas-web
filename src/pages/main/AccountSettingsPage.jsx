@@ -8,40 +8,62 @@ function AccountSettingsPage() {
   const navigate = useNavigate();
   const { logout, deleteAccount } = useAuthContext();
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [confirmText,     setConfirmText]     = useState('');
-  const [password,        setPassword]        = useState('');
-  const [isDeleting,      setIsDeleting]      = useState(false);
-  const [error,           setError]           = useState('');
+  /* ── Delete modal state ── */
+  const [showDeleteModal,   setShowDeleteModal]   = useState(false);
+  const [confirmText,       setConfirmText]       = useState('');
+  const [password,          setPassword]          = useState('');
+  const [isDeleting,        setIsDeleting]        = useState(false);
+  const [deleteError,       setDeleteError]       = useState('');
+
+  /* ── Deactivate modal state ── */
+  const [showDeactivateModal,  setShowDeactivateModal]  = useState(false);
+  const [deactivatePassword,   setDeactivatePassword]   = useState('');
+  const [isDeactivating,       setIsDeactivating]       = useState(false);
+  const [deactivateError,      setDeactivateError]      = useState('');
 
   const handleDelete = async () => {
     if (confirmText !== 'CONFIRM DELETE') {
-      setError('Please type CONFIRM DELETE to proceed.');
+      setDeleteError('Please type CONFIRM DELETE to proceed.');
       return;
     }
     if (!password) {
-      setError('Password is required.');
+      setDeleteError('Password is required.');
       return;
     }
-    setError('');
+    setDeleteError('');
     setIsDeleting(true);
     try {
       const result = await deleteAccount({ password });
       if (result?.success === false) {
-        setError(result.error || 'Failed to delete account.');
+        setDeleteError(result.error || 'Failed to delete account.');
         setIsDeleting(false);
       }
       // On success, AuthContext will auto-redirect to login
     } catch {
-      setError('An unexpected error occurred.');
+      setDeleteError('An unexpected error occurred.');
       setIsDeleting(false);
+    }
+  };
+
+  const handleDeactivate = async () => {
+    if (!deactivatePassword) {
+      setDeactivateError('Please enter your password to confirm.');
+      return;
+    }
+    setDeactivateError('');
+    setIsDeactivating(true);
+    try {
+      await logout();
+    } catch {
+      setDeactivateError('An unexpected error occurred.');
+      setIsDeactivating(false);
     }
   };
 
   return (
     <div className="inner-page">
-      <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+      <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
+        <button className="inner-page-back" style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)}>‹</button>
         <h1 className="inner-page-title">Account Settings</h1>
       </div>
 
@@ -51,7 +73,7 @@ function AccountSettingsPage() {
         <p className="account-section-desc">
           Temporarily deactivate your account. Your data will be preserved and you can reactivate by logging back in.
         </p>
-        <button className="btn-outline" onClick={logout}>
+        <button className="btn-outline" onClick={() => { setDeactivatePassword(''); setDeactivateError(''); setShowDeactivateModal(true); }}>
           Deactivate Account
         </button>
       </div>
@@ -62,14 +84,49 @@ function AccountSettingsPage() {
         <p className="account-section-desc">
           Permanently delete your account and all associated data. This action cannot be undone.
         </p>
-        <button className="btn-danger" onClick={() => setShowDeleteModal(true)}>
+        <button className="btn-danger" onClick={() => { setPassword(''); setConfirmText(''); setDeleteError(''); setShowDeleteModal(true); }}>
           Delete Account
         </button>
       </div>
 
-      {/* Delete confirmation modal */}
+      {/* ── Deactivate confirmation modal ── */}
+      {showDeactivateModal && (
+        <div className="modal-overlay" onClick={() => { setShowDeactivateModal(false); setDeactivateError(''); }}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Deactivate Account</h2>
+            <p className="modal-desc">
+              Your account will be deactivated. You can reactivate it by logging back in. Enter your password to confirm.
+            </p>
+
+            {deactivateError && <div className="page-error" style={{ marginBottom: 12 }}>{deactivateError}</div>}
+
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input
+                className="form-input"
+                type="password"
+                value={deactivatePassword}
+                onChange={(e) => setDeactivatePassword(e.target.value)}
+                placeholder="Your current password"
+                autoFocus
+              />
+            </div>
+
+            <div className="btn-row">
+              <button className="btn-secondary" onClick={() => { setShowDeactivateModal(false); setDeactivateError(''); }}>
+                Cancel
+              </button>
+              <button className="btn-outline" onClick={handleDeactivate} disabled={isDeactivating}>
+                {isDeactivating ? 'Deactivating…' : 'Deactivate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete confirmation modal ── */}
       {showDeleteModal && (
-        <div className="modal-overlay" onClick={() => { setShowDeleteModal(false); setError(''); }}>
+        <div className="modal-overlay" onClick={() => { setShowDeleteModal(false); setDeleteError(''); }}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">Delete Account</h2>
             <p className="modal-desc">
@@ -77,7 +134,7 @@ function AccountSettingsPage() {
               <strong>CONFIRM DELETE</strong> to continue.
             </p>
 
-            {error && <div className="page-error" style={{ marginBottom: 12 }}>{error}</div>}
+            {deleteError && <div className="page-error" style={{ marginBottom: 12 }}>{deleteError}</div>}
 
             <div className="form-group">
               <label className="form-label">Password</label>
@@ -101,7 +158,7 @@ function AccountSettingsPage() {
             </div>
 
             <div className="btn-row">
-              <button className="btn-secondary" onClick={() => { setShowDeleteModal(false); setError(''); }}>
+              <button className="btn-secondary" onClick={() => { setShowDeleteModal(false); setDeleteError(''); }}>
                 Cancel
               </button>
               <button className="btn-danger" onClick={handleDelete} disabled={isDeleting}>
