@@ -545,10 +545,12 @@
   border-color: rgba(255,255,255,0.35);
 }
 [data-theme="dark"] .btn-outline:hover {
-  background: #F0F0F0;
-  color: #010101;
-  border-color: #F0F0F0;
+  background: rgba(255,255,255,0.12);
+  color: #F0F0F0;
+  border-color: rgba(255,255,255,0.45);
 }
+
+[data-theme="dark"] .btn-primary:disabled { opacity: 0.3; }
 
 /* Chevron rows */
 [data-theme="dark"] .chevron-row { border-bottom-color: #2A2A2A; }

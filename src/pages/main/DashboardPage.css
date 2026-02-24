@@ -36,17 +36,31 @@
   font-family: var(--font);
 }
 
-/* ── Top bar — profile avatar button ── */
+/* ── Top bar — logo (left) + profile avatar (right) ── */
 .dash-top-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: 16px;
 }
 
-.dash-top-bar-spacer {
-  flex: 1;
+/* Logo */
+.dash-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
+.dash-logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: #010101;
+  letter-spacing: -0.5px;
+  font-family: var(--font);
+  line-height: 1;
+}
+
+[data-theme="dark"] .dash-logo-text { color: #F0F0F0; }
 
 .dash-profile-btn {
   width: 44px;

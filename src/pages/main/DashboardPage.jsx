@@ -188,9 +188,15 @@ export default function DashboardPage() {
   return (
     <div className="dashboard-page-new">
 
-      {/* ── Top bar: profile avatar button ── */}
+      {/* ── Top bar: Bigkas logo (left) + profile avatar (right) ── */}
       <div className="dash-top-bar">
-        <div className="dash-top-bar-spacer" />
+        <div className="dash-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" fill="#FBAF00"/>
+            <path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4m-4 0h8" stroke="#FBAF00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span className="dash-logo-text">Bigkas</span>
+        </div>
         <Link to={ROUTES.PROFILE} className="dash-profile-btn" aria-label="Go to Profile">
           {user?.avatar_url && !avatarError ? (
             <img
