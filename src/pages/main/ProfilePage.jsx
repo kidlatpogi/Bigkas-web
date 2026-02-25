@@ -265,6 +265,8 @@ function ProfilePage() {
             className="profile-input profile-input-readonly"
             value={formData.email}
             readOnly
+            disabled
+            tabIndex={-1}
           />
         </div>
 

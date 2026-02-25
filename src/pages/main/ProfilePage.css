@@ -12,8 +12,8 @@
 
 .profile-title {
   margin: 0;
-  text-align: center;
-  font-size: 42px;
+  text-align: left;
+  font-size: 32px;
   line-height: 1.15;
   font-weight: 700;
   color: #010101;
@@ -143,8 +143,10 @@
 }
 
 .profile-input-readonly {
-  background: #ffffff;
-  color: #1f2937;
+  background: #f5f5f5;
+  color: #9ca3af;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .profile-error,
@@ -319,13 +321,13 @@
 }
 
 [data-theme="dark"] .profile-input {
-  border-color: #4b5563;
-  background: #111827;
-  color: #f3f4f6;
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #111827;
 }
 
 [data-theme="dark"] .profile-input-readonly {
-  background: #0f172a;
+  background: #f5f5f5;
   color: #9ca3af;
 }
 
@@ -342,8 +344,8 @@
 }
 
 [data-theme="dark"] .profile-btn-save {
-  background: #010101;
-  color: #f3f4f6;
+  background: #ffffff;
+  color: #111827;
 }
 
 [data-theme="dark"] .profile-btn-save:disabled {
@@ -351,13 +353,13 @@
 }
 
 [data-theme="dark"] .profile-btn-cancel {
-  border-color: #4b5563;
-  background: #111827;
-  color: #f3f4f6;
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #111827;
 }
 
 [data-theme="dark"] .profile-btn-cancel:hover {
-  background: #1f2937;
+  background: #f8fafc;
 }
 
 [data-theme="dark"] .profile-avatar-modal {
@@ -389,7 +391,7 @@
   }
 
   .profile-title {
-    text-align: center;
+    text-align: left;
     font-size: 32px;
   }
 
