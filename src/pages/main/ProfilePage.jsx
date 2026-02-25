@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { ROUTES } from '../../utils/constants';
@@ -46,51 +46,24 @@ function ProfilePage() {
     avatarUri: null,
   });
 
-  const resolveAvatarUrl = useCallback((avatarValue) => {
-    if (!avatarValue) return null;
-    if (/^https?:\/\//i.test(avatarValue)) return avatarValue;
-
-    const normalizedPath = avatarValue
-      .replace(/^\/+/, '')
-      .replace(/^avatars\//, '');
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(normalizedPath);
-
-    return publicUrl || null;
-  }, []);
+  /* Build form snapshot directly from the AuthContext user (already cached). */
+  const profileLoaded = useRef(false);
 
   useEffect(() => {
-    let isMounted = true;
+    if (!user || profileLoaded.current) return;
 
-    const loadProfile = async () => {
-      const { data: authData } = await supabase.auth.getUser();
-      const authUser = authData?.user;
-      const meta = authUser?.user_metadata ?? {};
-
-      const fallbackName = user?.name || authUser?.email?.split('@')[0] || '';
-      const fallbackFirst = fallbackName.split(' ')[0] || user?.firstName || '';
-      const fallbackLast = fallbackName.split(' ').slice(1).join(' ') || user?.lastName || '';
-
-      const nextData = {
-        firstName: meta.first_name || user?.firstName || fallbackFirst || '',
-        lastName: meta.last_name || user?.lastName || fallbackLast || '',
-        nickname: meta.nickname || user?.nickname || '',
-        email: authUser?.email || user?.email || '',
-        avatarUri: resolveAvatarUrl(meta.avatar_url || user?.avatar_url || null),
-      };
-
-      if (!isMounted) return;
-      setInitialData(nextData);
-      setFormData(nextData);
+    const nextData = {
+      firstName: user.firstName || '',
+      lastName:  user.lastName  || '',
+      nickname:  user.nickname  || '',
+      email:     user.email     || '',
+      avatarUri: user.avatar_url || null,
     };
 
-    loadProfile();
-    return () => {
-      isMounted = false;
-    };
-  }, [user, resolveAvatarUrl]);
+    setInitialData(nextData);
+    setFormData(nextData);
+    profileLoaded.current = true;
+  }, [user]);
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -188,7 +161,7 @@ function ProfilePage() {
     <div className="profile-page">
       {/* Header */}
       <div className="profile-header">
-        <h1 className="profile-title">Edit Profile</h1>
+        <h1 className="inner-page-title">Edit Profile</h1>
       </div>
 
       {/* AvatarPicker */}

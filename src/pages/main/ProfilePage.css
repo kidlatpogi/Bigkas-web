@@ -10,15 +10,6 @@
   margin-bottom: 22px;
 }
 
-.profile-title {
-  margin: 0;
-  text-align: left;
-  font-size: 32px;
-  line-height: 1.15;
-  font-weight: 700;
-  color: #010101;
-}
-
 .profile-avatar-section {
   display: flex;
   flex-direction: column;
@@ -85,12 +76,6 @@
   place-items: center;
   color: #ffffff;
   border: 2px solid #f3f4f6;
-}
-
-.profile-avatar-hint {
-  margin-top: 12px;
-  color: #4b5563;
-  font-size: 14px;
 }
 
 .profile-avatar-status {
@@ -185,20 +170,10 @@
   background: transparent;
 }
 
-.profile-chevron {
-  color: #9ca3af;
-}
-
 .profile-setting-row svg {
   width: 18px;
   height: 18px;
   color: #4b5563;
-}
-
-.profile-actions {
-  margin-top: 14px;
-  display: grid;
-  gap: 14px;
 }
 
 .profile-btn-save,
@@ -296,10 +271,6 @@
   margin-top: 2px;
 }
 
-[data-theme="dark"] .profile-title {
-  color: #f3f4f6;
-}
-
 [data-theme="dark"] .profile-avatar-ring {
   border-color: #9ca3af;
   background: #1f2937;
@@ -314,7 +285,6 @@
   border-color: #1f2937;
 }
 
-[data-theme="dark"] .profile-avatar-hint,
 [data-theme="dark"] .profile-avatar-status,
 [data-theme="dark"] .profile-label {
   color: #d1d5db;
@@ -390,11 +360,6 @@
 @media (max-width: 640px) {
   .profile-page {
     padding: 18px 12px 26px;
-  }
-
-  .profile-title {
-    text-align: left;
-    font-size: 32px;
   }
 
   .profile-avatar-btn {
