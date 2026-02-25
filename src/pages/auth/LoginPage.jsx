@@ -110,7 +110,7 @@ function LoginPage() {
                 className={`form-input ${errors.email ? 'form-input-error' : ''}`}
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="NAME@DOMAIN.COM"
+                placeholder="name@gmail.com"
                 disabled={isLoading}
               />
               {errors.email && <span className="form-error">{errors.email}</span>}

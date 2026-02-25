@@ -22,7 +22,7 @@ const NAV_LINKS = [
  */
 function Navbar() {
   const location     = useLocation();
-  const { user, logout } = useAuthContext();
+  const { logout } = useAuthContext();
   const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const drawerRef    = useRef(null);
@@ -75,9 +75,6 @@ function Navbar() {
       if (document.body.contains(overlay)) cleanup();
     }, 700);
   };
-
-  // Close drawer on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
 
   // Close drawer on outside click
   useEffect(() => {
@@ -150,12 +147,13 @@ function Navbar() {
             key={to}
             to={to}
             className={`drawer-link${isActive(to) ? ' drawer-link-active' : ''}`}
+            onClick={() => setOpen(false)}
             tabIndex={open ? 0 : -1}
           >
             {label}
           </Link>
         ))}
-        <button className="drawer-logout" onClick={logout} tabIndex={open ? 0 : -1}>
+        <button className="drawer-logout" onClick={() => { setOpen(false); logout(); }} tabIndex={open ? 0 : -1}>
           Log Out
         </button>
       </div>
