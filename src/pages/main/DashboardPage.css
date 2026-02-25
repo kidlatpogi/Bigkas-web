@@ -10,9 +10,10 @@
 
   background: var(--bg);
   min-height: calc(100vh - 50px);
-  max-width: 980px;
+  width: min(1280px, calc(100vw - 48px));
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 28px 20px 110px;
+  padding: 24px 0 72px;
   font-family: var(--font);
 }
 
@@ -80,8 +81,9 @@
 .dash-greeting-text {
   font-size: 16px;
   font-weight: 500;
+  font-style: italic !important;
+  font-synthesis: style;
   color: var(--text-secondary);
-  font-style: italic;
   margin: 0;
 }
 
@@ -254,7 +256,8 @@
 }
 
 .dash-quote-text {
-  font-style: italic;
+  font-style: italic !important;
+  font-synthesis: style;
   line-height: 20px;
   margin: 0 0 8px;
   color: var(--black);
@@ -282,23 +285,45 @@
 
 @media (min-width: 901px) {
   .dashboard-page-new {
-    padding-top: 40px;
+    padding-top: 24px;
+    display: grid;
+    grid-template-columns: minmax(620px, 2.1fr) minmax(280px, 1fr);
+    column-gap: 22px;
+    align-items: start;
+  }
+
+  .dashboard-page-new > .dash-top-bar,
+  .dashboard-page-new > .dash-greeting {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-page-new > .dash-hero-card,
+  .dashboard-page-new > .dash-stats-card {
+    grid-column: 1;
+  }
+
+  .dashboard-page-new > .dash-info-row {
+    grid-column: 2;
+    grid-row: 3 / span 2;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .dash-greeting-name {
-    font-size: 48px;
+    font-size: 52px;
   }
 
   .dash-hero-title {
-    font-size: 36px;
+    font-size: 38px;
   }
 
   .dash-hero-sub {
-    max-width: 85%;
+    max-width: 92%;
   }
 
   .dash-stats-card {
-    padding: 28px 20px;
+    padding: 22px 16px;
+    margin-bottom: 0;
   }
 
   .dash-stat-value {
@@ -309,10 +334,15 @@
   .dash-stat-label {
     font-size: 11px;
   }
+
+  .dash-info-card {
+    min-height: 184px;
+  }
 }
 
 @media (max-width: 600px) {
   .dashboard-page-new {
+    width: calc(100vw - 24px);
     padding-bottom: 88px;
   }
 
