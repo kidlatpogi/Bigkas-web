@@ -225,3 +225,42 @@
     min-width: calc(50% - 6px);
   }
 }
+
+[data-theme='dark'] .progress-trend-card,
+[data-theme='dark'] .stat-block,
+[data-theme='dark'] .session-row {
+  background: #1E1E1E;
+  border-color: #2E2E2E;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.28);
+}
+
+[data-theme='dark'] .progress-chart-title,
+[data-theme='dark'] .stat-num,
+[data-theme='dark'] .session-row-text {
+  color: #F0F0F0;
+}
+
+[data-theme='dark'] .progress-trend-label,
+[data-theme='dark'] .progress-trend-value,
+[data-theme='dark'] .progress-label,
+[data-theme='dark'] .stat-desc,
+[data-theme='dark'] .session-row-date {
+  color: rgba(240,240,240,0.62);
+}
+
+[data-theme='dark'] .progress-range-selector {
+  background: #2A2A2A;
+}
+
+[data-theme='dark'] .progress-range-btn {
+  color: rgba(240,240,240,0.58);
+}
+
+[data-theme='dark'] .progress-range-btn.active {
+  background: #FBAF00;
+  color: #010101;
+}
+
+[data-theme='dark'] .session-row:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.38);
+}

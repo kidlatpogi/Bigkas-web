@@ -316,3 +316,21 @@
 [data-theme='dark'] .edit-avatar-modal-title {
   color: #f0f0f0;
 }
+
+[data-theme='dark'] .edit-avatar-modal-action,
+[data-theme='dark'] .edit-avatar-modal-cancel {
+  color: #F0F0F0;
+}
+
+[data-theme='dark'] .edit-avatar-modal-cancel {
+  background: #2A2A2A;
+}
+
+[data-theme='dark'] .edit-save:disabled {
+  background: #2F2F2F;
+  color: rgba(240,240,240,0.46);
+}
+
+[data-theme='dark'] .edit-input::placeholder {
+  color: rgba(240,240,240,0.38);
+}

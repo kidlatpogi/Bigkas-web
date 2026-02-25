@@ -71,3 +71,16 @@
 .btn-row .btn-primary {
   flex: 1;
 }
+
+[data-theme='dark'] .random-topic-btn {
+  color: #F0F0F0;
+}
+
+[data-theme='dark'] .chip {
+  border-color: #3A3A3A;
+  color: rgba(240,240,240,0.78);
+}
+
+[data-theme='dark'] .chip:hover:not(.active) {
+  border-color: #5A5A5A;
+}
