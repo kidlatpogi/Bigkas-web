@@ -1,5 +1,6 @@
 import { createContext, useCallback, useReducer } from 'react';
 import { supabase } from '../lib/supabase';
+import { ENV } from '../config/env';
 
 const PAGE_SIZE = 10;
 
@@ -35,6 +36,18 @@ function reducer(state, action) {
 
 const SessionContext = createContext(null);
 
+function isSessionsTableMissing(error) {
+  if (!error) return false;
+  const message = error.message?.toLowerCase() || '';
+  return (
+    error.code === '42P01' ||
+    error?.status === 404 ||
+    message.includes('does not exist') ||
+    message.includes('relation') ||
+    message.includes('not found')
+  );
+}
+
 export function SessionProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -46,6 +59,11 @@ export function SessionProvider({ children }) {
 
   /* ── Fetch paginated sessions ── */
   const fetchSessions = useCallback(async (page = 1, refresh = false) => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0 } });
+      return { success: true };
+    }
+
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -58,12 +76,7 @@ export function SessionProvider({ children }) {
       .range(from, from + PAGE_SIZE - 1);
     dispatch({ type: 'SET_LOADING', payload: false });
     if (error) {
-      // Table doesn't exist yet — treat as empty; stop console spam
-      const tableGone = error.code === '42P01' ||
-        error.message?.toLowerCase().includes('does not exist') ||
-        error.message?.toLowerCase().includes('relation') ||
-        error?.status === 404;
-      if (tableGone) {
+      if (isSessionsTableMissing(error)) {
         dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0 } });
         return { success: true };
       }
@@ -82,9 +95,18 @@ export function SessionProvider({ children }) {
 
   /* ── Fetch single session ── */
   const fetchSessionById = useCallback(async (sessionId) => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      dispatch({ type: 'SET_CURRENT', payload: null });
+      return { success: false, error: 'Session persistence is disabled' };
+    }
+
     dispatch({ type: 'SET_LOADING', payload: true });
     const { data, error } = await supabase.from('sessions').select('*').eq('id', sessionId).single();
     dispatch({ type: 'SET_LOADING', payload: false });
+    if (isSessionsTableMissing(error)) {
+      dispatch({ type: 'SET_CURRENT', payload: null });
+      return { success: false, error: 'Session not found' };
+    }
     if (error) { dispatch({ type: 'SET_ERROR', payload: error.message }); return { success: false, error: error.message }; }
     dispatch({ type: 'SET_CURRENT', payload: data });
     return { success: true, session: data };
@@ -110,7 +132,7 @@ export function SessionProvider({ children }) {
       });
       if (!res.ok) throw new Error(`Analysis failed: ${res.status}`);
       const analysisResult = await res.json();
-      // Persist to Supabase
+      // Persist to Supabase (optional in local/dev)
       const sessionRow = {
         user_id:       uid,
         target_text:   targetText,
@@ -123,8 +145,30 @@ export function SessionProvider({ children }) {
         feedback:       analysisResult.summary         ?? '',
         duration:       analysisResult.duration_sec    ?? 0,
       };
+
+      if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+        const localSession = {
+          id: `local-${Date.now()}`,
+          ...sessionRow,
+          created_at: new Date().toISOString(),
+        };
+        dispatch({ type: 'ADD_SESSION', payload: localSession });
+        return { success: true, session: localSession, analysisResult };
+      }
+
       const { data: saved, error: saveErr } = await supabase.from('sessions').insert(sessionRow).select().single();
-      if (saveErr) throw new Error(saveErr.message);
+      if (saveErr) {
+        if (isSessionsTableMissing(saveErr)) {
+          const localSession = {
+            id: `local-${Date.now()}`,
+            ...sessionRow,
+            created_at: new Date().toISOString(),
+          };
+          dispatch({ type: 'ADD_SESSION', payload: localSession });
+          return { success: true, session: localSession, analysisResult };
+        }
+        throw new Error(saveErr.message);
+      }
       dispatch({ type: 'ADD_SESSION', payload: saved });
       return { success: true, session: saved, analysisResult };
     } catch (err) {
@@ -137,7 +181,16 @@ export function SessionProvider({ children }) {
 
   /* ── Delete session ── */
   const deleteSession = useCallback(async (sessionId) => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      dispatch({ type: 'REMOVE_SESSION', payload: sessionId });
+      return { success: true };
+    }
+
     const { error } = await supabase.from('sessions').delete().eq('id', sessionId);
+    if (isSessionsTableMissing(error)) {
+      dispatch({ type: 'REMOVE_SESSION', payload: sessionId });
+      return { success: true };
+    }
     if (error) return { success: false, error: error.message };
     dispatch({ type: 'REMOVE_SESSION', payload: sessionId });
     return { success: true };

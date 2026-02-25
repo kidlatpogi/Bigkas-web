@@ -35,10 +35,16 @@ export function AuthProvider({ children }) {
     if (!supaSession) return null;
     const u    = supaSession.user || supaSession;
     const meta = u?.user_metadata || {};
+    const fullName = meta.full_name || meta.name || u.email?.split('@')[0] || 'User';
+    const fallbackFirst = fullName.split(' ')[0] || '';
+    const fallbackLast = fullName.split(' ').slice(1).join(' ');
+
     return {
       id:         u.id,
       email:      u.email,
-      name:       meta.full_name || meta.name || u.email?.split('@')[0] || 'User',
+      name:       fullName,
+      firstName:  meta.first_name || fallbackFirst,
+      lastName:   meta.last_name || fallbackLast,
       nickname:   meta.nickname || null,
       avatar_url: resolveAvatarUrl(meta.avatar_url),
       createdAt:  u.created_at,
@@ -103,9 +109,19 @@ export function AuthProvider({ children }) {
   }, [buildUser]);
 
   /* ── Update profile ── */
-  const updateProfile = useCallback(async ({ name, full_name, nickname, avatarUrl, avatar_url }) => {
+  const updateProfile = useCallback(async ({ name, full_name, first_name, last_name, nickname, avatarUrl, avatar_url }) => {
     const updates = {};
     const resolvedName = (name ?? full_name)?.trim();
+    const resolvedFirstName = first_name?.trim();
+    const resolvedLastName = last_name?.trim();
+
+    if (resolvedFirstName !== undefined) updates.first_name = resolvedFirstName;
+    if (resolvedLastName !== undefined) updates.last_name = resolvedLastName;
+
+    if (!resolvedName && (resolvedFirstName !== undefined || resolvedLastName !== undefined)) {
+      const fallbackFullName = `${resolvedFirstName || ''} ${resolvedLastName || ''}`.trim();
+      updates.full_name = fallbackFullName;
+    }
 
     if (resolvedName) updates.full_name = resolvedName;
     if (nickname !== undefined) updates.nickname = nickname || null;
@@ -119,8 +135,26 @@ export function AuthProvider({ children }) {
   }, [buildUser]);
 
   /* ── Change password ── */
-  const changePassword = useCallback(async (newPassword) => {
-    const { error: err } = await supabase.auth.updateUser({ password: newPassword });
+  const changePassword = useCallback(async (payload) => {
+    const nextPassword = typeof payload === 'string' ? payload : payload?.newPassword;
+    const currentPassword = typeof payload === 'string' ? null : payload?.currentPassword;
+
+    if (!nextPassword || nextPassword.length < 8) {
+      return { success: false, error: 'New password must be at least 8 characters.' };
+    }
+
+    if (currentPassword) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user?.email) return { success: false, error: 'Not authenticated' };
+
+      const { error: reAuthErr } = await supabase.auth.signInWithPassword({
+        email: session.user.email,
+        password: currentPassword,
+      });
+      if (reAuthErr) return { success: false, error: 'Current password is incorrect.' };
+    }
+
+    const { error: err } = await supabase.auth.updateUser({ password: nextPassword });
     if (err) return { success: false, error: err.message };
     return { success: true };
   }, []);

@@ -69,6 +69,9 @@ src/
    Update `.env` with your backend API URL:
    ```env
    VITE_API_BASE_URL=http://localhost:8000
+   # Optional (recommended for local dev without backend/Supabase schema):
+   VITE_ENABLE_DAILY_QUOTE_FETCH=false
+   VITE_ENABLE_SESSION_PERSISTENCE=false
    ```
 
 ### Development
@@ -152,6 +155,12 @@ The app connects to a FastAPI backend with the following endpoints:
 # API Configuration
 VITE_API_BASE_URL=http://localhost:8000
 VITE_API_TIMEOUT=30000
+
+# Optional feature flags
+# In production these default to enabled.
+# In development these default to disabled unless set to true.
+VITE_ENABLE_DAILY_QUOTE_FETCH=false
+VITE_ENABLE_SESSION_PERSISTENCE=false
 
 # App Configuration
 VITE_APP_NAME=Bigkas Web
