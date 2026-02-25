@@ -73,13 +73,22 @@ function IconSettings({ filled }) {
   );
 }
 
+/* ─── Icon names spec (from TECHNICAL_DOCS / mobile TAB_ICONS) ─── */
+const TAB_ICONS = {
+  Scripts:   { focused: 'document-text', outline: 'document-text-outline' },
+  Progress:  { focused: 'stats-chart',   outline: 'stats-chart-outline' },
+  Dashboard: { focused: 'home',          outline: 'home-outline' },
+  Profile:   { focused: 'person',        outline: 'person-outline' },
+  Settings:  { focused: 'settings',      outline: 'settings-outline' },
+};
+
 /* ─── Tab config mirroring mobile BottomTabNavigator ─── */
 const TABS = [
-  { to: ROUTES.SCRIPTS,   label: 'Scripts',   Icon: IconScripts },
-  { to: ROUTES.PROGRESS,  label: 'Progress',  Icon: IconProgress },
-  { to: ROUTES.DASHBOARD, label: 'Home',      Icon: IconHome,    center: true },
-  { to: ROUTES.PROFILE,   label: 'Profile',   Icon: IconPerson },
-  { to: ROUTES.SETTINGS,  label: 'Settings',  Icon: IconSettings },
+  { to: ROUTES.SCRIPTS,   label: 'Scripts',   Icon: IconScripts, icon: TAB_ICONS.Scripts },
+  { to: ROUTES.PROGRESS,  label: 'Progress',  Icon: IconProgress, icon: TAB_ICONS.Progress },
+  { to: ROUTES.DASHBOARD, label: 'Dashboard', Icon: IconHome, center: true, icon: TAB_ICONS.Dashboard },
+  { to: ROUTES.PROFILE,   label: 'Profile',   Icon: IconPerson, icon: TAB_ICONS.Profile },
+  { to: ROUTES.SETTINGS,  label: 'Settings',  Icon: IconSettings, icon: TAB_ICONS.Settings },
 ];
 
 /**
