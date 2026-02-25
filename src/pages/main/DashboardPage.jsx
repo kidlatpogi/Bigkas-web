@@ -165,7 +165,7 @@ export default function DashboardPage() {
   /* ── Load sessions on mount (once) ── */
   useEffect(() => {
     fetchSessions?.();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchSessions]);
 
   /* ── Load daily motivation quote (same source/behavior as mobile) ── */
   useEffect(() => {

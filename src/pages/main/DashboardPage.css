@@ -1,50 +1,28 @@
-/**
- * DashboardPage — 1:1 Figma desktop design (node 364:1412)
- * Design tokens:
- *   Primary: #FBAF00  ·  Black: #010101  ·  Background: #F5F5F5
- *   White: #FFFFFF    ·  Info card bg: #EBEBEB
- *   Border radius: 20px  ·  Content width: 800px
- */
+/* DashboardPage — style parity with mobile DashboardScreen */
 
 .dashboard-page-new {
-  --primary:        #FBAF00;
-  --black:          #010101;
-  --bg:             #F5F5F5;
-  --white:          #FFFFFF;
-  --card-bg:        #EBEBEB;
-  --text-primary:   #010101;
+  --primary: #fbaf00;
+  --black: #010101;
+  --bg: #f5f5f5;
+  --white: #ffffff;
   --text-secondary: rgba(1, 1, 1, 0.6);
-  --border:         #E0E0E0;
-  --radius-card:    20px;
-  --font:           'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --shadow-card:    0px 2px 3px 0px rgba(0,0,0,0.10),
-                    0px 6px 6px 0px rgba(0,0,0,0.09),
-                    0px 13px 8px 0px rgba(0,0,0,0.05),
-                    0px 24px 10px 0px rgba(0,0,0,0.01),
-                    0px 38px 10px 0px rgba(0,0,0,0);
-  --shadow-info:    0px 3px 7px 0px rgba(0,0,0,0.10),
-                    0px 13px 13px 0px rgba(0,0,0,0.09),
-                    0px 28px 17px 0px rgba(0,0,0,0.05),
-                    0px 50px 20px 0px rgba(0,0,0,0.01),
-                    0px 78px 22px 0px rgba(0,0,0,0);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   background: var(--bg);
   min-height: calc(100vh - 50px);
-  padding: 50px 0 80px;
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
+  padding: 24px 16px 100px;
   font-family: var(--font);
 }
 
-/* ── Top bar — logo (left) + profile avatar (right) ── */
 .dash-top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
-/* Logo */
 .dash-logo {
   display: flex;
   align-items: center;
@@ -61,345 +39,275 @@
 .dash-logo-text {
   font-size: 22px;
   font-weight: 800;
-  color: #010101;
-  letter-spacing: -0.5px;
-  font-family: var(--font);
+  color: var(--black);
+  letter-spacing: -0.4px;
   line-height: 1;
 }
 
-[data-theme="dark"] .dash-logo-text { color: #F0F0F0; }
-
 .dash-profile-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 2px solid #FBAF00;
+  border: 1.5px solid var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #F5F5F5;
-  color: rgba(1, 1, 1, 0.55);
+  background: var(--bg);
+  color: var(--primary);
   text-decoration: none;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color 0.2s ease, transform 0.2s ease;
   flex-shrink: 0;
 }
 
 .dash-profile-btn:hover {
-  border-color: #010101;
-  transform: scale(1.05);
+  border-color: var(--black);
+  transform: scale(1.03);
 }
 
 .dash-profile-avatar {
-  width: 100%;
-  height: 100%;
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
   object-fit: cover;
-  border-radius: 50%;
 }
 
-/* ── Greeting ── */
 .dash-greeting {
   margin-bottom: 16px;
 }
+
 .dash-greeting-text {
-  font-size: 32px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-secondary);
-  font-style: normal;
+  font-style: italic;
   margin: 0;
-  line-height: 1.2;
-  white-space: pre-wrap;
 }
+
 .dash-greeting-name {
-  font-size: 56px;
+  margin: 2px 0 0;
+  font-size: 40px;
+  line-height: 1.1;
   font-weight: 700;
   color: var(--black);
-  margin: 0;
-  line-height: 1.1;
 }
 
-/* ── Hero card — black background ── */
 .dash-hero-card {
   background: var(--black);
-  border-radius: var(--radius-card);
-  padding: 17px 24px 24px;
-  margin-bottom: 30px;
-  min-height: 245px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  border-radius: 16px;
+  padding: 32px 24px;
+  margin-bottom: 8px;
+  box-shadow: 0 8px 16px rgba(1, 1, 1, 0.2);
 }
 
-/* Streak badge */
-.dash-streak-badge {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #FFFFFF;
-  white-space: nowrap;
-}
-
-/* Hero header row — mic icon (left) + streak badge (right) */
 .dash-hero-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 100%;
-  margin-bottom: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
 }
 
 .dash-hero-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.dash-streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(251, 175, 0, 0.15);
+  padding: 6px 8px;
+  border-radius: 12px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .dash-hero-title {
+  margin: 0 0 4px;
   font-size: 32px;
   font-weight: 700;
-  color: #FFFFFF;
-  margin: 0 0 8px;
-  line-height: 1.2;
-  text-align: left;
-}
-.dash-hero-sub {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0 0 24px;
-  line-height: 1.5;
-  text-align: left;
+  color: #fff;
 }
 
-/* Buttons inside hero */
-.dash-btn-practice {
+.dash-hero-sub {
+  margin: 0 0 24px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 20px;
+  font-size: 16px;
+}
+
+.dash-btn-practice,
+.dash-btn-training {
   width: 100%;
-  max-width: 306px;
-  align-self: center;
-  height: 50px;
-  padding: 0;
-  background: #FFFFFF;
-  color: var(--black);
+  border-radius: 12px;
+  padding: 14px 16px;
   font-size: 16px;
   font-weight: 700;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
-  font-family: var(--font);
-  transition: opacity 0.2s;
-  letter-spacing: 0.2px;
+  transition: opacity 0.2s ease;
 }
-.dash-btn-practice:hover { opacity: 0.9; }
 
-.dash-hero-or {
-  align-self: center;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.70);
-  font-size: 16px;
-  font-weight: 500;
-  font-family: var(--font);
-  margin: 14px 0;
+.dash-btn-practice {
+  background: #fff;
+  color: var(--black);
+  border-color: #fff;
 }
 
 .dash-btn-training {
-  width: 100%;
-  max-width: 306px;
-  align-self: center;
-  height: 50px;
-  padding: 0;
   background: var(--primary);
   color: var(--black);
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: var(--font);
-  transition: opacity 0.2s;
-  letter-spacing: 0.2px;
 }
-.dash-btn-training:hover { opacity: 0.9; }
 
-/* ── Stats card ── */
+.dash-btn-practice:hover,
+.dash-btn-training:hover {
+  opacity: 0.92;
+}
+
+.dash-hero-or {
+  margin: 8px 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .dash-stats-card {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   background: var(--white);
-  border-radius: var(--radius-card);
-  padding: 40px 16px;
-  margin-bottom: 30px;
-  min-height: 245px;
-  box-shadow: var(--shadow-card);
+  border-radius: 16px;
+  padding: 24px 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 10px rgba(1, 1, 1, 0.08);
 }
+
 .dash-stat {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  color: #010101;
-}
-.dash-stat-icon {
-  margin-bottom: 2px;
-}
-.dash-stat-value {
-  font-size: 64px;
-  font-weight: 700;
-  color: var(--black);
-  font-family: var(--font);
-  line-height: 1;
-}
-.dash-stat-label {
-  font-size: 16px;
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  color: var(--black);
-  font-family: var(--font);
-  text-transform: uppercase;
-}
-.dash-stat-divider {
-  width: 1px;
-  height: 150px;
-  background: var(--primary);
-  flex-shrink: 0;
-  opacity: 0.8;
 }
 
-/* ── Info cards row (two columns) ── */
+.dash-stat-icon {
+  margin-bottom: 4px;
+}
+
+.dash-stat-value {
+  margin: 0;
+  font-size: 32px;
+  line-height: 38px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.dash-stat-label {
+  margin-top: 2px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.dash-stat-divider {
+  width: 1.5px;
+  height: 40px;
+  background: var(--primary);
+}
+
 .dash-info-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 16px;
 }
+
 .dash-info-card {
-  background: #FFFFFF;
-  border-radius: var(--radius-card);
-  padding: 24px 30px;
-  box-shadow: var(--shadow-info);
-  min-height: 245px;
-  display: flex;
-  flex-direction: column;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(1, 1, 1, 0.06);
 }
+
 .dash-card-label {
   display: block;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: rgba(1,1,1,0.80);
-  margin-bottom: 14px;
-  font-family: var(--font);
-  text-align: center;
-}
-
-/* Motivation — italic quote */
-.dash-quote-text {
-  font-size: 15px;
-  font-style: italic;
-  color: var(--black);
-  line-height: 1.55;
-  margin: 0 0 8px;
-  font-family: var(--font);
-}
-.dash-quote-author {
-  font-size: 14px;
+  font-size: 10px;
   color: var(--text-secondary);
-  font-family: var(--font);
-  font-weight: 600;
 }
 
-/* Tip of the Day */
+.dash-quote-text {
+  font-style: italic;
+  line-height: 20px;
+  margin: 0 0 8px;
+  color: var(--black);
+  font-size: 14px;
+}
+
+.dash-quote-author {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 .dash-tip-title {
-  font-size: 15px;
+  margin: 0 0 4px;
   font-weight: 700;
   color: var(--black);
-  margin: 0 0 6px;
-  font-family: var(--font);
-  line-height: 1.4;
-}
-.dash-tip-body {
   font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.55;
-  margin: 0;
-  font-family: var(--font);
 }
 
-/* ── Responsive ── */
-@media (max-width: 900px) {
-  .dashboard-page-new {
-    max-width: 100%;
-    padding: 32px 24px 80px;
-  }
-  .dash-greeting-text { font-size: 24px; }
-  .dash-greeting-name { font-size: 42px; }
-  .dash-stat-value    { font-size: 48px; }
+.dash-tip-body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 @media (max-width: 600px) {
   .dashboard-page-new {
-    padding: 24px 16px 60px;
+    padding-bottom: 88px;
   }
-  .dash-greeting-text { font-size: 20px; }
-  .dash-greeting-name { font-size: 34px; }
-  .dash-stat-value    { font-size: 36px; }
-  .dash-stat-label    { font-size: 12px; }
-  .dash-stat-divider  { height: 80px; }
+
+  .dash-greeting-name {
+    font-size: 34px;
+  }
+
+  .dash-hero-title {
+    font-size: 28px;
+  }
+
   .dash-info-row {
     grid-template-columns: 1fr;
   }
-  .dash-btn-practice,
-  .dash-btn-training {
-    width: 100%;
-  }
 }
-/* end */
 
-/* ── Dark mode ── */
 [data-theme="dark"] .dashboard-page-new {
-  --black: #F0F0F0;
+  --black: #f0f0f0;
   --bg: #121212;
-  --white: #1E1E1E;
-  --card-bg: #1E1E1E;
-  --text-primary: #F0F0F0;
-  --text-secondary: rgba(240, 240, 240, 0.6);
-  --border: #2E2E2E;
+  --white: #1e1e1e;
+  --text-secondary: rgba(240, 240, 240, 0.65);
 }
-[data-theme="dark"] .dash-greeting-text { color: rgba(240,240,240,0.6); }
-[data-theme="dark"] .dash-greeting-name { color: #F0F0F0; }
-/* Hero card stays dark (black card) — override the --black token flip */
+
 [data-theme="dark"] .dash-hero-card {
-  background: #1A1A1A;
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #1a1a1a;
 }
-[data-theme="dark"] .dash-hero-title  { color: #FFFFFF; }
-[data-theme="dark"] .dash-hero-sub    { color: rgba(255,255,255,0.65); }
-[data-theme="dark"] .dash-hero-or     { color: rgba(255,255,255,0.55); }
+
+[data-theme="dark"] .dash-hero-title {
+  color: #fff;
+}
+
+[data-theme="dark"] .dash-hero-sub,
+[data-theme="dark"] .dash-hero-or {
+  color: rgba(255, 255, 255, 0.65);
+}
+
 [data-theme="dark"] .dash-btn-practice {
-  background: rgba(255,255,255,0.12);
-  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
 }
-[data-theme="dark"] .dash-btn-practice:hover { background: rgba(255,255,255,0.18); }
-[data-theme="dark"] .dash-stats-card  { background: #1E1E1E; }
-[data-theme="dark"] .dash-stat-value  { color: #F0F0F0; }
-[data-theme="dark"] .dash-stat-label  { color: rgba(240,240,240,0.7); }
-[data-theme="dark"] .dash-stat-divider { background: #FBAF00; }
-[data-theme="dark"] .dash-info-card   { background: #1E1E1E; }
-[data-theme="dark"] .dash-card-label  { color: rgba(240,240,240,0.8); }
-[data-theme="dark"] .dash-quote-text  { color: #F0F0F0; }
-[data-theme="dark"] .dash-quote-author { color: rgba(240,240,240,0.6); }
-[data-theme="dark"] .dash-tip-title   { color: #F0F0F0; }
-[data-theme="dark"] .dash-tip-body    { color: rgba(240,240,240,0.8); }
-[data-theme="dark"] .dash-profile-btn { background: #1E1E1E; color: rgba(240,240,240,0.55); }
-[data-theme="dark"] .dash-stat        { color: #FBAF00; }
-[data-theme="dark"] .dash-stat-value  { color: #F0F0F0; }
