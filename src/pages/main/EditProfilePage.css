@@ -1,7 +1,23 @@
 .edit-profile-page {
+  --edit-page-bg: #f5f5f5;
+  --edit-surface: #ffffff;
+  --edit-surface-muted: #f0f0f0;
+  --edit-border: #e0e0e0;
+  --edit-border-strong: #ececec;
+  --edit-text-primary: #010101;
+  --edit-text-secondary: rgba(1, 1, 1, 0.6);
+  --edit-text-muted: #888;
+  --edit-overlay: rgba(0, 0, 0, 0.45);
+  --edit-input-bg: #ffffff;
+  --edit-input-border: #e0e0e0;
+  --edit-input-text: #111827;
+  --edit-input-placeholder: rgba(17, 24, 39, 0.42);
+  --edit-input-disabled-bg: #f1f3f5;
+  --edit-input-disabled-text: #8b949e;
+  --edit-input-focus: #FBAF00;
   min-height: calc(100vh - 50px);
   padding: 14px 16px 92px;
-  background: #f5f5f5;
+  background: var(--edit-page-bg);
 }
 
 .edit-profile-shell {
@@ -23,7 +39,7 @@
   font-size: 32px;
   line-height: 1.15;
   font-weight: 700;
-  color: #010101;
+  color: var(--edit-text-primary);
 }
 
 .page-error {
@@ -121,7 +137,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(1, 1, 1, 0.6);
+  color: var(--edit-text-secondary);
   margin-bottom: 6px;
 }
 
@@ -129,21 +145,26 @@
   width: 100%;
   height: 48px;
   border-radius: 12px;
-  border: 1.5px solid #e0e0e0;
-  background: #fff;
+  border: 1.5px solid var(--edit-input-border);
+  background: var(--edit-input-bg);
   padding: 0 14px;
   font-size: 15px;
-  color: #010101;
+  color: var(--edit-input-text);
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
 }
 
 .edit-input:focus {
   outline: none;
-  border-color: #fbaf00;
+  border-color: var(--edit-input-focus);
 }
 
 .edit-input:disabled {
-  background: #f0f0f0;
-  color: #888;
+  background: var(--edit-input-disabled-bg);
+  color: var(--edit-input-disabled-text);
+}
+
+.edit-input::placeholder {
+  color: var(--edit-input-placeholder);
 }
 
 .edit-input.is-error {
@@ -160,12 +181,12 @@
   width: 100%;
   height: 52px;
   border: none;
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid var(--edit-border-strong);
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #010101;
+  color: var(--edit-text-primary);
   font-size: 16px;
   font-weight: 500;
   padding: 0 4px;
@@ -200,15 +221,15 @@
 }
 
 .edit-cancel {
-  border: 1.5px solid #d4d4d4;
-  background: #fff;
-  color: #010101;
+  border: 1.5px solid var(--edit-border);
+  background: var(--edit-surface);
+  color: var(--edit-text-primary);
 }
 
 .edit-avatar-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--edit-overlay);
   z-index: 1200;
   display: flex;
   align-items: flex-end;
@@ -219,7 +240,7 @@
 .edit-avatar-modal {
   width: 100%;
   max-width: 500px;
-  background: #fff;
+  background: var(--edit-surface);
   border-radius: 24px 24px 0 0;
   padding: 20px 18px 14px;
 }
@@ -229,6 +250,7 @@
   text-align: center;
   font-size: 17px;
   font-weight: 700;
+  color: var(--edit-text-primary);
 }
 
 .edit-avatar-modal-action,
@@ -236,10 +258,11 @@
   width: 100%;
   height: 48px;
   border-radius: 12px;
-  border: 1px solid #ececec;
-  background: #fff;
+  border: 1px solid var(--edit-border-strong);
+  background: var(--edit-surface);
   font-size: 15px;
   font-weight: 600;
+  color: var(--edit-text-primary);
   margin-bottom: 8px;
 }
 
@@ -253,7 +276,7 @@
 
 .edit-avatar-modal-cancel {
   border: none;
-  background: #f3f3f3;
+  background: var(--edit-surface-muted);
 }
 
 @media (min-width: 768px) {
@@ -276,14 +299,22 @@
 }
 
 [data-theme='dark'] .edit-profile-page {
-  background: #121212;
-}
-
-[data-theme='dark'] .edit-profile-title,
-[data-theme='dark'] .edit-nav-row,
-[data-theme='dark'] .edit-input,
-[data-theme='dark'] .edit-cancel {
-  color: #f0f0f0;
+  --edit-page-bg: #121212;
+  --edit-surface: #1e1e1e;
+  --edit-surface-muted: #2a2a2a;
+  --edit-border: #3a3a3a;
+  --edit-border-strong: #2f2f2f;
+  --edit-text-primary: #f0f0f0;
+  --edit-text-secondary: rgba(240, 240, 240, 0.68);
+  --edit-text-muted: rgba(240, 240, 240, 0.46);
+  --edit-overlay: rgba(0, 0, 0, 0.62);
+  --edit-input-bg: #191b1f;
+  --edit-input-border: #3a3f46;
+  --edit-input-text: #f3f4f6;
+  --edit-input-placeholder: rgba(243, 244, 246, 0.45);
+  --edit-input-disabled-bg: #24272d;
+  --edit-input-disabled-text: rgba(243, 244, 246, 0.5);
+  --edit-input-focus: #FBAF00;
 }
 
 [data-theme='dark'] .edit-profile-back {
@@ -291,46 +322,26 @@
   color: #f0f0f0;
 }
 
-[data-theme='dark'] .edit-input,
-[data-theme='dark'] .edit-cancel,
-[data-theme='dark'] .edit-avatar-modal,
-[data-theme='dark'] .edit-avatar-modal-action,
-[data-theme='dark'] .edit-avatar-modal-cancel {
-  background: #1e1e1e;
-  border-color: #333;
-}
-
-[data-theme='dark'] .edit-input:disabled {
-  background: #2a2a2a;
-  color: rgba(240, 240, 240, 0.6);
-}
-
-[data-theme='dark'] .edit-label {
-  color: rgba(240, 240, 240, 0.6);
-}
-
-[data-theme='dark'] .edit-nav-row {
-  border-bottom-color: #2a2a2a;
-}
-
-[data-theme='dark'] .edit-avatar-modal-title {
-  color: #f0f0f0;
-}
-
-[data-theme='dark'] .edit-avatar-modal-action,
-[data-theme='dark'] .edit-avatar-modal-cancel {
-  color: #F0F0F0;
-}
-
-[data-theme='dark'] .edit-avatar-modal-cancel {
-  background: #2A2A2A;
+[data-theme='dark'] .edit-save {
+  background: #FBAF00;
+  color: #010101;
 }
 
 [data-theme='dark'] .edit-save:disabled {
-  background: #2F2F2F;
+  background: #3a3a3a;
   color: rgba(240,240,240,0.46);
 }
 
-[data-theme='dark'] .edit-input::placeholder {
-  color: rgba(240,240,240,0.38);
+[data-theme='dark'] .edit-cancel:hover {
+  background: #252525;
 }
+
+[data-theme='dark'] .edit-avatar-placeholder {
+  background: #0f172a;
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .edit-avatar-camera {
+  border-color: #1e1e1e;
+}
+
