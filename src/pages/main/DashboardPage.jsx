@@ -37,26 +37,57 @@ const FALLBACK_QUOTE = {
   author: 'Winston Churchill',
 };
 
+let cachedQuote = null;
+let cachedQuoteDateKey = null;
+let quoteRequestPromise = null;
+
 /**
- * Fetches daily quote through backend proxy only.
- * In local dev, this is disabled by default unless explicitly enabled.
+ * Fetches a daily motivational quote from the backend endpoint.
+ * Uses a per-day cache so multiple renders/mounts don't overwrite
+ * the card with a different quote a second later.
+ * Falls back to a hardcoded quote on failure.
  */
 async function fetchDailyQuote() {
-  if (!ENV.ENABLE_DAILY_QUOTE_FETCH) return FALLBACK_QUOTE;
+  const dateKey = new Date().toISOString().slice(0, 10);
 
-  try {
-    const proxyRes = await fetch(`${ENV.API_BASE_URL}/api/content/daily-quote`);
-    if (proxyRes.ok) {
-      const proxyData = await proxyRes.json();
-      if (proxyData?.text && proxyData?.author) {
-        return { text: proxyData.text, author: proxyData.author };
-      }
-    }
-  } catch {
-    // Use fallback quote below
+  if (cachedQuote && cachedQuoteDateKey === dateKey) {
+    return cachedQuote;
   }
 
-  return FALLBACK_QUOTE;
+  if (quoteRequestPromise) {
+    return quoteRequestPromise;
+  }
+
+  quoteRequestPromise = (async () => {
+    try {
+      if (!ENV.ENABLE_DAILY_QUOTE_FETCH) {
+        cachedQuote = FALLBACK_QUOTE;
+        cachedQuoteDateKey = dateKey;
+        return FALLBACK_QUOTE;
+      }
+
+      const proxyRes = await fetch(`${ENV.API_BASE_URL}/api/content/daily-quote`);
+      if (!proxyRes.ok) throw new Error(`Quote fetch failed: ${proxyRes.status}`);
+
+      const proxyData = await proxyRes.json();
+      const nextQuote =
+        proxyData?.text && proxyData?.author
+          ? { text: proxyData.text, author: proxyData.author }
+          : FALLBACK_QUOTE;
+
+      cachedQuote = nextQuote;
+      cachedQuoteDateKey = dateKey;
+      return nextQuote;
+    } catch {
+      cachedQuote = FALLBACK_QUOTE;
+      cachedQuoteDateKey = dateKey;
+      return FALLBACK_QUOTE;
+    } finally {
+      quoteRequestPromise = null;
+    }
+  })();
+
+  return quoteRequestPromise;
 }
 
 /** Deterministic daily selection — same all day, rotates at midnight */
@@ -81,7 +112,7 @@ export default function DashboardPage() {
   const tip = useMemo(() => getDailyTip(), []);
 
   /* ── Derived display values ── */
-  const displayName = user?.nickname || user?.name?.split(' ')[0] || 'Speaker';
+  const displayName = user?.nickname || user?.name || 'Speaker';
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();
@@ -94,19 +125,16 @@ export default function DashboardPage() {
     if (!sessions?.length) return 0;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     return sessions.filter((s) => {
-      const d = new Date(s.created_at); d.setHours(0, 0, 0, 0);
+      const d = new Date(s.createdAt || s.created_at); d.setHours(0, 0, 0, 0);
       return d.getTime() === today.getTime();
     }).length;
   }, [sessions]);
 
-  /**
-   * averageScore — computed from sessions' confidence_score (0–100 scale).
-   * Mirrors mobile DashboardScreen.jsx averageScore logic.
-   */
+  /** @type {number} averageScore — average pronunciation score (0-100) */
   const averageScore = useMemo(() => {
     if (!sessions?.length) return 0;
-    const total = sessions.reduce((sum, s) => sum + (s.confidence_score ?? s.score ?? 0), 0);
-    return Math.round(total / sessions.length);
+    const total = sessions.reduce((sum, s) => sum + (s.score || 0), 0);
+    return Math.round((total / sessions.length) * 100);
   }, [sessions]);
 
   /**
@@ -117,7 +145,7 @@ export default function DashboardPage() {
     if (!sessions?.length) return 0;
     const dateSet = new Set(
       sessions.map((s) => {
-        const d = new Date(s.created_at);
+        const d = new Date(s.createdAt || s.created_at);
         return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
       })
     );
