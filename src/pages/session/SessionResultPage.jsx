@@ -16,14 +16,14 @@ function SessionResultPage() {
 
   // Derived metrics
   const acousticScore  = result.acoustic_score  ?? Math.round(score * 0.95);
-  const fluencyScore   = result.fluency_score   ?? Math.round(score * 0.9);
   const wpm            = result.wpm             ?? 120;
   const durationSec    = result.duration_sec    ?? 0;
 
   // Simulated pitch bars
-  const pitchBars = Array.from({ length: 20 }, () =>
-    Math.max(12, Math.round((score / 100) * 48 * (0.6 + Math.random() * 0.6)))
-  );
+  const pitchBars = Array.from({ length: 20 }, (_, index) => {
+    const variance = (Math.sin((index + 1) * (score + 17)) + 1) / 2; // 0..1 deterministic
+    return Math.max(12, Math.round((score / 100) * 48 * (0.6 + variance * 0.6)));
+  });
 
   const pitchTier = getScoreTier(acousticScore);
   const paceTier  = wpm >= 120 && wpm <= 160 ? { label: 'Good', color: '#34C759' }

@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useReducer } from 'react';
+import { createContext, useCallback, useReducer } from 'react';
 import { supabase } from '../lib/supabase';
 
 const PAGE_SIZE = 10;
