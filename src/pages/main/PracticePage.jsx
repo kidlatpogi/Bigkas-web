@@ -4,6 +4,7 @@ import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts } from '../../api/scriptsApi';
 import { ROUTES } from '../../utils/constants';
 import { SYSTEM_PREWRITTEN_SPEECHES, RANDOM_TOPICS } from '../../utils/practiceData';
+import BackButton from '../../components/common/BackButton';
 import './PracticePage.css';
 
 /* ─── Icons ─── */
@@ -37,15 +38,6 @@ function IconClose() {
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <line x1="18" y1="6" x2="6" y2="18"/>
       <line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  );
-}
-
-function IconBack() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="15 18 9 12 15 6"/>
     </svg>
   );
 }
@@ -153,9 +145,7 @@ export default function PracticePage() {
       <div className="practice-wrap">
 
         {/* Back button */}
-        <button className="practice-back" onClick={() => navigate(-1)} aria-label="Go back">
-          <IconBack />
-        </button>
+        <BackButton onClick={() => navigate(-1)} />
 
         {/* Header */}
         <h1 className="practice-title">Practice{'\n'}Setup</h1>

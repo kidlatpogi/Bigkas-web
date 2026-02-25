@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScript, createScript, updateScript } from '../../api/scriptsApi';
+import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 
@@ -79,7 +80,7 @@ function ScriptEditorPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">{isEditing ? 'Edit Script' : 'New Script'}</h1>
       </div>
 

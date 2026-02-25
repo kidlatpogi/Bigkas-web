@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { ROUTES, getScoreTier } from '../../utils/constants';
+import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
 
@@ -84,7 +85,7 @@ function DetailedFeedbackPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Detailed Feedback</h1>
       </div>
 

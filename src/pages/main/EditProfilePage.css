@@ -17,18 +17,6 @@
   margin-bottom: 18px;
 }
 
-.edit-profile-back {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: #ececec;
-  color: #010101;
-  font-size: 20px;
-  display: grid;
-  place-items: center;
-}
-
 .edit-profile-title {
   margin: 0;
   text-align: center;

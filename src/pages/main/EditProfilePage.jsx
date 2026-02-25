@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronForward, IoCamera } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
+import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './EditProfilePage.css';
 
@@ -11,12 +12,14 @@ function EditProfilePage() {
 
   const goToDashboard = () => navigate(ROUTES.DASHBOARD);
 
-  const initialFirstName = user?.name?.split(' ')[0] || '';
-  const initialLastName = user?.name?.split(' ').slice(1).join(' ') || '';
+  const initialFirstName = user?.firstName || user?.name?.split(' ')[0] || '';
+  const initialLastName = user?.lastName || user?.name?.split(' ').slice(1).join(' ') || '';
+  const initialNickname = user?.nickname || '';
   const initialAvatarUrl = user?.avatar_url || '';
 
   const [firstName, setFirstName] = useState(initialFirstName);
   const [lastName, setLastName] = useState(initialLastName);
+  const [nickname, setNickname] = useState(initialNickname);
   const [email] = useState(user?.email || '');
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [avatarFile, setAvatarFile] = useState(null);
@@ -66,10 +69,11 @@ function EditProfilePage() {
   const hasChanges = useMemo(() => {
     return (
       fullName !== initialFullName ||
+      nickname.trim() !== initialNickname.trim() ||
       avatarRemoved ||
       avatarFile !== null
     );
-  }, [fullName, initialFullName, avatarRemoved, avatarFile]);
+  }, [fullName, initialFullName, nickname, initialNickname, avatarRemoved, avatarFile]);
 
   const isSaveDisabled = isSaving || !hasChanges;
 
@@ -107,6 +111,9 @@ function EditProfilePage() {
 
       const result = await updateProfile({
         name: fullName,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        nickname: nickname.trim() || null,
         avatarUrl: newAvatarUrl,
       });
 
@@ -129,7 +136,7 @@ function EditProfilePage() {
     <div className="edit-profile-page">
       <div className="edit-profile-shell">
         <div className="edit-profile-header">
-          <button className="edit-profile-back" onClick={goToDashboard} aria-label="Go back">‹</button>
+          <BackButton onClick={goToDashboard} className="edit-profile-back" />
           <h1 className="edit-profile-title">Edit Profile</h1>
           <div className="edit-profile-header-spacer" />
         </div>
@@ -188,6 +195,17 @@ function EditProfilePage() {
           <div className="edit-field">
             <label className="edit-label">EMAIL ADDRESS</label>
             <input className="edit-input" value={email} disabled readOnly />
+          </div>
+
+          <div className="edit-field">
+            <label className="edit-label">NICKNAME</label>
+            <input
+              className="edit-input"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Your display name"
+              maxLength={30}
+            />
           </div>
 
           <button

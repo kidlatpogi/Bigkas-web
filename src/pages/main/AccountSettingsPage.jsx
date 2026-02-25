@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
+import BackButton from '../../components/common/BackButton';
 import './InnerPages.css';
 import './AccountSettingsPage.css';
 
@@ -63,7 +64,7 @@ function AccountSettingsPage() {
   return (
     <div className="inner-page">
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
-        <button className="inner-page-back" style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)}>‹</button>
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Account Settings</h1>
       </div>
 
