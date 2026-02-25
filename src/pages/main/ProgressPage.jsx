@@ -7,6 +7,13 @@ import './InnerPages.css';
 import './ProgressPage.css';
 
 const TIME_RANGES = ['Week', 'Month', 'Year'];
+const CHART_WIDTH = 1000;
+const CHART_HEIGHT = 210;
+const CHART_LEFT = 40;
+const CHART_RIGHT = 960;
+const CHART_TOP = 28;
+const CHART_BASELINE = 150;
+const CHART_LABEL_Y = 188;
 
 function ProgressPage() {
   const navigate = useNavigate();
@@ -100,13 +107,15 @@ function ProgressPage() {
     const minValue = Math.min(...values);
     const maxValue = Math.max(...values);
     const rangeValue = maxValue - minValue;
-    const flatLineY = 85;
+    const flatLineY = CHART_BASELINE;
 
     return chartData.map((point, index) => {
-      const x = chartData.length > 1 ? 4 + (index * 92) / (chartData.length - 1) : 50;
+      const x = chartData.length > 1
+        ? CHART_LEFT + (index * (CHART_RIGHT - CHART_LEFT)) / (chartData.length - 1)
+        : (CHART_LEFT + CHART_RIGHT) / 2;
       const y = rangeValue === 0
         ? flatLineY
-        : 18 + (1 - (point.value - minValue) / rangeValue) * 67;
+        : CHART_TOP + (1 - (point.value - minValue) / rangeValue) * (CHART_BASELINE - CHART_TOP);
       return { ...point, x, y };
     });
   }, [chartData]);
@@ -171,13 +180,13 @@ function ProgressPage() {
         </div>
 
         <div className="progress-line-chart">
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="progress-svg" role="img" aria-label="Progress chart">
-            <line x1="4" y1="85" x2="96" y2="85" className="progress-baseline" />
+          <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} preserveAspectRatio="none" className="progress-svg" role="img" aria-label="Progress chart">
+            <line x1={CHART_LEFT} y1={CHART_BASELINE} x2={CHART_RIGHT} y2={CHART_BASELINE} className="progress-baseline" />
             <polyline points={polylinePoints} className="progress-polyline" />
             {chartPoints.map((point) => (
               <g key={point.label}>
-                <circle cx={point.x} cy={point.y} r="1.8" className="progress-point" />
-                <text x={point.x} y="95" textAnchor="middle" className="progress-label">{point.label}</text>
+                <circle cx={point.x} cy={point.y} r="9" className="progress-point" />
+                <text x={point.x} y={CHART_LABEL_Y} textAnchor="middle" className="progress-label">{point.label}</text>
               </g>
             ))}
           </svg>
