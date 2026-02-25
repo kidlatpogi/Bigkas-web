@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts, deleteScript } from '../../api/scriptsApi';
 import { ROUTES, buildRoute } from '../../utils/constants';
-import { formatDate } from '../../utils/formatters';
+import { formatEditedTime } from '../../utils/formatters';
 import FilterTabs from '../../components/common/FilterTabs';
 import './InnerPages.css';
 import './ScriptsPage.css';
@@ -107,25 +107,17 @@ function ScriptsPage() {
 
       <div className="scripts-list">
         {scripts.map((script) => (
-          <div key={script.id} className="script-card">
-            <div
-              className="script-card-body"
-              onClick={() => navigate(buildRoute.scriptEditor(script.id))}
-            >
-              <h3 className="script-title">{script.title || 'Untitled Script'}</h3>
-              <p className="script-preview">
-                {script.content?.slice(0, 100)}
-                {script.content?.length > 100 ? '…' : ''}
-              </p>
-              <span className="script-date">{formatDate(script.created_at)}</span>
-            </div>
-            <div className="script-card-actions">
+          <div key={script.id} className="script-card" onClick={() => navigate(buildRoute.scriptEditor(script.id))}>
+            {/* Top row: type badge + menu */}
+            <div className="script-card-top">
+              <span className={`script-badge ${script.type === 'auto-generated' ? 'generated' : 'self'}`}>
+                {script.type === 'auto-generated' ? 'Auto-Generated' : 'Self-Authored'}
+              </span>
               <button
                 className="script-menu-btn"
                 onClick={(e) => { e.stopPropagation(); setMenuOpenId(script.id); }}
                 aria-label="Script options"
               >
-                {/* Ellipsis-vertical icon */}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <circle cx="12" cy="5" r="1.5"/>
                   <circle cx="12" cy="12" r="1.5"/>
@@ -133,6 +125,14 @@ function ScriptsPage() {
                 </svg>
               </button>
             </div>
+
+            {/* Body */}
+            <h3 className="script-title">{script.title || 'Untitled Script'}</h3>
+            <p className="script-preview">
+              {script.content?.slice(0, 120)}
+              {script.content?.length > 120 ? ' …' : ''}
+            </p>
+            <span className="script-date">{formatEditedTime(script.updated_at)}</span>
           </div>
         ))}
       </div>
