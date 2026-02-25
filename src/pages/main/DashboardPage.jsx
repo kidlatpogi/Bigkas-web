@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { useSessions } from '../../hooks/useSessions';
+import { ENV } from '../../config/env';
 import { ROUTES } from '../../utils/constants';
 import './DashboardPage.css';
 
@@ -23,23 +24,40 @@ const TIPS = [
   { title: 'Smile while speaking', body: 'A natural smile changes the shape of your mouth and makes your pronunciation warmer and clearer.' },
 ];
 
-/** Curated motivational quotes — rotates daily, no external API needed */
-const QUOTES = [
-  { text: 'Courage is what it takes to stand up and speak.', author: 'Winston Churchill' },
-  { text: 'All great speakers were bad speakers at first.', author: 'Ralph Waldo Emerson' },
-  { text: 'The human brain starts working the moment you are born and never stops until you stand up to speak in public.', author: 'George Jessel' },
-  { text: 'It usually takes me more than three weeks to prepare a good impromptu speech.', author: 'Mark Twain' },
-  { text: 'There are always three speeches for every one you actually gave. The one you practiced, the one you gave, and the one you wish you gave.', author: 'Dale Carnegie' },
-  { text: 'Speech is power: speech is to persuade, to convert, to compel.', author: 'Ralph Waldo Emerson' },
-  { text: 'The right word may be effective, but no word was ever as effective as a rightly timed pause.', author: 'Mark Twain' },
-  { text: 'Take advantage of every opportunity to practice your communication skills.', author: 'Jim Rohn' },
-  { text: 'Think before you speak. Read before you think.', author: 'Fran Lebowitz' },
-  { text: 'To speak and to speak well are two things. A fool may talk, but a wise man speaks.', author: 'Ben Jonson' },
-  { text: 'Kind words can be short and easy to speak, but their echoes are truly endless.', author: 'Mother Teresa' },
-  { text: 'The most precious things in speech are the pauses.', author: 'Ralph Richardson' },
-  { text: 'Words are, of course, the most powerful drug used by mankind.', author: 'Rudyard Kipling' },
-  { text: 'You can speak well if your tongue can deliver the message of your heart.', author: 'John Ford' },
-];
+const FALLBACK_QUOTE = {
+  text: 'Courage is what it takes to stand up and speak.',
+  author: 'Winston Churchill',
+};
+
+/**
+ * Fetches the same daily motivation source used by mobile (ZenQuotes).
+ * Tries backend proxy first (avoids browser CORS), then direct API.
+ */
+async function fetchDailyQuote() {
+  try {
+    const proxyRes = await fetch(`${ENV.API_BASE_URL}/api/content/daily-quote`);
+    if (proxyRes.ok) {
+      const proxyData = await proxyRes.json();
+      if (proxyData?.text && proxyData?.author) {
+        return { text: proxyData.text, author: proxyData.author };
+      }
+    }
+  } catch {
+    // Fall through to direct source
+  }
+
+  try {
+    const res = await fetch('https://zenquotes.io/api/today');
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return { text: data[0].q, author: data[0].a };
+    }
+  } catch {
+    // Use fallback quote below
+  }
+
+  return FALLBACK_QUOTE;
+}
 
 /** Deterministic daily selection — same all day, rotates at midnight */
 function getDailyIndex() {
@@ -47,8 +65,7 @@ function getDailyIndex() {
   return Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86_400_000);
 }
 
-function getDailyTip()   { return TIPS[getDailyIndex()   % TIPS.length]; }
-function getDailyQuote() { return QUOTES[getDailyIndex() % QUOTES.length]; }
+function getDailyTip() { return TIPS[getDailyIndex() % TIPS.length]; }
 
 /* ─────────────────────────────────────────────────────────────
    Icon components (Ionicons-style SVG — from mobile app)
@@ -121,10 +138,10 @@ export default function DashboardPage() {
   const { user } = useAuthContext();
   const { sessions, fetchSessions } = useSessions();
   const [avatarError, setAvatarError] = useState(false);
+  const [quote, setQuote] = useState(FALLBACK_QUOTE);
 
-  /* ── Daily content (no external API — computed locally, no CORS) ── */
-  const quote = useMemo(() => getDailyQuote(), []);
-  const tip   = useMemo(() => getDailyTip(),   []);
+  /* ── Daily content (mobile-synced quote source + deterministic tip) ── */
+  const tip = useMemo(() => getDailyTip(), []);
 
   /* ── Derived display values ── */
   const displayName = user?.nickname || user?.name?.split(' ')[0] || 'Speaker';
@@ -184,6 +201,11 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchSessions?.();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ── Load daily motivation quote (same source/behavior as mobile) ── */
+  useEffect(() => {
+    fetchDailyQuote().then(setQuote);
+  }, []);
 
   return (
     <div className="dashboard-page-new">
@@ -271,7 +293,7 @@ export default function DashboardPage() {
 
       {/* ── Info cards row (Motivation + Tip of the Day) ── */}
       <div className="dash-info-row">
-        {/* Motivation — daily quote from ZenQuotes API */}
+        {/* Motivation — mobile-synced daily quote */}
         <div className="dash-info-card">
           <span className="dash-card-label">MOTIVATION</span>
           <p className="dash-quote-text">&ldquo;{quote.text}&rdquo;</p>
