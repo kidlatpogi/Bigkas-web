@@ -6,8 +6,8 @@
 /* Wrapper — fixed, top-right corner, above all content */
 .theme-toggle-wrap {
   position: fixed;
-  top: 2.5rem;
-  right: 1.5rem;
+  top: calc(2.5rem + 40px);
+  right: calc(1.5rem + 20px);
   z-index: 2050;
 }
 
