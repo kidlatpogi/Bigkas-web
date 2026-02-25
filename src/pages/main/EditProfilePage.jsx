@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronForward, IoCamera } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
-import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './EditProfilePage.css';
 
@@ -136,9 +135,7 @@ function EditProfilePage() {
     <div className="edit-profile-page">
       <div className="edit-profile-shell">
         <div className="edit-profile-header">
-          <BackButton onClick={goToDashboard} className="edit-profile-back" />
           <h1 className="edit-profile-title">Edit Profile</h1>
-          <div className="edit-profile-header-spacer" />
         </div>
 
         {error && <div className="page-error">{error}</div>}

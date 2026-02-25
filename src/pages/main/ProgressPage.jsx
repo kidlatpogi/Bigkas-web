@@ -9,8 +9,8 @@ import './ProgressPage.css';
 const TIME_RANGES = ['Week', 'Month', 'Year'];
 const CHART_WIDTH = 1000;
 const CHART_HEIGHT = 210;
-const CHART_LEFT = 40;
-const CHART_RIGHT = 960;
+const CHART_LEFT = 70;
+const CHART_RIGHT = 930;
 const CHART_TOP = 28;
 const CHART_BASELINE = 150;
 const CHART_LABEL_Y = 188;
@@ -135,6 +135,8 @@ function ProgressPage() {
     ? Math.round(filteredSessions.reduce((a, b) => a + (b.confidence_score ?? 0), 0) / filteredSessions.length)
     : null;
 
+  const performanceScore = avgScore ?? 0;
+
   // Last-period comparison
   const prevNow = new Date(now);
   const daysMap = { Week: 7, Month: 30, Year: 365 };
@@ -179,8 +181,19 @@ function ProgressPage() {
           </div>
         </div>
 
+        <div className="trend-score-row">
+          <span className="trend-score-num">{performanceScore}%</span>
+          {improvement !== null ? (
+            <span className={`trend-badge ${improvement >= 0 ? 'up' : 'down'}`}>
+              {improvement >= 0 ? '+' : ''}{improvement}%
+            </span>
+          ) : (
+            <span className="trend-score-label">No trend data yet</span>
+          )}
+        </div>
+
         <div className="progress-line-chart">
-          <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} preserveAspectRatio="none" className="progress-svg" role="img" aria-label="Progress chart">
+          <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} preserveAspectRatio="xMidYMid meet" className="progress-svg" role="img" aria-label="Progress chart">
             <line x1={CHART_LEFT} y1={CHART_BASELINE} x2={CHART_RIGHT} y2={CHART_BASELINE} className="progress-baseline" />
             <polyline points={polylinePoints} className="progress-polyline" />
             {chartPoints.map((point) => (

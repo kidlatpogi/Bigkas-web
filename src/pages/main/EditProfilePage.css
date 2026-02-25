@@ -11,8 +11,8 @@
 }
 
 .edit-profile-header {
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  display: flex;
+  justify-content: center;
   align-items: center;
   margin-bottom: 18px;
 }
@@ -45,11 +45,6 @@
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
-}
-
-.edit-profile-header-spacer {
-  width: 36px;
-  height: 36px;
 }
 
 .edit-avatar-wrap {
