@@ -9,6 +9,8 @@ function EditProfilePage() {
   const navigate = useNavigate();
   const { user, updateProfile, uploadAvatar } = useAuthContext();
 
+  const goToDashboard = () => navigate(ROUTES.DASHBOARD);
+
   const initialFirstName = user?.name?.split(' ')[0] || '';
   const initialLastName = user?.name?.split(' ').slice(1).join(' ') || '';
   const initialAvatarUrl = user?.avatar_url || '';
@@ -112,7 +114,7 @@ function EditProfilePage() {
         setError(result.error || 'Failed to save changes.');
       } else {
         setSuccess(true);
-        setTimeout(() => navigate(-1), 650);
+        setTimeout(() => goToDashboard(), 650);
       }
     } catch {
       setError('An unexpected error occurred.');
@@ -127,7 +129,7 @@ function EditProfilePage() {
     <div className="edit-profile-page">
       <div className="edit-profile-shell">
         <div className="edit-profile-header">
-          <button className="edit-profile-back" onClick={() => navigate(-1)} aria-label="Go back">‹</button>
+          <button className="edit-profile-back" onClick={goToDashboard} aria-label="Go back">‹</button>
           <h1 className="edit-profile-title">Edit Profile</h1>
           <div className="edit-profile-header-spacer" />
         </div>
@@ -220,7 +222,7 @@ function EditProfilePage() {
           <button
             type="button"
             className="edit-cancel"
-            onClick={() => navigate(-1)}
+            onClick={goToDashboard}
             disabled={isSaving}
           >
             Cancel
