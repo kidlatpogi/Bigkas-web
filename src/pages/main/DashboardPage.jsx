@@ -205,7 +205,7 @@ export default function DashboardPage() {
       <div className="dash-hero-card">
         {/* Header row — mic icon circle + streak badge */}
         <div className="dash-hero-header">
-          <div className="dash-hero-icon"><IoMic size={28} color="#FBAF00" aria-hidden="true" /></div>
+          <div className="dash-hero-icon"><IoMic size={28} color="#FFFFFF" aria-hidden="true" /></div>
           <div className="dash-streak-badge">
             <IoFlame size={14} color="#FBAF00" aria-hidden="true" />
             <span>{streakCount} day streak</span>
