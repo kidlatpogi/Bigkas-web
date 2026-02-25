@@ -1,51 +1,118 @@
-import { useState, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IoChevronForward, IoCamera } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
-import './InnerPages.css';
+import { ROUTES } from '../../utils/constants';
 import './EditProfilePage.css';
 
 function EditProfilePage() {
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const { user, updateProfile, uploadAvatar } = useAuthContext();
 
-  const [firstName, setFirstName] = useState(user?.name?.split(' ')[0] || '');
-  const [lastName,  setLastName]  = useState(user?.name?.split(' ').slice(1).join(' ') || '');
-  const [nickname,  setNickname]  = useState(user?.nickname || '');
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
+  const initialFirstName = user?.name?.split(' ')[0] || '';
+  const initialLastName = user?.name?.split(' ').slice(1).join(' ') || '';
+  const initialAvatarUrl = user?.avatar_url || '';
+
+  const [firstName, setFirstName] = useState(initialFirstName);
+  const [lastName, setLastName] = useState(initialLastName);
+  const [email] = useState(user?.email || '');
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [avatarFile, setAvatarFile] = useState(null);
-  const [isSaving, setIsSaving]   = useState(false);
-  const [error,    setError]      = useState('');
-  const [success,  setSuccess]    = useState(false);
+  const [avatarRemoved, setAvatarRemoved] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({ firstName: '', lastName: '' });
   const fileRef = useRef(null);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (avatarUrl?.startsWith('blob:')) {
+      URL.revokeObjectURL(avatarUrl);
+    }
+
     setAvatarFile(file);
+    setAvatarRemoved(false);
     setAvatarUrl(URL.createObjectURL(file));
+    setShowAvatarModal(false);
   };
 
+  const handleRemoveAvatar = () => {
+    if (avatarUrl?.startsWith('blob:')) {
+      URL.revokeObjectURL(avatarUrl);
+    }
+
+    setAvatarFile(null);
+    setAvatarRemoved(true);
+    setAvatarUrl('');
+    setShowAvatarModal(false);
+  };
+
+  const fullName = useMemo(
+    () => `${firstName.trim()} ${lastName.trim()}`.trim(),
+    [firstName, lastName]
+  );
+
+  const initialFullName = useMemo(
+    () => `${initialFirstName.trim()} ${initialLastName.trim()}`.trim(),
+    [initialFirstName, initialLastName]
+  );
+
+  const hasChanges = useMemo(() => {
+    return (
+      fullName !== initialFullName ||
+      avatarRemoved ||
+      avatarFile !== null
+    );
+  }, [fullName, initialFullName, avatarRemoved, avatarFile]);
+
+  const isSaveDisabled = isSaving || !hasChanges;
+
   const handleSave = async () => {
+    if (isSaveDisabled) return;
+
+    const nextErrors = { firstName: '', lastName: '' };
+    if (!firstName.trim()) nextErrors.firstName = 'First name is required';
+    if (!lastName.trim()) nextErrors.lastName = 'Last name is required';
+
+    if (nextErrors.firstName || nextErrors.lastName) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    setFieldErrors({ firstName: '', lastName: '' });
     setError('');
     setIsSaving(true);
+
     try {
-      let newAvatarUrl = user?.avatar_url || '';
+      let newAvatarUrl;
+
       if (avatarFile && typeof uploadAvatar === 'function') {
         const result = await uploadAvatar(avatarFile);
-        if (result?.success) newAvatarUrl = result.url;
+        if (result?.success) {
+          newAvatarUrl = result.url;
+        } else {
+          setError(result?.error || 'Failed to upload avatar.');
+          setIsSaving(false);
+          return;
+        }
+      } else if (avatarRemoved) {
+        newAvatarUrl = null;
       }
 
       const result = await updateProfile({
-        full_name:  `${firstName.trim()} ${lastName.trim()}`.trim(),
-        nickname:   nickname.trim() || user?.nickname,
-        avatar_url: newAvatarUrl,
+        name: fullName,
+        avatarUrl: newAvatarUrl,
       });
 
       if (result?.success === false) {
         setError(result.error || 'Failed to save changes.');
       } else {
         setSuccess(true);
-        setTimeout(() => navigate(-1), 800);
+        setTimeout(() => navigate(-1), 650);
       }
     } catch {
       setError('An unexpected error occurred.');
@@ -57,79 +124,142 @@ function EditProfilePage() {
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
 
   return (
-    <div className="inner-page">
-      {/* Header */}
-      <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
-        <h1 className="inner-page-title">Edit Profile</h1>
-      </div>
+    <div className="edit-profile-page">
+      <div className="edit-profile-shell">
+        <div className="edit-profile-header">
+          <button className="edit-profile-back" onClick={() => navigate(-1)} aria-label="Go back">‹</button>
+          <h1 className="edit-profile-title">Edit Profile</h1>
+          <div className="edit-profile-header-spacer" />
+        </div>
 
-      {error   && <div className="page-error">{error}</div>}
-      {success && <div className="page-success">Profile updated!</div>}
+        {error && <div className="page-error">{error}</div>}
+        {success && <div className="page-success">Profile updated successfully!</div>}
 
-      {/* Avatar */}
-      <div className="avatar-wrap">
-        {avatarUrl ? (
-          <img src={avatarUrl} alt="Avatar" className="avatar-img" />
-        ) : (
-          <div className="avatar-placeholder">{initials}</div>
-        )}
-        <button className="avatar-edit-btn" onClick={() => fileRef.current?.click()}>📷</button>
-        <input
-          type="file"
-          ref={fileRef}
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleAvatarChange}
-        />
-      </div>
-
-      {/* Name row */}
-      <div className="form-row">
-        <div className="form-group">
-          <label className="form-label">First Name</label>
+        <div className="edit-avatar-wrap">
+          <button
+            type="button"
+            className="edit-avatar-btn"
+            onClick={() => setShowAvatarModal(true)}
+            aria-label="Change profile picture"
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="edit-avatar-img" />
+            ) : (
+              <div className="edit-avatar-placeholder">{initials || 'U'}</div>
+            )}
+            <span className="edit-avatar-camera"><IoCamera size={14} /></span>
+          </button>
           <input
-            className="form-input"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="First name"
+            type="file"
+            ref={fileRef}
+            accept="image/*"
+            className="edit-avatar-input"
+            onChange={handleAvatarChange}
           />
         </div>
-        <div className="form-group">
-          <label className="form-label">Last Name</label>
-          <input
-            className="form-input"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Last name"
-          />
+
+        <div className="edit-profile-form">
+          <div className="edit-profile-row">
+            <div className="edit-field">
+              <label className="edit-label">FIRST NAME</label>
+              <input
+                className={`edit-input ${fieldErrors.firstName ? 'is-error' : ''}`}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Juan"
+              />
+              {fieldErrors.firstName && <span className="edit-error">{fieldErrors.firstName}</span>}
+            </div>
+
+            <div className="edit-field">
+              <label className="edit-label">LAST NAME</label>
+              <input
+                className={`edit-input ${fieldErrors.lastName ? 'is-error' : ''}`}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Dela Cruz"
+              />
+              {fieldErrors.lastName && <span className="edit-error">{fieldErrors.lastName}</span>}
+            </div>
+          </div>
+
+          <div className="edit-field">
+            <label className="edit-label">EMAIL ADDRESS</label>
+            <input className="edit-input" value={email} disabled readOnly />
+          </div>
+
+          <button
+            type="button"
+            className="edit-nav-row"
+            onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
+          >
+            <span>Change Password</span>
+            <IoChevronForward size={18} />
+          </button>
+
+          <button
+            type="button"
+            className="edit-nav-row"
+            onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
+          >
+            <span>Account Settings</span>
+            <IoChevronForward size={18} />
+          </button>
+        </div>
+
+        <div className="edit-actions">
+          <button
+            type="button"
+            className="edit-save"
+            onClick={handleSave}
+            disabled={isSaveDisabled}
+          >
+            {isSaving ? 'Saving…' : 'Save Changes'}
+          </button>
+
+          <button
+            type="button"
+            className="edit-cancel"
+            onClick={() => navigate(-1)}
+            disabled={isSaving}
+          >
+            Cancel
+          </button>
         </div>
       </div>
 
-      {/* Nickname */}
-      <div className="form-group">
-        <label className="form-label">Nickname</label>
-        <input
-          className="form-input"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          placeholder="Your display name"
-        />
-      </div>
+      {showAvatarModal && (
+        <div className="edit-avatar-modal-overlay" onClick={() => setShowAvatarModal(false)}>
+          <div className="edit-avatar-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <h3 className="edit-avatar-modal-title">Change Profile Photo</h3>
 
-      {/* Email — read only */}
-      <div className="form-group">
-        <label className="form-label">Email (read-only)</label>
-        <input className="form-input" value={user?.email || ''} disabled />
-      </div>
+            <button
+              type="button"
+              className="edit-avatar-modal-action"
+              onClick={() => fileRef.current?.click()}
+            >
+              Choose from device
+            </button>
 
-      {/* Actions */}
-      <div className="btn-row">
-        <button className="btn-secondary" onClick={() => navigate(-1)} disabled={isSaving}>Cancel</button>
-        <button className="btn-primary" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? 'Saving…' : 'Save Changes'}
-        </button>
-      </div>
+            <button
+              type="button"
+              className="edit-avatar-modal-action danger"
+              onClick={handleRemoveAvatar}
+              disabled={!avatarUrl && !avatarFile}
+            >
+              Remove current photo
+            </button>
+
+            <button
+              type="button"
+              className="edit-avatar-modal-cancel"
+              onClick={() => setShowAvatarModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
