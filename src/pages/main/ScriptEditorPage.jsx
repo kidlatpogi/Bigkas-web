@@ -79,8 +79,8 @@ function ScriptEditorPage() {
   return (
     <div className="inner-page">
       {/* Header */}
-      <div className="inner-page-header">
-        <BackButton onClick={() => navigate(-1)} />
+      <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">{isEditing ? 'Edit Script' : 'New Script'}</h1>
       </div>
 
@@ -116,8 +116,8 @@ function ScriptEditorPage() {
         <button className="btn-secondary" onClick={() => navigate(-1)} disabled={isSaving}>
           Cancel
         </button>
-        <button className="btn-primary" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? 'Saving…' : 'Save Script'}
+        <button className="btn-primary" style={{ background: '#010101', color: '#FFFFFF' }} onClick={handleSave} disabled={isSaving}>
+          {isSaving ? 'Saving…' : 'Save'}
         </button>
       </div>
     </div>
