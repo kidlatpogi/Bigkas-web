@@ -191,8 +191,6 @@ function ProfilePage() {
         <h1 className="profile-title">Edit Profile</h1>
       </div>
 
-      <div className="profile-content-card">
-
       {/* AvatarPicker */}
       <div className="profile-avatar-section">
         <div className="profile-avatar-wrap">
@@ -201,17 +199,19 @@ function ProfilePage() {
             onClick={() => setAvatarModalOpen(true)}
             type="button"
           >
-            {formData.avatarUri ? (
-              <img
-                src={formData.avatarUri}
-                alt="Avatar"
-                className="profile-avatar-img"
-                onError={() => setFormData(prev => ({ ...prev, avatarUri: null }))}
-              />
-            ) : (
-              <div className="profile-avatar-placeholder">{initials}</div>
-            )}
-            <div className="profile-avatar-overlay">
+            <div className="profile-avatar-ring">
+              {formData.avatarUri ? (
+                <img
+                  src={formData.avatarUri}
+                  alt="Avatar"
+                  className="profile-avatar-img"
+                  onError={() => setFormData(prev => ({ ...prev, avatarUri: null }))}
+                />
+              ) : (
+                <div className="profile-avatar-placeholder">{initials}</div>
+              )}
+            </div>
+            <div className="profile-avatar-camera-badge">
               <CameraIcon size={22} />
             </div>
           </button>
@@ -315,7 +315,6 @@ function ProfilePage() {
         >
           Cancel
         </button>
-      </div>
       </div>
 
       {avatarModalOpen && (
