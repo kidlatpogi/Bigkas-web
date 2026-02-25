@@ -212,7 +212,7 @@
 
 .profile-btn-save {
   border: 0;
-  background: #111827;
+  background: #000000;
   color: #ffffff;
   margin-top: 10px;
 }
@@ -344,14 +344,14 @@
 }
 
 [data-theme="dark"] .profile-btn-save {
-  background: #FBAF00;
-  color: #010101;
+  background: #000000;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .profile-btn-save:disabled {
-  background: #FBAF00;
+  background: #000000;
   color: #7c7c7c;
-  opacity: 0.65;
+  opacity: 1;
 }
 
 [data-theme="dark"] .profile-btn-cancel {
