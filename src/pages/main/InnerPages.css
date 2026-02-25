@@ -180,7 +180,9 @@
 }
 
 .btn-primary:hover {
-  opacity: 0.85;
+  background: #D59300;
+  color: #010101;
+  opacity: 1;
 }
 
 .btn-primary:active {
