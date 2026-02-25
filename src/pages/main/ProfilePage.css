@@ -304,13 +304,17 @@
 }
 
 [data-theme="dark"] .profile-input {
-  --profile-input-bg: #191b1f;
-  --profile-input-border: #3a3f46;
-  --profile-input-text: #f3f4f6;
-  --profile-input-placeholder: rgba(243, 244, 246, 0.45);
-  --profile-input-disabled-bg: #24272d;
-  --profile-input-disabled-text: rgba(243, 244, 246, 0.5);
+  --profile-input-bg: #2A2A2A;
+  --profile-input-border: #3A3A3A;
+  --profile-input-text: #F0F0F0;
+  --profile-input-placeholder: rgba(255, 255, 255, 0.3);
+  --profile-input-disabled-bg: #222222;
+  --profile-input-disabled-text: rgba(255, 255, 255, 0.35);
   --profile-input-focus: #FBAF00;
+}
+
+[data-theme="dark"] .profile-input:focus {
+  background: #2E2E2E;
 }
 
 [data-theme="dark"] .profile-input-readonly {

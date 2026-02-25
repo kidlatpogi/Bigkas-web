@@ -308,13 +308,17 @@
   --edit-text-secondary: rgba(240, 240, 240, 0.68);
   --edit-text-muted: rgba(240, 240, 240, 0.46);
   --edit-overlay: rgba(0, 0, 0, 0.62);
-  --edit-input-bg: #191b1f;
-  --edit-input-border: #3a3f46;
-  --edit-input-text: #f3f4f6;
-  --edit-input-placeholder: rgba(243, 244, 246, 0.45);
-  --edit-input-disabled-bg: #24272d;
-  --edit-input-disabled-text: rgba(243, 244, 246, 0.5);
+  --edit-input-bg: #2A2A2A;
+  --edit-input-border: #3A3A3A;
+  --edit-input-text: #F0F0F0;
+  --edit-input-placeholder: rgba(255, 255, 255, 0.3);
+  --edit-input-disabled-bg: #222222;
+  --edit-input-disabled-text: rgba(255, 255, 255, 0.35);
   --edit-input-focus: #FBAF00;
+}
+
+[data-theme='dark'] .edit-input:focus {
+  background: #2E2E2E;
 }
 
 [data-theme='dark'] .edit-profile-back {
