@@ -4,6 +4,7 @@ import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail, validatePassword } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
 import googleLogo from '../../assets/Google-Logo.png';
+import BackButton from '../../components/common/BackButton';
 import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './AuthPages.css';
 
@@ -68,15 +69,7 @@ function RegisterPage() {
       <ThemeToggleBtn />
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
-        <button
-          className="auth-back-btn"
-          onClick={() => navigate(ROUTES.HOME)}
-          aria-label="Back"
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M13 4l-6 6 6 6" stroke="#010101" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+        <BackButton onClick={() => navigate(ROUTES.HOME)} />
 
         <div className="auth-brand-content">
           <h1 className="auth-brand-name">BIGKAS</h1>

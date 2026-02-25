@@ -26,7 +26,8 @@
 }
 
 .filter-tab-btn:hover {
-  background: rgba(1, 1, 1, 0.04);
+  background: rgba(251, 175, 0, 0.14);
+  border-color: rgba(251, 175, 0, 0.5);
   color: #010101;
 }
 

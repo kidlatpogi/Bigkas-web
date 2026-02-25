@@ -20,6 +20,26 @@ export function formatDate(date, options = {}) {
 }
 
 /**
+ * Format an updated_at timestamp into mobile-style relative text.
+ * e.g. "EDITED TODAY", "EDITED YESTERDAY", "EDITED 6 DAYS AGO"
+ * @param {string|Date} isoTimestamp
+ * @returns {string}
+ */
+export function formatEditedTime(isoTimestamp) {
+  if (!isoTimestamp) return '';
+  const now = new Date();
+  const edited = new Date(isoTimestamp);
+  const diffMs = now - edited;
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffHours < 24) return 'EDITED TODAY';
+  if (diffDays === 1) return 'EDITED YESTERDAY';
+  if (diffDays < 7) return `EDITED ${diffDays} DAYS AGO`;
+  return `EDITED ${edited.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+}
+
+/**
  * Format date with time
  * @param {Date|string} date 
  * @returns {string}

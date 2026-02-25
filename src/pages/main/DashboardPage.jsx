@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import {
+  IoMic,
+  IoFlame,
+  IoCalendar,
+  IoStar,
+  IoPersonOutline,
+} from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { useSessions } from '../../hooks/useSessions';
 import { ENV } from '../../config/env';
 import { ROUTES } from '../../utils/constants';
+import temporaryLogo from '../../assets/Temporary Logo.png';
 import './DashboardPage.css';
 
 /* ─────────────────────────────────────────────────────────────
@@ -29,34 +37,57 @@ const FALLBACK_QUOTE = {
   author: 'Winston Churchill',
 };
 
+let cachedQuote = null;
+let cachedQuoteDateKey = null;
+let quoteRequestPromise = null;
+
 /**
- * Fetches the same daily motivation source used by mobile (ZenQuotes).
- * Tries backend proxy first (avoids browser CORS), then direct API.
+ * Fetches a daily motivational quote from the backend endpoint.
+ * Uses a per-day cache so multiple renders/mounts don't overwrite
+ * the card with a different quote a second later.
+ * Falls back to a hardcoded quote on failure.
  */
 async function fetchDailyQuote() {
-  try {
-    const proxyRes = await fetch(`${ENV.API_BASE_URL}/api/content/daily-quote`);
-    if (proxyRes.ok) {
-      const proxyData = await proxyRes.json();
-      if (proxyData?.text && proxyData?.author) {
-        return { text: proxyData.text, author: proxyData.author };
+  const dateKey = new Date().toISOString().slice(0, 10);
+
+  if (cachedQuote && cachedQuoteDateKey === dateKey) {
+    return cachedQuote;
+  }
+
+  if (quoteRequestPromise) {
+    return quoteRequestPromise;
+  }
+
+  quoteRequestPromise = (async () => {
+    try {
+      if (!ENV.ENABLE_DAILY_QUOTE_FETCH) {
+        cachedQuote = FALLBACK_QUOTE;
+        cachedQuoteDateKey = dateKey;
+        return FALLBACK_QUOTE;
       }
-    }
-  } catch {
-    // Fall through to direct source
-  }
 
-  try {
-    const res = await fetch('https://zenquotes.io/api/today');
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return { text: data[0].q, author: data[0].a };
-    }
-  } catch {
-    // Use fallback quote below
-  }
+      const proxyRes = await fetch(`${ENV.API_BASE_URL}/api/content/daily-quote`);
+      if (!proxyRes.ok) throw new Error(`Quote fetch failed: ${proxyRes.status}`);
 
-  return FALLBACK_QUOTE;
+      const proxyData = await proxyRes.json();
+      const nextQuote =
+        proxyData?.text && proxyData?.author
+          ? { text: proxyData.text, author: proxyData.author }
+          : FALLBACK_QUOTE;
+
+      cachedQuote = nextQuote;
+      cachedQuoteDateKey = dateKey;
+      return nextQuote;
+    } catch {
+      cachedQuote = FALLBACK_QUOTE;
+      cachedQuoteDateKey = dateKey;
+      return FALLBACK_QUOTE;
+    } finally {
+      quoteRequestPromise = null;
+    }
+  })();
+
+  return quoteRequestPromise;
 }
 
 /** Deterministic daily selection — same all day, rotates at midnight */
@@ -66,69 +97,6 @@ function getDailyIndex() {
 }
 
 function getDailyTip() { return TIPS[getDailyIndex() % TIPS.length]; }
-
-/* ─────────────────────────────────────────────────────────────
-   Icon components (Ionicons-style SVG — from mobile app)
-   ───────────────────────────────────────────────────────────── */
-
-/** Ionicons "mic" icon */
-function MicIcon({ size = 28, color = '#FBAF00' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" fill={color} />
-      <path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4m-4 0h8" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-/** Ionicons "flame" icon (streak) */
-function FlameIcon({ size = 14, color = '#FBAF00' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true">
-      <path d="M12 2C9 7.5 6 11.5 6 15.5a6 6 0 0012 0c0-2.8-1.6-5.5-3.2-8-1.1 2-1.4 3.8-1.8 5.5C11.2 10.5 10.5 7 12 2z" />
-    </svg>
-  );
-}
-
-/** Ionicons "calendar" icon — TODAY stat (color=#FBAF00 matching mobile) */
-function CalendarIcon({ size = 22, color = '#FBAF00' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="dash-stat-icon">
-      <rect x="3" y="4" width="18" height="18" rx="3" ry="3"/>
-      <line x1="16" y1="2" x2="16" y2="6"/>
-      <line x1="8" y1="2" x2="8" y2="6"/>
-      <line x1="3" y1="10" x2="21" y2="10"/>
-    </svg>
-  );
-}
-
-/** Ionicons "star" icon — AVG SCORE stat (filled, color=#FBAF00 matching mobile) */
-function StarIcon({ size = 22, color = '#FBAF00' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" className="dash-stat-icon">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-    </svg>
-  );
-}
-
-/** Ionicons "flame" icon — STREAK stat (filled, color=#FBAF00 matching mobile) */
-function FlameStatIcon({ size = 22, color = '#FBAF00' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" className="dash-stat-icon">
-      <path d="M12 2C9 7.5 6 11.5 6 15.5a6 6 0 0012 0c0-2.8-1.6-5.5-3.2-8-1.1 2-1.4 3.8-1.8 5.5C11.2 10.5 10.5 7 12 2z" />
-    </svg>
-  );
-}
-
-/** Person icon for avatar button */
-function PersonIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-  );
-}
 
 /* ─────────────────────────────────────────────────────────────
    DashboardPage — 1:1 copy of the mobile DashboardScreen
@@ -144,7 +112,7 @@ export default function DashboardPage() {
   const tip = useMemo(() => getDailyTip(), []);
 
   /* ── Derived display values ── */
-  const displayName = user?.nickname || user?.name?.split(' ')[0] || 'Speaker';
+  const displayName = user?.nickname || user?.name || 'Speaker';
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();
@@ -157,19 +125,16 @@ export default function DashboardPage() {
     if (!sessions?.length) return 0;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     return sessions.filter((s) => {
-      const d = new Date(s.created_at); d.setHours(0, 0, 0, 0);
+      const d = new Date(s.createdAt || s.created_at); d.setHours(0, 0, 0, 0);
       return d.getTime() === today.getTime();
     }).length;
   }, [sessions]);
 
-  /**
-   * averageScore — computed from sessions' confidence_score (0–100 scale).
-   * Mirrors mobile DashboardScreen.jsx averageScore logic.
-   */
+  /** @type {number} averageScore — average pronunciation score (0-100) */
   const averageScore = useMemo(() => {
     if (!sessions?.length) return 0;
-    const total = sessions.reduce((sum, s) => sum + (s.confidence_score ?? s.score ?? 0), 0);
-    return Math.round(total / sessions.length);
+    const total = sessions.reduce((sum, s) => sum + (s.score || 0), 0);
+    return Math.round((total / sessions.length) * 100);
   }, [sessions]);
 
   /**
@@ -180,7 +145,7 @@ export default function DashboardPage() {
     if (!sessions?.length) return 0;
     const dateSet = new Set(
       sessions.map((s) => {
-        const d = new Date(s.created_at);
+        const d = new Date(s.createdAt || s.created_at);
         return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
       })
     );
@@ -200,7 +165,7 @@ export default function DashboardPage() {
   /* ── Load sessions on mount (once) ── */
   useEffect(() => {
     fetchSessions?.();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchSessions]);
 
   /* ── Load daily motivation quote (same source/behavior as mobile) ── */
   useEffect(() => {
@@ -213,10 +178,7 @@ export default function DashboardPage() {
       {/* ── Top bar: Bigkas logo (left) + profile avatar (right) ── */}
       <div className="dash-top-bar">
         <div className="dash-logo">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" fill="#FBAF00"/>
-            <path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4m-4 0h8" stroke="#FBAF00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <img src={temporaryLogo} alt="Bigkas logo" className="dash-logo-image" />
           <span className="dash-logo-text">Bigkas</span>
         </div>
         <Link to={ROUTES.PROFILE} className="dash-profile-btn" aria-label="Go to Profile">
@@ -228,7 +190,7 @@ export default function DashboardPage() {
               onError={() => setAvatarError(true)}
             />
           ) : (
-            <PersonIcon />
+            <IoPersonOutline size={22} aria-hidden="true" />
           )}
         </Link>
       </div>
@@ -243,9 +205,9 @@ export default function DashboardPage() {
       <div className="dash-hero-card">
         {/* Header row — mic icon circle + streak badge */}
         <div className="dash-hero-header">
-          <div className="dash-hero-icon"><MicIcon /></div>
+          <div className="dash-hero-icon"><IoMic size={28} color="#FFFFFF" aria-hidden="true" /></div>
           <div className="dash-streak-badge">
-            <FlameIcon />
+            <IoFlame size={14} color="#FBAF00" aria-hidden="true" />
             <span>{streakCount} day streak</span>
           </div>
         </div>
@@ -273,19 +235,19 @@ export default function DashboardPage() {
       {/* ── Stats row (Today · Avg Score · Streak) ── */}
       <div className="dash-stats-card">
         <div className="dash-stat">
-          <CalendarIcon size={24} />
+          <IoCalendar size={24} color="#FBAF00" className="dash-stat-icon" aria-hidden="true" />
           <span className="dash-stat-value">{String(todayCount).padStart(2, '0')}</span>
           <span className="dash-stat-label">TODAY</span>
         </div>
         <div className="dash-stat-divider" />
         <div className="dash-stat">
-          <StarIcon size={24} />
+          <IoStar size={24} color="#FBAF00" className="dash-stat-icon" aria-hidden="true" />
           <span className="dash-stat-value">{averageScore}</span>
           <span className="dash-stat-label">AVG SCORE</span>
         </div>
         <div className="dash-stat-divider" />
         <div className="dash-stat">
-          <FlameStatIcon size={24} />
+          <IoFlame size={24} color="#FBAF00" className="dash-stat-icon" aria-hidden="true" />
           <span className="dash-stat-value">{String(streakCount).padStart(2, '0')}</span>
           <span className="dash-stat-label">STREAK</span>
         </div>

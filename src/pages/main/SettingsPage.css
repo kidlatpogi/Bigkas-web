@@ -1,30 +1,31 @@
 /* ── SettingsPage.css ── */
 
 .settings-page {
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 auto;
 }
 
-/* ── Section label ── */
-.settings-section-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #888;
-  letter-spacing: 0.1em;
-  margin: 0 0 10px 4px;
+/* ── Section title ── */
+.settings-section-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #010101;
+  letter-spacing: 0.04em;
+  margin: 0 0 12px 2px;
 }
 
 /* ── Settings card ── */
 .settings-card {
   background: #fff;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1.5px solid #E8E8E8;
   overflow: hidden;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .settings-field {
-  padding: 14px 16px;
+  padding: 16px 18px;
 }
 
 .settings-field-label {
@@ -51,10 +52,10 @@
 
 .settings-select {
   width: 100%;
-  padding: 11px 36px 11px 12px;
+  padding: 12px 40px 12px 14px;
   border: 1.5px solid #E0E0E0;
-  border-radius: 9px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 15px;
   font-weight: 500;
   color: #010101;
   background: #F8F8F8;
@@ -72,7 +73,7 @@
 
 .settings-select-wrap svg {
   position: absolute;
-  right: 10px;
+  right: 12px;
   color: #888;
   pointer-events: none;
   flex-shrink: 0;
@@ -81,43 +82,43 @@
 /* ── Test Audio/Video button ── */
 .settings-btn-test {
   width: 100%;
-  padding: 14px;
-  background: transparent;
-  border: 1.5px solid #010101;
-  border-radius: 10px;
+  padding: 15px;
+  background: #fff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #010101;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.12s, color 0.12s;
-  margin-bottom: 28px;
+  transition: background 0.12s, border-color 0.15s;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .settings-btn-test:hover {
-  background: #010101;
-  color: #fff;
+  background: #F7F7F7;
+  border-color: #CCCCCC;
 }
 
 /* ── Log out button ── */
 .settings-btn-logout {
   width: 100%;
-  padding: 15px;
-  background: #FF0019;
+  padding: 16px;
+  background: #E5243B;
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
   font-size: 16px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
   font-family: inherit;
   transition: opacity 0.15s, transform 0.1s;
-  letter-spacing: 0.02em;
 }
 
 .settings-btn-logout:hover {
-  opacity: 0.88;
+  opacity: 0.9;
 }
 
 .settings-btn-logout:active {
@@ -125,9 +126,14 @@
 }
 
 /* ── Dark mode ── */
+[data-theme="dark"] .settings-section-title {
+  color: #F0F0F0;
+}
+
 [data-theme="dark"] .settings-card {
   background: #242424;
   border-color: #333;
+  box-shadow: none;
 }
 
 [data-theme="dark"] .settings-field-label {
@@ -149,16 +155,16 @@
 }
 
 [data-theme="dark"] .settings-btn-test {
-  border-color: #F0F0F0;
+  background: #242424;
+  border-color: #444;
   color: #F0F0F0;
 }
 
 [data-theme="dark"] .settings-btn-test:hover {
-  background: #F0F0F0;
-  color: #010101;
+  background: #2e2e2e;
 }
 
-[data-theme="dark"] .settings-section-label {
-  color: #666;
+[data-theme="dark"] .settings-btn-logout {
+  background: #C41E33;
 }
 

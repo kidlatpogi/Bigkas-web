@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
+import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './GenerateScriptPage.css';
@@ -93,8 +95,8 @@ function GenerateScriptPage() {
   return (
     <div className="inner-page">
       {/* Header */}
-      <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+      <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Generate Script</h1>
       </div>
 
@@ -106,19 +108,20 @@ function GenerateScriptPage() {
         <div className="prompt-row">
           <textarea
             className="form-textarea"
-            placeholder="Describe what you want to speak about…"
+            placeholder="What are you talking about? Be specific about your main message and who the audience is."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={3}
           />
-          <button className="shuffle-btn" onClick={handleRandomTopic} title="Random topic">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+          <button className="random-topic-btn" onClick={handleRandomTopic} title="Random topic">
+            <IoShuffle size={14} />
+            <span>Random Topic</span>
           </button>
         </div>
       </div>
 
       {/* Vibe chips */}
-      <p className="section-label">Vibe</p>
+      <p className="section-label">What's the vibe?</p>
       <div className="chip-group">
         {VIBES.map((v) => (
           <button
@@ -132,7 +135,7 @@ function GenerateScriptPage() {
       </div>
 
       {/* Duration chips */}
-      <p className="section-label">Duration</p>
+      <p className="section-label">Approx. Duration</p>
       <div className="chip-group" style={{ marginBottom: 24 }}>
         {DURATIONS.map((d) => (
           <button

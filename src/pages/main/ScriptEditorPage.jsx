@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScript, createScript, updateScript } from '../../api/scriptsApi';
+import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 
@@ -78,8 +79,8 @@ function ScriptEditorPage() {
   return (
     <div className="inner-page">
       {/* Header */}
-      <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+      <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">{isEditing ? 'Edit Script' : 'New Script'}</h1>
       </div>
 
@@ -115,8 +116,8 @@ function ScriptEditorPage() {
         <button className="btn-secondary" onClick={() => navigate(-1)} disabled={isSaving}>
           Cancel
         </button>
-        <button className="btn-primary" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? 'Saving…' : 'Save Script'}
+        <button className="btn-primary" style={{ background: '#010101', color: '#FFFFFF' }} onClick={handleSave} disabled={isSaving}>
+          {isSaving ? 'Saving…' : 'Save'}
         </button>
       </div>
     </div>

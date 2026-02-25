@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { ROUTES, buildRoute, getScoreTier } from '../../utils/constants';
@@ -7,6 +7,13 @@ import './InnerPages.css';
 import './ProgressPage.css';
 
 const TIME_RANGES = ['Week', 'Month', 'Year'];
+const CHART_WIDTH = 1000;
+const CHART_HEIGHT = 210;
+const CHART_LEFT = 70;
+const CHART_RIGHT = 930;
+const CHART_TOP = 24;
+const CHART_BASELINE = 176;
+const CHART_LABEL_Y = 204;
 
 function ProgressPage() {
   const navigate = useNavigate();
@@ -17,6 +24,103 @@ function ProgressPage() {
   useEffect(() => {
     fetchSessions(1, true);
   }, [fetchSessions]);
+
+  const hasAnySessions = sessions.length > 0;
+
+  const chartData = useMemo(() => {
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    if (range === 'Week') {
+      const now = new Date();
+      const result = [];
+      for (let i = 6; i >= 0; i -= 1) {
+        const day = new Date(now);
+        day.setDate(day.getDate() - i);
+        day.setHours(0, 0, 0, 0);
+
+        const daySessions = sessions.filter((session) => {
+          const sessionDate = new Date(session.created_at);
+          sessionDate.setHours(0, 0, 0, 0);
+          return sessionDate.getTime() === day.getTime();
+        });
+
+        const avg = daySessions.length > 0
+          ? Math.round(daySessions.reduce((sum, session) => sum + (session.confidence_score ?? 0), 0) / daySessions.length)
+          : 0;
+
+        result.push({ label: dayNames[day.getDay()], value: avg });
+      }
+      return result;
+    }
+
+    if (range === 'Month') {
+      const now = new Date();
+      const result = [];
+      for (let week = 3; week >= 0; week -= 1) {
+        const weekEnd = new Date(now);
+        weekEnd.setDate(weekEnd.getDate() - week * 7);
+        const weekStart = new Date(weekEnd);
+        weekStart.setDate(weekStart.getDate() - 6);
+        weekStart.setHours(0, 0, 0, 0);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        const weekSessions = sessions.filter((session) => {
+          const sessionDate = new Date(session.created_at);
+          return sessionDate >= weekStart && sessionDate <= weekEnd;
+        });
+
+        const avg = weekSessions.length > 0
+          ? Math.round(weekSessions.reduce((sum, session) => sum + (session.confidence_score ?? 0), 0) / weekSessions.length)
+          : 0;
+
+        result.push({ label: `Wk${4 - week}`, value: avg });
+      }
+      return result;
+    }
+
+    const now = new Date();
+    const result = [];
+    for (let monthOffset = 11; monthOffset >= 0; monthOffset -= 1) {
+      const monthStart = new Date(now.getFullYear(), now.getMonth() - monthOffset, 1);
+      const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0, 23, 59, 59, 999);
+
+      const monthSessions = sessions.filter((session) => {
+        const sessionDate = new Date(session.created_at);
+        return sessionDate >= monthStart && sessionDate <= monthEnd;
+      });
+
+      const avg = monthSessions.length > 0
+        ? Math.round(monthSessions.reduce((sum, session) => sum + (session.confidence_score ?? 0), 0) / monthSessions.length)
+        : 0;
+
+      result.push({ label: monthNames[monthStart.getMonth()], value: avg });
+    }
+
+    return result;
+  }, [range, sessions]);
+
+  const chartPoints = useMemo(() => {
+    if (!chartData.length) return [];
+
+    const values = chartData.map((point) => (Number.isFinite(point.value) ? point.value : 0));
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const rangeValue = maxValue - minValue;
+    const flatLineY = CHART_BASELINE;
+
+    return chartData.map((point, index) => {
+      const x = chartData.length > 1
+        ? CHART_LEFT + (index * (CHART_RIGHT - CHART_LEFT)) / (chartData.length - 1)
+        : (CHART_LEFT + CHART_RIGHT) / 2;
+      const y = rangeValue === 0
+        ? flatLineY
+        : CHART_TOP + (1 - (point.value - minValue) / rangeValue) * (CHART_BASELINE - CHART_TOP);
+      return { ...point, x, y };
+    });
+  }, [chartData]);
+
+  const polylinePoints = chartPoints.map((point) => `${point.x},${point.y}`).join(' ');
 
   // Filter sessions for chart based on range
   const now = new Date();
@@ -50,32 +154,6 @@ function ProgressPage() {
 
   const improvement = avgScore !== null && prevAvg !== null ? avgScore - prevAvg : null;
 
-  // Chart bars: last 7 / 30 / 12 buckets
-  const buildBars = () => {
-    const buckets = range === 'Week' ? 7 : range === 'Month' ? 8 : 12;
-    return Array.from({ length: buckets }, (_, i) => {
-      const bucketEnd = new Date(now);
-      const bucketSize = days / buckets;
-      bucketEnd.setDate(bucketEnd.getDate() - (buckets - 1 - i) * bucketSize);
-      const bucketStart = new Date(bucketEnd);
-      bucketStart.setDate(bucketStart.getDate() - bucketSize);
-
-      const inBucket = sessions.filter((s) => {
-        const d = new Date(s.created_at);
-        return d >= bucketStart && d < bucketEnd;
-      });
-
-      const score = inBucket.length
-        ? Math.round(inBucket.reduce((a, b) => a + (b.confidence_score ?? 0), 0) / inBucket.length)
-        : 0;
-
-      return { score, label: (i + 1).toString() };
-    });
-  };
-
-  const bars = buildBars();
-  const maxBar = Math.max(...bars.map(b => b.score), 1);
-
   const recentSessions = [...sessions].slice(0, 5);
 
   return (
@@ -86,58 +164,47 @@ function ProgressPage() {
 
       {/* Performance trend card */}
       <div className="page-card progress-trend-card">
-        <div className="trend-top">
-          <div>
-            <p className="section-label">Performance Trend</p>
-            <div className="trend-score">
-              {avgScore !== null ? (
-                <>
-                  <span className="trend-score-num">{avgScore}</span>
-                  <span className="trend-score-label">/100 avg</span>
-                  {improvement !== null && (
-                    <span className={`trend-badge ${improvement >= 0 ? 'up' : 'down'}`}>
-                      {improvement >= 0 ? '+' : ''}{improvement} vs prev {range.toLowerCase()}
-                    </span>
-                  )}
-                </>
-              ) : (
-                <span className="trend-score-label">No data yet</span>
-              )}
-            </div>
-          </div>
-          <div className="tabs" style={{ margin: 0 }}>
-            {TIME_RANGES.map((r) => (
+        <div className="progress-trend-header">
+          <p className="progress-trend-label">Performance Trend</p>
+          <p className="progress-trend-value">
+            {hasAnySessions ? `${avgScore ?? 0}%` : 'NO DATA YET'}
+          </p>
+        </div>
+
+        <div className="progress-chart-header">
+          <h2 className="progress-chart-title">Daily Progress</h2>
+          <div className="progress-range-selector">
+            {TIME_RANGES.map((timeRange) => (
               <button
-                key={r}
-                className={`tab-btn ${range === r ? 'active' : ''}`}
-                onClick={() => setRange(r)}
+                key={timeRange}
+                className={`progress-range-btn${range === timeRange ? ' active' : ''}`}
+                onClick={() => setRange(timeRange)}
               >
-                {r}
+                {timeRange.toUpperCase()}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Bar chart */}
-        <div className="bar-chart">
-          {bars.map((bar, i) => (
-            <div key={i} className="bar-col">
-              <div
-                className="bar"
-                style={{ height: `${(bar.score / maxBar) * 100}%` }}
-                title={`${bar.score}/100`}
-              />
-              <span className="bar-label">{bar.label}</span>
-            </div>
-          ))}
+        <div className="progress-line-chart">
+          <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} preserveAspectRatio="xMidYMid meet" className="progress-svg" role="img" aria-label="Progress chart">
+            <line x1={CHART_LEFT} y1={CHART_BASELINE} x2={CHART_RIGHT} y2={CHART_BASELINE} className="progress-baseline" />
+            <polyline points={polylinePoints} className="progress-polyline" />
+            {chartPoints.map((point) => (
+              <g key={point.label}>
+                <circle cx={point.x} cy={point.y} r="8.5" className="progress-point" />
+                <text x={point.x} y={CHART_LABEL_Y} textAnchor="middle" className="progress-label">{point.label}</text>
+              </g>
+            ))}
+          </svg>
         </div>
       </div>
 
       {/* Stats row */}
       <div className="progress-stats-row">
         <div className="stat-block">
-          <p className="stat-num">{filteredSessions.length}</p>
-          <p className="stat-desc">Sessions this {range.toLowerCase()}</p>
+          <p className={`stat-num${!hasAnySessions ? ' stat-primary' : ''}`}>{hasAnySessions ? filteredSessions.length : 0}</p>
+          <p className="stat-desc">{hasAnySessions ? `Sessions this ${range.toLowerCase()}` : 'NO DATA YET'}</p>
         </div>
         <div className="stat-block">
           <p className="stat-num">{avgScore ?? '-'}</p>

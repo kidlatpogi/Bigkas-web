@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getScoreTier, buildRoute, ROUTES } from '../../utils/constants';
 import { formatDuration } from '../../utils/formatters';
+import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
 
@@ -33,7 +34,7 @@ function SessionResultPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Analysis Result</h1>
       </div>
 

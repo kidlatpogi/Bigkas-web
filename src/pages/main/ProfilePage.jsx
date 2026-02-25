@@ -1,9 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { ROUTES } from '../../utils/constants';
 import { supabase } from '../../lib/supabase';
-import BackButton from '../../components/common/BackButton';
 import './ProfilePage.css';
 
 /* ── Inline SVG icons ── */
@@ -27,60 +26,103 @@ function ProfilePage() {
   const { user } = useAuthContext();
   const fileRef  = useRef(null);
 
-  const [avatarMenuOpen,  setAvatarMenuOpen]  = useState(false);
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [isSaving,        setIsSaving]        = useState(false);
   const [errors,          setErrors]          = useState({});
-
-  const meta = user?.user_metadata ?? {};
+  const [initialData,     setInitialData]     = useState({
+    firstName: '',
+    lastName: '',
+    nickname: '',
+    email: '',
+    avatarUri: null,
+  });
 
   const [formData, setFormData] = useState({
-    firstName: meta.first_name  || user?.name?.split(' ')[0] || '',
-    lastName:  meta.last_name   || user?.name?.split(' ').slice(1).join(' ') || '',
-    nickname:  meta.nickname    || user?.nickname || '',
-    email:     user?.email      || '',
-    avatarUri: meta.avatar_url  || null,
+    firstName: '',
+    lastName: '',
+    nickname: '',
+    email: '',
+    avatarUri: null,
   });
+
+  /* Build form snapshot directly from the AuthContext user (already cached). */
+  const profileLoaded = useRef(false);
+
+  useEffect(() => {
+    if (!user || profileLoaded.current) return;
+
+    const nextData = {
+      firstName: user.firstName || '',
+      lastName:  user.lastName  || '',
+      nickname:  user.nickname  || '',
+      email:     user.email     || '',
+      avatarUri: user.avatar_url || null,
+    };
+
+    setInitialData(nextData);
+    setFormData(nextData);
+    profileLoaded.current = true;
+  }, [user]);
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
+  const hasChanges = useMemo(() => {
+    return (
+      formData.firstName.trim() !== initialData.firstName.trim() ||
+      formData.lastName.trim() !== initialData.lastName.trim() ||
+      formData.nickname.trim() !== initialData.nickname.trim() ||
+      (formData.avatarUri || null) !== (initialData.avatarUri || null)
+    );
+  }, [formData, initialData]);
+
   /* ── Avatar ── */
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    // Immediate local preview
-    setFormData(prev => ({ ...prev, avatarUri: URL.createObjectURL(file) }));
-    setAvatarMenuOpen(false);
+
+    const previousAvatar = formData.avatarUri;
+    const localPreview = URL.createObjectURL(file);
+    setFormData(prev => ({ ...prev, avatarUri: localPreview }));
+    setAvatarModalOpen(false);
     setAvatarUploading(true);
+
     try {
       const ext  = file.name.split('.').pop().toLowerCase();
       const path = `${user.id}/avatar.${ext}`;
       const { error: uploadErr } = await supabase.storage
         .from('avatars')
         .upload(path, file, { upsert: true });
-      if (!uploadErr) {
+
+      if (uploadErr) {
+        setErrors(prev => ({ ...prev, avatar: 'Failed to upload profile picture.' }));
+        setFormData(prev => ({ ...prev, avatarUri: previousAvatar }));
+      } else {
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
-        setFormData(prev => ({ ...prev, avatarUri: publicUrl }));
-        await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
+        setFormData(prev => ({ ...prev, avatarUri: publicUrl || previousAvatar }));
+        setErrors(prev => ({ ...prev, avatar: undefined }));
       }
     } catch (err) {
       console.error('Avatar upload error:', err);
+      setErrors(prev => ({ ...prev, avatar: 'Failed to upload profile picture.' }));
+      setFormData(prev => ({ ...prev, avatarUri: previousAvatar }));
     } finally {
       setAvatarUploading(false);
+      URL.revokeObjectURL(localPreview);
     }
   };
 
-  const handleRemoveAvatar = async () => {
+  const handleRemoveAvatar = () => {
     setFormData(prev => ({ ...prev, avatarUri: null }));
-    setAvatarMenuOpen(false);
-    await supabase.auth.updateUser({ data: { avatar_url: null } });
+    setAvatarModalOpen(false);
   };
 
   /* ── Save / Cancel ── */
   const handleSaveChanges = async () => {
+    if (!hasChanges) return;
     if (!formData.firstName.trim()) {
       setErrors({ firstName: 'First name is required' });
       return;
@@ -93,9 +135,10 @@ function ProfilePage() {
           last_name:  formData.lastName.trim(),
           full_name:  `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim(),
           nickname:   formData.nickname.trim(),
-          avatar_url: formData.avatarUri,
+          avatar_url: formData.avatarUri || null,
         },
       });
+      setInitialData({ ...formData, avatarUri: formData.avatarUri || null });
       navigate(-1);
     } catch {
       alert('Failed to save changes. Please try again.');
@@ -105,15 +148,9 @@ function ProfilePage() {
   };
 
   const handleCancel = () => {
-    const m = user?.user_metadata ?? {};
-    setFormData({
-      firstName: m.first_name || user?.name?.split(' ')[0] || '',
-      lastName:  m.last_name  || user?.name?.split(' ').slice(1).join(' ') || '',
-      nickname:  m.nickname   || user?.nickname || '',
-      email:     user?.email  || '',
-      avatarUri: m.avatar_url || null,
-    });
+    setFormData(initialData);
     setErrors({});
+    setAvatarModalOpen(false);
   };
 
   const initials = formData.firstName
@@ -121,67 +158,39 @@ function ProfilePage() {
     : (user?.email?.[0] || 'U').toUpperCase();
 
   return (
-    <div className="profile-page" onClick={() => setAvatarMenuOpen(false)}>
+    <div className="profile-page">
       {/* Header */}
       <div className="profile-header">
-        <BackButton />
-        <h1 className="profile-title">Edit Profile</h1>
+        <h1 className="inner-page-title">Edit Profile</h1>
       </div>
 
       {/* AvatarPicker */}
       <div className="profile-avatar-section">
-        <div className="profile-avatar-wrap" onClick={e => e.stopPropagation()}>
+        <div className="profile-avatar-wrap">
           <button
             className="profile-avatar-btn"
-            onClick={() => setAvatarMenuOpen(o => !o)}
+            onClick={() => setAvatarModalOpen(true)}
             type="button"
           >
-            {formData.avatarUri ? (
-              <img
-                src={formData.avatarUri}
-                alt="Avatar"
-                className="profile-avatar-img"
-                onError={() => setFormData(prev => ({ ...prev, avatarUri: null }))}
-              />
-            ) : (
-              <div className="profile-avatar-placeholder">{initials}</div>
-            )}
-            <div className="profile-avatar-overlay">
+            <div className="profile-avatar-ring">
+              {formData.avatarUri ? (
+                <img
+                  src={formData.avatarUri}
+                  alt="Avatar"
+                  className="profile-avatar-img"
+                  onError={() => setFormData(prev => ({ ...prev, avatarUri: null }))}
+                />
+              ) : (
+                <div className="profile-avatar-placeholder">{initials}</div>
+              )}
+            </div>
+            <div className="profile-avatar-camera-badge">
               <CameraIcon size={22} />
             </div>
           </button>
 
           {avatarUploading && (
             <p className="profile-avatar-status">Uploading…</p>
-          )}
-
-          {/* Context menu */}
-          {avatarMenuOpen && (
-            <div className="profile-avatar-menu">
-              {formData.avatarUri ? (
-                <>
-                  <button
-                    className="profile-avatar-menu-item"
-                    onClick={() => { fileRef.current?.click(); setAvatarMenuOpen(false); }}
-                  >
-                    Change Profile Picture
-                  </button>
-                  <button
-                    className="profile-avatar-menu-item danger"
-                    onClick={handleRemoveAvatar}
-                  >
-                    Remove Profile Picture
-                  </button>
-                </>
-              ) : (
-                <button
-                  className="profile-avatar-menu-item"
-                  onClick={() => { fileRef.current?.click(); setAvatarMenuOpen(false); }}
-                >
-                  Add Profile Picture
-                </button>
-              )}
-            </div>
           )}
         </div>
 
@@ -192,6 +201,7 @@ function ProfilePage() {
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
+        {errors.avatar && <span className="profile-error-msg">{errors.avatar}</span>}
       </div>
 
       {/* Form */}
@@ -228,6 +238,8 @@ function ProfilePage() {
             className="profile-input profile-input-readonly"
             value={formData.email}
             readOnly
+            disabled
+            tabIndex={-1}
           />
         </div>
 
@@ -243,29 +255,31 @@ function ProfilePage() {
         </div>
 
         {/* Chevron rows */}
-        <button
-          className="profile-setting-row"
-          type="button"
-          onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
-        >
-          <span>Change Password</span>
-          <ChevronIcon />
-        </button>
-        <button
-          className="profile-setting-row"
-          type="button"
-          onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
-        >
-          <span>Account Settings</span>
-          <ChevronIcon />
-        </button>
+        <div className="profile-settings-list">
+          <button
+            className="profile-setting-row"
+            type="button"
+            onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
+          >
+            <span>Change Password</span>
+            <ChevronIcon />
+          </button>
+          <button
+            className="profile-setting-row"
+            type="button"
+            onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
+          >
+            <span>Account Settings</span>
+            <ChevronIcon />
+          </button>
+        </div>
 
         {/* Action buttons */}
         <button
           className="profile-btn-save"
           type="button"
           onClick={handleSaveChanges}
-          disabled={isSaving}
+          disabled={isSaving || avatarUploading || !hasChanges}
         >
           {isSaving ? 'Saving…' : 'Save Changes'}
         </button>
@@ -277,6 +291,55 @@ function ProfilePage() {
           Cancel
         </button>
       </div>
+
+      {avatarModalOpen && (
+        <div className="profile-avatar-modal-overlay" onClick={() => setAvatarModalOpen(false)}>
+          <div className="profile-avatar-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <h3 className="profile-avatar-modal-title">Profile Picture</h3>
+
+            {formData.avatarUri ? (
+              <>
+                <button
+                  type="button"
+                  className="profile-avatar-modal-action"
+                  onClick={() => {
+                    fileRef.current?.click();
+                    setAvatarModalOpen(false);
+                  }}
+                >
+                  Change Profile Picture
+                </button>
+                <button
+                  type="button"
+                  className="profile-avatar-modal-action danger"
+                  onClick={handleRemoveAvatar}
+                >
+                  Remove Profile Picture
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                className="profile-avatar-modal-action"
+                onClick={() => {
+                  fileRef.current?.click();
+                  setAvatarModalOpen(false);
+                }}
+              >
+                Add Profile Picture
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="profile-avatar-modal-cancel"
+              onClick={() => setAvatarModalOpen(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

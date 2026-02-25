@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { buildRoute } from '../../utils/constants';
+import BackButton from '../../components/common/BackButton';
 import './TrainingPage.css';
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
@@ -48,14 +49,6 @@ function SettingsGearIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
       <path d="M470.39 300l-.47-.38-31.56-18.22a188.78 188.78 0 000-51.83l31.56-18.22c6-3.51 9.19-10.51 7.68-17.19-10.13-42.86-29.47-80.87-56.84-110.43a14.87 14.87 0 00-17.37-2.93l-31.56 18.22a188.08 188.08 0 00-44.86-25.89V38.42a14.88 14.88 0 00-11.86-14.56c-44.16-9.59-89.86-9.16-132.29 0a14.88 14.88 0 00-11.86 14.56v36.13a188.08 188.08 0 00-44.86 25.89L95 82.22a14.87 14.87 0 00-17.37 2.93c-27.37 29.56-46.71 67.57-56.84 110.43-1.51 6.68 1.68 13.68 7.68 17.19l31.56 18.22a188.78 188.78 0 000 51.83L28.47 300.62c-6 3.51-9.19 10.51-7.68 17.19 10.12 42.86 29.46 80.87 56.84 110.43a14.87 14.87 0 0017.37 2.93l31.56-18.22a188.08 188.08 0 0044.86 25.89v36.13a14.88 14.88 0 0011.86 14.56c44.16 9.59 89.86 9.16 132.29 0a14.88 14.88 0 0011.86-14.56v-36.13a188.08 188.08 0 0044.86-25.89l31.56 18.22a14.87 14.87 0 0017.37-2.93c27.37-29.56 46.71-67.57 56.84-110.43 1.51-6.68-1.68-13.68-7.68-17.22zM256 336a80 80 0 110-160 80 80 0 010 160z"/>
-    </svg>
-  );
-}
-
-function BackIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M15 18l-6-6 6-6"/>
     </svg>
   );
 }
@@ -290,7 +283,7 @@ function TrainingPage() {
     return (
       <div className="tp-page">
         <div className="tp-header">
-          <button className="tp-back-btn" onClick={() => navigate(-1)}><BackIcon /></button>
+          <BackButton onClick={() => navigate(-1)} />
           <span className="tp-header-title">Training</span>
           <div className="tp-header-spacer" />
         </div>
@@ -311,9 +304,7 @@ function TrainingPage() {
     <div className="tp-page">
       {/* ── Dark Header ── */}
       <div className="tp-header">
-        <button className="tp-back-btn" onClick={() => navigate(-1)} aria-label="Go back">
-          <BackIcon />
-        </button>
+        <BackButton onClick={() => navigate(-1)} />
         <span className="tp-header-title">{title}</span>
         {focus === 'scripted' ? (
           <button className="tp-settings-btn" onClick={() => setShowSettings(true)} aria-label="Settings">

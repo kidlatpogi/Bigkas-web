@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts } from '../../api/scriptsApi';
+import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './TrainingSetupPage.css';
@@ -61,7 +62,7 @@ function TrainingSetupPage() {
   return (
     <div className="inner-page training-setup-page">
       <div className="inner-page-header training-setup-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
 

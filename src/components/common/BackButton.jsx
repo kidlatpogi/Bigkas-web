@@ -5,7 +5,7 @@ import './BackButton.css';
  * BackButton — reusable circular back navigation button.
  * If `onClick` is provided, calls that; otherwise calls navigate(-1).
  */
-function BackButton({ onClick, label = 'Go back', className = '' }) {
+function BackButton({ onClick, label = 'Go back', className = '', style }) {
   const navigate = useNavigate();
 
   const handleClick = onClick || (() => navigate(-1));
@@ -16,6 +16,7 @@ function BackButton({ onClick, label = 'Go back', className = '' }) {
       className={`back-btn ${className}`.trim()}
       onClick={handleClick}
       aria-label={label}
+      style={style}
     >
       <svg
         width="20"

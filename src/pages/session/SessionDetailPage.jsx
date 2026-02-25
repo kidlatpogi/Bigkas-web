@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { formatDate, formatDuration } from '../../utils/formatters';
 import { buildRoute, getScoreTier, ROUTES } from '../../utils/constants';
+import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
 
@@ -39,7 +40,7 @@ function SessionDetailPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header">
-        <button className="inner-page-back" onClick={() => navigate(-1)}>‹</button>
+        <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Session Detail</h1>
       </div>
 

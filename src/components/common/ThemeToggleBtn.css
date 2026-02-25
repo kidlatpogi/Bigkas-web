@@ -7,7 +7,7 @@
 .theme-toggle-wrap {
   position: fixed;
   top: calc(2.5rem + 40px);
-  right: calc(1.5rem + 20px);
+  right: calc(1.5rem + 40px);
   z-index: 2050;
 }
 
@@ -78,8 +78,8 @@
 /* Mobile — shrink slightly */
 @media (max-width: 640px) {
   .theme-toggle-wrap {
-    top: 0.75rem;
-    right: 0.75rem;
+    top: calc(3rem + 30px);
+    right: 1rem;
   }
   .theme-toggle-btn {
     width: 44px;
