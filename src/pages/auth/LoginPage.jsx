@@ -29,19 +29,17 @@ function LoginPage() {
   const [errors, setErrors] = useState({});
   const [resendLoading, setResendLoading] = useState(false);
   const [showUnverified, setShowUnverified] = useState(false);
-  const [showAccountCreated, setShowAccountCreated] = useState(false);
+  const [showAccountCreated, setShowAccountCreated] = useState(() => Boolean(location.state?.accountCreated));
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
   // Show the "Account created" banner from navigation state, auto-clear after 3s
   useEffect(() => {
-    if (location.state?.accountCreated) {
-      setShowAccountCreated(true);
-      const timer = setTimeout(() => setShowAccountCreated(false), 3000);
-      window.history.replaceState({}, '');
-      return () => clearTimeout(timer);
-    }
-  }, [location.state]);
+    if (!showAccountCreated) return;
+    const timer = setTimeout(() => setShowAccountCreated(false), 3000);
+    window.history.replaceState({}, '');
+    return () => clearTimeout(timer);
+  }, [showAccountCreated]);
 
   // Resend cooldown countdown
   useEffect(() => {
