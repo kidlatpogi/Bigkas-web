@@ -14,7 +14,7 @@ import './AuthPages.css';
  */
 function LoginPage() {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuthContext();
+  const { login, loginWithGoogle, isLoading } = useAuthContext();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -52,6 +52,16 @@ function LoginPage() {
       navigate(ROUTES.DASHBOARD);
     } else {
       setErrors({ submit: result.error });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const result = await loginWithGoogle();
+    if (!result?.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: result?.error || 'Google sign-in failed. Please try again.',
+      }));
     }
   };
 
@@ -141,7 +151,7 @@ function LoginPage() {
             <span className="auth-divider-line" />
           </div>
 
-          <button type="button" className="auth-google-btn" onClick={() => alert('Google Sign-In coming soon!')}>
+          <button type="button" className="auth-google-btn" onClick={handleGoogleSignIn} disabled={isLoading}>
             <img src={googleLogo} alt="Google" className="auth-google-logo" />
             Continue with Google
           </button>

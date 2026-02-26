@@ -7,6 +7,11 @@ import { ENV } from '../config/env';
  */
 const AuthContext = createContext(null);
 
+function getWebRedirectPath(path = '/') {
+  if (typeof window === 'undefined') return undefined;
+  return `${window.location.origin}${path}`;
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,13 +87,56 @@ export function AuthProvider({ children }) {
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: getWebRedirectPath('/login'),
+      },
     });
     setIsLoading(false);
     if (err) { setError(err.message); return { success: false, error: err.message }; }
     if (!data.session) return { success: true, requiresEmailConfirmation: true };
     return { success: true, user: buildUser(data.session) };
   }, [buildUser]);
+
+  /* ── Google OAuth Login ── */
+  const loginWithGoogle = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    const redirectTo = getWebRedirectPath('/dashboard');
+
+    const { error: err } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+      },
+    });
+
+    if (err) {
+      setIsLoading(false);
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
+
+    return { success: true };
+  }, []);
+
+  /* ── Resend verification email ── */
+  const resendVerificationEmail = useCallback(async (email) => {
+    const { error: err } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: getWebRedirectPath('/login'),
+      },
+    });
+
+    if (err) {
+      return { success: false, error: err.message };
+    }
+
+    return { success: true };
+  }, []);
 
   /* ── Logout ── */
   const logout = useCallback(async () => {
@@ -207,6 +255,7 @@ export function AuthProvider({ children }) {
     user, isLoading, isAuthenticated: !!user, error,
     login, logout, register, updateNickname, updateProfile,
     changePassword, uploadAvatar, deleteAccount, clearError,
+    loginWithGoogle, resendVerificationEmail,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

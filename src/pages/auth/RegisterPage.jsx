@@ -14,7 +14,7 @@ import './AuthPages.css';
  */
 function RegisterPage() {
   const navigate = useNavigate();
-  const { register, isLoading } = useAuthContext();
+  const { register, loginWithGoogle, resendVerificationEmail, isLoading } = useAuthContext();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -22,6 +22,7 @@ function RegisterPage() {
     password: '',
   });
   const [errors, setErrors] = useState({});
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,11 +58,54 @@ function RegisterPage() {
       email: formData.email,
       password: formData.password,
     });
+
+    if (result.success && result.requiresEmailConfirmation) {
+      setVerificationSent(true);
+      setErrors({
+        submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
+      });
+      return;
+    }
+
     if (result.success) {
       navigate(ROUTES.DASHBOARD);
     } else {
       setErrors({ submit: result.error });
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const result = await loginWithGoogle();
+    if (!result?.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: result?.error || 'Google sign-in failed. Please try again.',
+      }));
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!formData.email) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: 'Enter your email first to resend verification.',
+      }));
+      return;
+    }
+
+    const result = await resendVerificationEmail(formData.email);
+    if (result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: `Verification email resent to ${formData.email}.`,
+      }));
+      return;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      submit: result.error || 'Unable to resend verification email.',
+    }));
   };
 
   return (
@@ -163,10 +207,21 @@ function RegisterPage() {
             <span className="auth-divider-line" />
           </div>
 
-          <button type="button" className="auth-google-btn" onClick={() => alert('Google Sign-In coming soon!')}>
+          <button type="button" className="auth-google-btn" onClick={handleGoogleSignIn} disabled={isLoading}>
             <img src={googleLogo} alt="Google" className="auth-google-logo" />
             Continue with Google
           </button>
+
+          {verificationSent && (
+            <button
+              type="button"
+              className="auth-submit-btn"
+              onClick={handleResendVerification}
+              disabled={isLoading}
+            >
+              Resend Verification Email
+            </button>
+          )}
 
           <div className="auth-footer">
             <p className="auth-footer-label">ALREADY HAVE AN ACCOUNT?</p>

@@ -41,6 +41,14 @@ let cachedQuote = null;
 let cachedQuoteDateKey = null;
 let quoteRequestPromise = null;
 
+function getLocalDateKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 /**
  * Fetches a daily motivational quote from the backend endpoint.
  * Uses a per-day cache so multiple renders/mounts don't overwrite
@@ -48,7 +56,7 @@ let quoteRequestPromise = null;
  * Falls back to a hardcoded quote on failure.
  */
 async function fetchDailyQuote() {
-  const dateKey = new Date().toISOString().slice(0, 10);
+  const dateKey = getLocalDateKey();
 
   if (cachedQuote && cachedQuoteDateKey === dateKey) {
     return cachedQuote;
@@ -91,12 +99,13 @@ async function fetchDailyQuote() {
 }
 
 /** Deterministic daily selection — same all day, rotates at midnight */
-function getDailyIndex() {
-  const today = new Date();
-  return Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86_400_000);
+function getDailyIndex(dateKey = getLocalDateKey()) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86_400_000);
 }
 
-function getDailyTip() { return TIPS[getDailyIndex() % TIPS.length]; }
+function getDailyTip(dateKey) { return TIPS[getDailyIndex(dateKey) % TIPS.length]; }
 
 /* ─────────────────────────────────────────────────────────────
    DashboardPage — 1:1 copy of the mobile DashboardScreen
@@ -107,9 +116,10 @@ export default function DashboardPage() {
   const { sessions, fetchSessions } = useSessions();
   const [avatarError, setAvatarError] = useState(false);
   const [quote, setQuote] = useState(FALLBACK_QUOTE);
+  const [dateKey, setDateKey] = useState(() => getLocalDateKey());
 
   /* ── Daily content (mobile-synced quote source + deterministic tip) ── */
-  const tip = useMemo(() => getDailyTip(), []);
+  const tip = useMemo(() => getDailyTip(dateKey), [dateKey]);
 
   /* ── Derived display values ── */
   const displayName = user?.nickname || user?.name || 'Speaker';
@@ -167,10 +177,27 @@ export default function DashboardPage() {
     fetchSessions?.();
   }, [fetchSessions]);
 
+  useEffect(() => {
+    const syncDateKey = () => {
+      const nextKey = getLocalDateKey();
+      setDateKey((prevKey) => (prevKey === nextKey ? prevKey : nextKey));
+    };
+
+    const minuteTick = window.setInterval(syncDateKey, 60_000);
+    window.addEventListener('focus', syncDateKey);
+    document.addEventListener('visibilitychange', syncDateKey);
+
+    return () => {
+      window.clearInterval(minuteTick);
+      window.removeEventListener('focus', syncDateKey);
+      document.removeEventListener('visibilitychange', syncDateKey);
+    };
+  }, []);
+
   /* ── Load daily motivation quote (same source/behavior as mobile) ── */
   useEffect(() => {
     fetchDailyQuote().then(setQuote);
-  }, []);
+  }, [dateKey]);
 
   return (
     <div className="dashboard-page-new">
