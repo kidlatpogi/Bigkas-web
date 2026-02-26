@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { ENV } from '../config/env';
 import { initEmailJS, sendVerificationEmail } from '../utils/emailService';
@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   const [error, setError]     = useState(null);
   const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(null);
+  const signupCooldownUntilRef = useRef(0);
 
   const resolveAvatarUrl = useCallback((avatarValue) => {
     if (!avatarValue) return null;
@@ -116,8 +117,17 @@ export function AuthProvider({ children }) {
 
   /* ── Register ── */
   const register = useCallback(async ({ name, firstName, lastName, email, password }) => {
+    const remainingMs = signupCooldownUntilRef.current - Date.now();
+    if (remainingMs > 0) {
+      const waitSeconds = Math.ceil(remainingMs / 1000);
+      const message = `Too many signup attempts. Please wait ${waitSeconds}s and try again.`;
+      setError(message);
+      return { success: false, error: message };
+    }
+
     setIsLoading(true);
     setError(null);
+    const normalizedEmail = (email || '').trim();
     const resolvedFirstName = (firstName || '').trim();
     const resolvedLastName = (lastName || '').trim();
     const resolvedFullName =
@@ -125,7 +135,7 @@ export function AuthProvider({ children }) {
       `${resolvedFirstName} ${resolvedLastName}`.trim();
 
     const { data, error: err } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: {
         data: {
@@ -136,16 +146,27 @@ export function AuthProvider({ children }) {
       },
     });
     setIsLoading(false);
-    if (err) { setError(err.message); return { success: false, error: err.message }; }
+    if (err) {
+      const isRateLimited = err.status === 429 || err.code === 429 || `${err.message || ''}`.includes('429');
+      if (isRateLimited) {
+        signupCooldownUntilRef.current = Date.now() + 30_000;
+        const message = 'Too many signup attempts. Please wait 30 seconds and try again.';
+        setError(message);
+        return { success: false, error: message };
+      }
+
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
     
     if (!data.session) {
       // Email confirmation required - send via EmailJS
       setPendingEmailVerification(true);
-      setPendingEmail(email);
+      setPendingEmail(normalizedEmail);
 
       // Send verification email via EmailJS
       const verificationLink = getWebRedirectPath('/verify-email');
-      const emailResult = await sendVerificationEmail(email, verificationLink);
+      const emailResult = await sendVerificationEmail(normalizedEmail, verificationLink);
       if (!emailResult.success) {
           setError(`Account created but verification email failed: ${emailResult.error}`);
           return { success: true, requiresEmailConfirmation: true, emailSendError: emailResult.error };
@@ -181,9 +202,14 @@ export function AuthProvider({ children }) {
 
   /* ── Resend verification email ── */
   const resendVerificationEmail = useCallback(async (email) => {
+    const normalizedEmail = (email || '').trim();
+    if (!normalizedEmail) {
+      return { success: false, error: 'Enter your email to resend verification.' };
+    }
+
     // Send via EmailJS (our custom service)
     const verificationLink = getWebRedirectPath('/verify-email');
-    const emailResult = await sendVerificationEmail(email, verificationLink);
+    const emailResult = await sendVerificationEmail(normalizedEmail, verificationLink);
     
     if (emailResult.success) {
       return { success: true };
@@ -192,7 +218,7 @@ export function AuthProvider({ children }) {
     // Fallback to Supabase resend
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
-      email,
+      email: normalizedEmail,
     });
 
     if (err) {

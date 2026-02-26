@@ -62,6 +62,10 @@ function RegisterPage() {
     if (!message) return 'Registration failed. Please try again.';
     const normalized = message.toLowerCase();
 
+    if (normalized.includes('too many') || normalized.includes('429') || normalized.includes('rate limit')) {
+      return 'Too many signup attempts. Please wait a bit, then try again.';
+    }
+
     if (normalized.includes('already registered') || normalized.includes('already exists')) {
       return 'This email is already registered. Try logging in instead.';
     }
@@ -79,6 +83,7 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!validateForm()) return;
     const result = await register({
       firstName: formData.firstName,
@@ -113,7 +118,8 @@ function RegisterPage() {
   };
 
   const handleResendVerification = async () => {
-    if (!formData.email) {
+    const email = (formData.email || '').trim();
+    if (!email) {
       setErrors((prev) => ({
         ...prev,
         submit: 'Enter your email first to resend verification.',
@@ -121,11 +127,11 @@ function RegisterPage() {
       return;
     }
 
-    const result = await resendVerificationEmail(formData.email);
+    const result = await resendVerificationEmail(email);
     if (result.success) {
       setErrors((prev) => ({
         ...prev,
-        submit: `Verification email resent to ${formData.email}.`,
+        submit: `Verification email resent to ${email}.`,
       }));
       return;
     }
