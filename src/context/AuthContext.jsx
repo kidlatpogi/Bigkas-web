@@ -144,11 +144,14 @@ export function AuthProvider({ children }) {
       (name || '').trim() ||
       `${resolvedFirstName} ${resolvedLastName}`.trim();
 
+    const emailRedirectTo = getWebRedirectPath('/verify-email');
+
     try {
       const { data, error: err } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
         options: {
+          emailRedirectTo,
           data: {
             full_name: resolvedFullName,
             first_name: resolvedFirstName || undefined,
@@ -180,8 +183,27 @@ export function AuthProvider({ children }) {
         }
 
         // SMTP / email sending failure (500 from Supabase)
+        // The user may have been created but the confirmation email failed.
+        // Try to recover by resending the confirmation email separately.
         if (errStatus === 500 || errMsg.toLowerCase().includes('internal server') || errMsg.toLowerCase().includes('sending confirmation')) {
-          const message = 'Sign-up service is temporarily unavailable. The email service may be experiencing issues. Please try again in a few minutes.';
+          try {
+            const { error: resendErr } = await supabase.auth.resend({
+              type: 'signup',
+              email: normalizedEmail,
+              options: { emailRedirectTo },
+            });
+
+            if (!resendErr) {
+              // Recovery succeeded — the confirmation email was sent
+              setPendingEmailVerification(true);
+              setPendingEmail(normalizedEmail);
+              return { success: true, requiresEmailConfirmation: true };
+            }
+          } catch {
+            // Resend also failed, fall through to error
+          }
+
+          const message = 'Account may have been created but the verification email could not be sent. Please try logging in, or try again in a few minutes.';
           setError(message);
           return { success: false, error: message };
         }
@@ -259,10 +281,13 @@ export function AuthProvider({ children }) {
       return { success: false, error: 'Enter your email to resend verification.' };
     }
 
+    const emailRedirectTo = getWebRedirectPath('/verify-email');
+
     // Resend via Supabase (sends through Brevo SMTP)
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
       email: normalizedEmail,
+      options: { emailRedirectTo },
     });
 
     if (err) {
