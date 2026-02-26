@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
@@ -14,13 +14,25 @@ import './AuthPages.css';
  */
 function LoginPage() {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuthContext();
+  const location = useLocation();
+  const {
+    login,
+    loginWithGoogle,
+    resendVerificationEmail,
+    pendingEmailVerification,
+    pendingEmail,
+    isLoading,
+  } = useAuthContext();
+
+  const verificationEmailFromState = location.state?.verificationEmail || '';
+  const verificationRequiredFromState = !!location.state?.verificationRequired;
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [errors, setErrors] = useState({});
+  const [resendLoading, setResendLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +65,44 @@ function LoginPage() {
     } else {
       setErrors({ submit: result.error });
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const result = await loginWithGoogle();
+    if (!result?.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: result?.error || 'Google sign-in failed. Please try again.',
+      }));
+    }
+  };
+
+  const handleResendVerification = async () => {
+    const email = (pendingEmail || verificationEmailFromState || formData.email || '').trim();
+    if (!email) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: 'Enter your email to resend verification.',
+      }));
+      return;
+    }
+
+    setResendLoading(true);
+    const result = await resendVerificationEmail(email);
+    setResendLoading(false);
+
+    if (result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: `Verification email resent to ${email}.`,
+      }));
+      return;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      submit: result.error || 'Unable to resend verification email.',
+    }));
   };
 
   return (
@@ -94,6 +144,12 @@ function LoginPage() {
               <div className="auth-error-banner">{errors.submit}</div>
             )}
 
+            {(pendingEmailVerification || verificationRequiredFromState) && (
+              <div className="auth-info-banner">
+                Verification required for {pendingEmail || verificationEmailFromState || formData.email}. Please check your email.
+              </div>
+            )}
+
             <div className="form-group">
               <label htmlFor="email" className="form-label">EMAIL ADDRESS</label>
               <input
@@ -133,7 +189,18 @@ function LoginPage() {
             </button>
           </form>
 
-          <Link to="#" className="auth-forgot-link">FORGOT PASSWORD?</Link>
+          {(pendingEmailVerification || verificationRequiredFromState) && (
+            <button
+              type="button"
+              className="auth-submit-btn"
+              onClick={handleResendVerification}
+              disabled={isLoading || resendLoading}
+            >
+              {resendLoading ? 'SENDING...' : 'RESEND VERIFICATION EMAIL'}
+            </button>
+          )}
+
+          <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot-link">FORGOT PASSWORD?</Link>
 
           <div className="auth-divider">
             <span className="auth-divider-line" />
@@ -141,7 +208,7 @@ function LoginPage() {
             <span className="auth-divider-line" />
           </div>
 
-          <button type="button" className="auth-google-btn" onClick={() => alert('Google Sign-In coming soon!')}>
+          <button type="button" className="auth-google-btn" onClick={handleGoogleSignIn} disabled={isLoading}>
             <img src={googleLogo} alt="Google" className="auth-google-logo" />
             Continue with Google
           </button>

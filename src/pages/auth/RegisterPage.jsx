@@ -14,14 +14,17 @@ import './AuthPages.css';
  */
 function RegisterPage() {
   const navigate = useNavigate();
-  const { register, isLoading } = useAuthContext();
+  const { register, loginWithGoogle, resendVerificationEmail, isLoading } = useAuthContext();
 
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,8 +36,11 @@ function RegisterPage() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
     }
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -45,28 +51,140 @@ function RegisterPage() {
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.errors[0];
     }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const mapSignupError = (message) => {
+    if (!message) return 'Registration failed. Please try again.';
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes('too many') || normalized.includes('429') || normalized.includes('rate limit')) {
+      return 'Too many signup attempts. Please wait a bit, then try again.';
+    }
+
+    if (normalized.includes('already registered') || normalized.includes('already exists')) {
+      return 'This email is already registered. Try logging in instead.';
+    }
+
+    if (normalized.includes('password')) {
+      return 'Password does not meet the requirements. Please choose a stronger one.';
+    }
+
+    if (normalized.includes('500') || normalized.includes('internal server')) {
+      return 'Sign-up service is temporarily unavailable. If email confirmation is required, check Supabase email/SMTP settings and try again.';
+    }
+
+    return message;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!validateForm()) return;
     const result = await register({
-      name: formData.name,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
     });
+
+    if (result.success && result.requiresEmailConfirmation) {
+      setShowSuccessModal(true);
+      setErrors({
+        submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
+      });
+      return;
+    }
+
     if (result.success) {
       navigate(ROUTES.DASHBOARD);
     } else {
-      setErrors({ submit: result.error });
+      setErrors({ submit: mapSignupError(result.error) });
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const result = await loginWithGoogle();
+    if (!result?.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: result?.error || 'Google sign-in failed. Please try again.',
+      }));
+    }
+  };
+
+  const handleResendVerification = async () => {
+    const email = (formData.email || '').trim();
+    if (!email) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: 'Enter your email first to resend verification.',
+      }));
+      return;
+    }
+
+    const result = await resendVerificationEmail(email);
+    if (result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: `Verification email resent to ${email}.`,
+      }));
+      return;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      submit: result.error || 'Unable to resend verification email.',
+    }));
+  };
+
+  const handleGoToLogin = () => {
+    setShowSuccessModal(false);
+    navigate(ROUTES.LOGIN, {
+      state: {
+        verificationEmail: formData.email,
+        verificationRequired: true,
+      },
+    });
   };
 
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
+
+      {showSuccessModal && (
+        <div className="auth-modal-backdrop" role="dialog" aria-modal="true">
+          <div className="auth-modal">
+            <h3 className="auth-modal-title">Check your email</h3>
+            <p className="auth-modal-body">
+              We sent a verification link to
+              <span className="auth-modal-highlight"> {formData.email}</span>.
+              Please verify your account to continue.
+            </p>
+            <div className="auth-modal-actions">
+              <button
+                type="button"
+                className="auth-submit-btn"
+                onClick={handleResendVerification}
+                disabled={isLoading}
+              >
+                Resend Email
+              </button>
+              <button
+                type="button"
+                className="auth-submit-btn auth-submit-btn-primary"
+                onClick={handleGoToLogin}
+              >
+                Go to Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
         <BackButton onClick={() => navigate(ROUTES.HOME)} />
@@ -103,19 +221,36 @@ function RegisterPage() {
               <div className="auth-error-banner">{errors.submit}</div>
             )}
 
-            <div className="form-group">
-              <label htmlFor="name" className="form-label">FULL NAME</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className={`form-input ${errors.name ? 'form-input-error' : ''}`}
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="FIRST LAST"
-                disabled={isLoading}
-              />
-              {errors.name && <span className="form-error">{errors.name}</span>}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="firstName" className="form-label">FIRST NAME</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  className={`form-input ${errors.firstName ? 'form-input-error' : ''}`}
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="FIRST"
+                  disabled={isLoading}
+                />
+                {errors.firstName && <span className="form-error">{errors.firstName}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastName" className="form-label">LAST NAME</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  className={`form-input ${errors.lastName ? 'form-input-error' : ''}`}
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="LAST"
+                  disabled={isLoading}
+                />
+                {errors.lastName && <span className="form-error">{errors.lastName}</span>}
+              </div>
             </div>
 
             <div className="form-group">
@@ -148,6 +283,21 @@ function RegisterPage() {
               {errors.password && <span className="form-error">{errors.password}</span>}
             </div>
 
+            <div className="form-group">
+              <label htmlFor="confirmPassword" className="form-label">CONFIRM PASSWORD</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                className={`form-input ${errors.confirmPassword ? 'form-input-error' : ''}`}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                disabled={isLoading}
+              />
+              {errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
+            </div>
+
             <button
               type="submit"
               className="auth-submit-btn"
@@ -163,10 +313,11 @@ function RegisterPage() {
             <span className="auth-divider-line" />
           </div>
 
-          <button type="button" className="auth-google-btn" onClick={() => alert('Google Sign-In coming soon!')}>
+          <button type="button" className="auth-google-btn" onClick={handleGoogleSignIn} disabled={isLoading}>
             <img src={googleLogo} alt="Google" className="auth-google-logo" />
             Continue with Google
           </button>
+
 
           <div className="auth-footer">
             <p className="auth-footer-label">ALREADY HAVE AN ACCOUNT?</p>
