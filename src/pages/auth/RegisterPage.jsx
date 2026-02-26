@@ -21,6 +21,7 @@ function RegisterPage() {
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -49,6 +50,9 @@ function RegisterPage() {
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.errors[0];
+    }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -271,6 +275,21 @@ function RegisterPage() {
                 disabled={isLoading}
               />
               {errors.password && <span className="form-error">{errors.password}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword" className="form-label">CONFIRM PASSWORD</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                className={`form-input ${errors.confirmPassword ? 'form-input-error' : ''}`}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                disabled={isLoading}
+              />
+              {errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
             </div>
 
             <button

@@ -9,6 +9,7 @@ import LandingPage from '../pages/landing/LandingPage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import NicknamePage from '../pages/auth/NicknamePage';
+import VerifyEmailPage from '../pages/auth/VerifyEmailPage';
 
 // Main Pages
 import DashboardPage from '../pages/main/DashboardPage';
@@ -134,6 +135,9 @@ function AppRouter() {
         <Route path={ROUTES.LOGIN}    element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
       </Route>
+
+      {/* Email Verification - accessible anytime */}
+      <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
 
       {/* Nickname Route — authenticated users without a nickname */}
       <Route element={<NicknameRoute />}>

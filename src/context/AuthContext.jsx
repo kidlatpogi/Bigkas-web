@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { ENV } from '../config/env';
+import { initEmailJS, sendVerificationEmail } from '../utils/emailService';
 
 /**
  * Authentication Context — backed by Supabase Auth
@@ -60,6 +61,8 @@ export function AuthProvider({ children }) {
 
   /* ── Restore session on mount ── */
   useEffect(() => {
+    initEmailJS();
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(buildUser(session));
       setIsLoading(false);
@@ -134,9 +137,21 @@ export function AuthProvider({ children }) {
     });
     setIsLoading(false);
     if (err) { setError(err.message); return { success: false, error: err.message }; }
+    
     if (!data.session) {
+      // Email confirmation required - send via EmailJS
       setPendingEmailVerification(true);
       setPendingEmail(email);
+
+      // Send verification email via EmailJS
+      const verificationLink = getWebRedirectPath('/verify-email');
+      const emailResult = await sendVerificationEmail(email, verificationLink);
+      if (!emailResult.success) {
+          setError(`Account created but verification email failed: ${emailResult.error}`);
+          return { success: true, requiresEmailConfirmation: true, emailSendError: emailResult.error };
+        }
+      }
+      
       return { success: true, requiresEmailConfirmation: true };
     }
     return { success: true, user: buildUser(data.session) };
@@ -167,6 +182,15 @@ export function AuthProvider({ children }) {
 
   /* ── Resend verification email ── */
   const resendVerificationEmail = useCallback(async (email) => {
+    // Send via EmailJS (our custom service)
+    const verificationLink = getWebRedirectPath('/verify-email');
+    const emailResult = await sendVerificationEmail(email, verificationLink);
+    
+    if (emailResult.success) {
+      return { success: true };
+    }
+
+    // Fallback to Supabase resend
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
       email,
