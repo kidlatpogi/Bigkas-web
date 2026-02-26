@@ -82,6 +82,7 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!validateForm()) return;
     // Clear all banners when attempting to log in
     setShowUnverified(false);
@@ -193,7 +194,7 @@ function LoginPage() {
             {showUnverified && (
               <div className="auth-unverified-banner">
                 <p className="auth-unverified-text">
-                  Please verify your email address before logging in. Check your inbox and spam folder for the verification link.
+                  Verify your Email Address. Check your inbox and spam folder for the verification link.
                 </p>
                 <button
                   type="button"
