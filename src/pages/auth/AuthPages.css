@@ -150,6 +150,16 @@
   text-align: center;
 }
 
+.auth-info-banner {
+  background-color: rgba(251, 175, 0, 0.08);
+  border: 1px solid rgba(251, 175, 0, 0.4);
+  color: #8A5A00;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -419,6 +429,12 @@
 }
 [data-theme="dark"] .auth-link:hover {
   color: #FBAF00;
+}
+
+[data-theme="dark"] .auth-info-banner {
+  background-color: rgba(251, 175, 0, 0.12);
+  border-color: rgba(251, 175, 0, 0.5);
+  color: #F3C977;
 }
 
 /* ═══════════════════════════════════════════

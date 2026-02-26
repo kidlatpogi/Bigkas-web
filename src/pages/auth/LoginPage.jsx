@@ -14,13 +14,21 @@ import './AuthPages.css';
  */
 function LoginPage() {
   const navigate = useNavigate();
-  const { login, loginWithGoogle, isLoading } = useAuthContext();
+  const {
+    login,
+    loginWithGoogle,
+    resendVerificationEmail,
+    pendingEmailVerification,
+    pendingEmail,
+    isLoading,
+  } = useAuthContext();
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [errors, setErrors] = useState({});
+  const [resendLoading, setResendLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,6 +73,34 @@ function LoginPage() {
     }
   };
 
+  const handleResendVerification = async () => {
+    const email = pendingEmail || formData.email;
+    if (!email) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: 'Enter your email to resend verification.',
+      }));
+      return;
+    }
+
+    setResendLoading(true);
+    const result = await resendVerificationEmail(email);
+    setResendLoading(false);
+
+    if (result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: `Verification email resent to ${email}.`,
+      }));
+      return;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      submit: result.error || 'Unable to resend verification email.',
+    }));
+  };
+
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
@@ -102,6 +138,12 @@ function LoginPage() {
           <form className="auth-form" onSubmit={handleSubmit}>
             {errors.submit && (
               <div className="auth-error-banner">{errors.submit}</div>
+            )}
+
+            {pendingEmailVerification && (
+              <div className="auth-info-banner">
+                Verification required for {pendingEmail || formData.email}. Please check your email.
+              </div>
             )}
 
             <div className="form-group">
@@ -142,6 +184,17 @@ function LoginPage() {
               {isLoading ? 'LOGGING IN...' : 'LOG IN'}
             </button>
           </form>
+
+          {pendingEmailVerification && (
+            <button
+              type="button"
+              className="auth-submit-btn"
+              onClick={handleResendVerification}
+              disabled={isLoading || resendLoading}
+            >
+              {resendLoading ? 'SENDING...' : 'RESEND VERIFICATION EMAIL'}
+            </button>
+          )}
 
           <Link to="#" className="auth-forgot-link">FORGOT PASSWORD?</Link>
 

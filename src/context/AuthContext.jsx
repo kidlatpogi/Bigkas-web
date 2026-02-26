@@ -16,6 +16,8 @@ export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError]     = useState(null);
+  const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState(null);
 
   const resolveAvatarUrl = useCallback((avatarValue) => {
     if (!avatarValue) return null;
@@ -63,8 +65,21 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(buildUser(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const nextUser = buildUser(session);
+      const emailConfirmed = !!session?.user?.email_confirmed_at;
+
+      if (session?.user && !emailConfirmed) {
+        setPendingEmailVerification(true);
+        setPendingEmail(session.user.email || null);
+        setUser(null);
+        await supabase.auth.signOut();
+        return;
+      }
+
+      setPendingEmailVerification(false);
+      setPendingEmail(null);
+      setUser(nextUser);
     });
 
     return () => subscription.unsubscribe();
@@ -77,6 +92,22 @@ export function AuthProvider({ children }) {
     const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
     setIsLoading(false);
     if (err) { setError(err.message); return { success: false, error: err.message }; }
+
+    const emailConfirmed = !!data.user?.email_confirmed_at;
+    if (!emailConfirmed) {
+      setPendingEmailVerification(true);
+      setPendingEmail(email);
+      setError('Please verify your email address before logging in.');
+      await supabase.auth.signOut();
+      return {
+        success: false,
+        error: 'Please verify your email address before logging in.',
+        requiresEmailConfirmation: true,
+      };
+    }
+
+    setPendingEmailVerification(false);
+    setPendingEmail(null);
     return { success: true, user: buildUser(data.session) };
   }, [buildUser]);
 
@@ -103,7 +134,11 @@ export function AuthProvider({ children }) {
     });
     setIsLoading(false);
     if (err) { setError(err.message); return { success: false, error: err.message }; }
-    if (!data.session) return { success: true, requiresEmailConfirmation: true };
+    if (!data.session) {
+      setPendingEmailVerification(true);
+      setPendingEmail(email);
+      return { success: true, requiresEmailConfirmation: true };
+    }
     return { success: true, user: buildUser(data.session) };
   }, [buildUser]);
 
@@ -259,6 +294,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     user, isLoading, isAuthenticated: !!user, error,
+    pendingEmailVerification, pendingEmail,
     login, logout, register, updateNickname, updateProfile,
     changePassword, uploadAvatar, deleteAccount, clearError,
     loginWithGoogle, resendVerificationEmail,
