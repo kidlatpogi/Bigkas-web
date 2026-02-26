@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
   const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(null);
   const signupCooldownUntilRef = useRef(0);
+  const signupInProgressRef = useRef(false);
 
   const resolveAvatarUrl = useCallback((avatarValue) => {
     if (!avatarValue) return null;
@@ -79,6 +80,10 @@ export function AuthProvider({ children }) {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      // Skip auth state changes while signup is in progress to prevent race conditions
+      // that would reset pendingEmailVerification or cause unwanted navigation
+      if (signupInProgressRef.current) return;
+
       const nextUser = buildUser(session);
       const emailConfirmed = !!session?.user?.email_confirmed_at;
 
@@ -137,6 +142,7 @@ export function AuthProvider({ children }) {
 
     setIsLoading(true);
     setError(null);
+    signupInProgressRef.current = true;
     const normalizedEmail = (email || '').trim();
     const resolvedFirstName = (firstName || '').trim();
     const resolvedLastName = (lastName || '').trim();
@@ -248,6 +254,9 @@ export function AuthProvider({ children }) {
       const errorMsg = 'An unexpected error occurred during sign-up. Please try again.';
       setError(errorMsg);
       return { success: false, error: errorMsg };
+    } finally {
+      // Reset flag after a short delay to let any pending auth events settle
+      setTimeout(() => { signupInProgressRef.current = false; }, 3000);
     }
   }, [buildUser]);
 
