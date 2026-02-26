@@ -58,6 +58,9 @@ function LoginPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (showAccountCreated) {
+      setShowAccountCreated(false);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
@@ -94,6 +97,7 @@ function LoginPage() {
     } else if (result.requiresEmailConfirmation) {
       // User account exists but email is not verified
       setShowUnverified(true);
+      setFormData({ email: '', password: '' });
     } else {
       setErrors({ submit: result.error });
     }
