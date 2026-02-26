@@ -150,7 +150,6 @@ export function AuthProvider({ children }) {
           setError(`Account created but verification email failed: ${emailResult.error}`);
           return { success: true, requiresEmailConfirmation: true, emailSendError: emailResult.error };
         }
-      }
       
       return { success: true, requiresEmailConfirmation: true };
     }
