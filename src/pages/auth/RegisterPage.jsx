@@ -23,7 +23,7 @@ function RegisterPage() {
     password: '',
   });
   const [errors, setErrors] = useState({});
-  const [verificationSent, setVerificationSent] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +54,25 @@ function RegisterPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const mapSignupError = (message) => {
+    if (!message) return 'Registration failed. Please try again.';
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes('already registered') || normalized.includes('already exists')) {
+      return 'This email is already registered. Try logging in instead.';
+    }
+
+    if (normalized.includes('password')) {
+      return 'Password does not meet the requirements. Please choose a stronger one.';
+    }
+
+    if (normalized.includes('500') || normalized.includes('internal server')) {
+      return 'Sign-up service is temporarily unavailable. If email confirmation is required, check Supabase email/SMTP settings and try again.';
+    }
+
+    return message;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -65,7 +84,7 @@ function RegisterPage() {
     });
 
     if (result.success && result.requiresEmailConfirmation) {
-      setVerificationSent(true);
+      setShowSuccessModal(true);
       setErrors({
         submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
       });
@@ -75,7 +94,7 @@ function RegisterPage() {
     if (result.success) {
       navigate(ROUTES.DASHBOARD);
     } else {
-      setErrors({ submit: result.error });
+      setErrors({ submit: mapSignupError(result.error) });
     }
   };
 
@@ -113,9 +132,49 @@ function RegisterPage() {
     }));
   };
 
+  const handleGoToLogin = () => {
+    setShowSuccessModal(false);
+    navigate(ROUTES.LOGIN, {
+      state: {
+        verificationEmail: formData.email,
+        verificationRequired: true,
+      },
+    });
+  };
+
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
+
+      {showSuccessModal && (
+        <div className="auth-modal-backdrop" role="dialog" aria-modal="true">
+          <div className="auth-modal">
+            <h3 className="auth-modal-title">Check your email</h3>
+            <p className="auth-modal-body">
+              We sent a verification link to
+              <span className="auth-modal-highlight"> {formData.email}</span>.
+              Please verify your account to continue.
+            </p>
+            <div className="auth-modal-actions">
+              <button
+                type="button"
+                className="auth-submit-btn"
+                onClick={handleResendVerification}
+                disabled={isLoading}
+              >
+                Resend Email
+              </button>
+              <button
+                type="button"
+                className="auth-submit-btn auth-submit-btn-primary"
+                onClick={handleGoToLogin}
+              >
+                Go to Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
         <BackButton onClick={() => navigate(ROUTES.HOME)} />
@@ -234,16 +293,6 @@ function RegisterPage() {
             Continue with Google
           </button>
 
-          {verificationSent && (
-            <button
-              type="button"
-              className="auth-submit-btn"
-              onClick={handleResendVerification}
-              disabled={isLoading}
-            >
-              Resend Verification Email
-            </button>
-          )}
 
           <div className="auth-footer">
             <p className="auth-footer-label">ALREADY HAVE AN ACCOUNT?</p>

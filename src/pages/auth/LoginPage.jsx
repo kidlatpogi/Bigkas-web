@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
@@ -14,6 +14,7 @@ import './AuthPages.css';
  */
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     login,
     loginWithGoogle,
@@ -22,6 +23,9 @@ function LoginPage() {
     pendingEmail,
     isLoading,
   } = useAuthContext();
+
+  const verificationEmailFromState = location.state?.verificationEmail || '';
+  const verificationRequiredFromState = !!location.state?.verificationRequired;
 
   const [formData, setFormData] = useState({
     email: '',
@@ -74,7 +78,7 @@ function LoginPage() {
   };
 
   const handleResendVerification = async () => {
-    const email = pendingEmail || formData.email;
+    const email = pendingEmail || verificationEmailFromState || formData.email;
     if (!email) {
       setErrors((prev) => ({
         ...prev,
@@ -140,9 +144,9 @@ function LoginPage() {
               <div className="auth-error-banner">{errors.submit}</div>
             )}
 
-            {pendingEmailVerification && (
+            {(pendingEmailVerification || verificationRequiredFromState) && (
               <div className="auth-info-banner">
-                Verification required for {pendingEmail || formData.email}. Please check your email.
+                Verification required for {pendingEmail || verificationEmailFromState || formData.email}. Please check your email.
               </div>
             )}
 
@@ -185,7 +189,7 @@ function LoginPage() {
             </button>
           </form>
 
-          {pendingEmailVerification && (
+          {(pendingEmailVerification || verificationRequiredFromState) && (
             <button
               type="button"
               className="auth-submit-btn"
