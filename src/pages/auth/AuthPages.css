@@ -156,6 +156,12 @@
   gap: 6px;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .form-label {
   font-size: 12px;
   font-weight: 600;
@@ -431,6 +437,11 @@
 }
 
 @media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
   .auth-form-panel {
     padding: 24px 16px;
   }

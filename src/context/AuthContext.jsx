@@ -81,15 +81,24 @@ export function AuthProvider({ children }) {
   }, [buildUser]);
 
   /* ── Register ── */
-  const register = useCallback(async ({ name, email, password }) => {
+  const register = useCallback(async ({ name, firstName, lastName, email, password }) => {
     setIsLoading(true);
     setError(null);
+    const resolvedFirstName = (firstName || '').trim();
+    const resolvedLastName = (lastName || '').trim();
+    const resolvedFullName =
+      (name || '').trim() ||
+      `${resolvedFirstName} ${resolvedLastName}`.trim();
+
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: name },
-        emailRedirectTo: getWebRedirectPath('/login'),
+        data: {
+          full_name: resolvedFullName,
+          first_name: resolvedFirstName || undefined,
+          last_name: resolvedLastName || undefined,
+        },
       },
     });
     setIsLoading(false);
@@ -126,9 +135,6 @@ export function AuthProvider({ children }) {
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
       email,
-      options: {
-        emailRedirectTo: getWebRedirectPath('/login'),
-      },
     });
 
     if (err) {

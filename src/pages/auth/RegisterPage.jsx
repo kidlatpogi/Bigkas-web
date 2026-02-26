@@ -17,7 +17,8 @@ function RegisterPage() {
   const { register, loginWithGoogle, resendVerificationEmail, isLoading } = useAuthContext();
 
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
   });
@@ -34,8 +35,11 @@ function RegisterPage() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
     }
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -54,7 +58,8 @@ function RegisterPage() {
     e.preventDefault();
     if (!validateForm()) return;
     const result = await register({
-      name: formData.name,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       email: formData.email,
       password: formData.password,
     });
@@ -147,19 +152,36 @@ function RegisterPage() {
               <div className="auth-error-banner">{errors.submit}</div>
             )}
 
-            <div className="form-group">
-              <label htmlFor="name" className="form-label">FULL NAME</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className={`form-input ${errors.name ? 'form-input-error' : ''}`}
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="FIRST LAST"
-                disabled={isLoading}
-              />
-              {errors.name && <span className="form-error">{errors.name}</span>}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="firstName" className="form-label">FIRST NAME</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  className={`form-input ${errors.firstName ? 'form-input-error' : ''}`}
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="FIRST"
+                  disabled={isLoading}
+                />
+                {errors.firstName && <span className="form-error">{errors.firstName}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastName" className="form-label">LAST NAME</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  className={`form-input ${errors.lastName ? 'form-input-error' : ''}`}
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="LAST"
+                  disabled={isLoading}
+                />
+                {errors.lastName && <span className="form-error">{errors.lastName}</span>}
+              </div>
             </div>
 
             <div className="form-group">
