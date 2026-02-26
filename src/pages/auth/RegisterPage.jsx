@@ -63,19 +63,27 @@ function RegisterPage() {
     const normalized = message.toLowerCase();
 
     if (normalized.includes('too many') || normalized.includes('429') || normalized.includes('rate limit')) {
-      return 'Too many signup attempts. Please wait a bit, then try again.';
+      return 'Too many signup attempts. Please wait a minute and try again.';
     }
 
-    if (normalized.includes('already registered') || normalized.includes('already exists')) {
+    if (normalized.includes('already registered') || normalized.includes('already exists') || normalized.includes('already been registered')) {
       return 'This email is already registered. Try logging in instead.';
     }
 
     if (normalized.includes('password')) {
-      return 'Password does not meet the requirements. Please choose a stronger one.';
+      return 'Password does not meet the requirements. Use at least 8 characters with a mix of letters and numbers.';
     }
 
-    if (normalized.includes('500') || normalized.includes('internal server')) {
-      return 'Sign-up service is temporarily unavailable. If email confirmation is required, check Supabase email/SMTP settings and try again.';
+    if (normalized.includes('500') || normalized.includes('internal server') || normalized.includes('unavailable') || normalized.includes('email service')) {
+      return 'The sign-up service is temporarily unavailable. This can happen when the email verification service is unreachable. Please try again in a few minutes.';
+    }
+
+    if (normalized.includes('network') || normalized.includes('fetch') || normalized.includes('internet')) {
+      return 'Unable to reach the server. Please check your internet connection and try again.';
+    }
+
+    if (normalized.includes('invalid') && normalized.includes('email')) {
+      return 'Please enter a valid email address.';
     }
 
     return message;
@@ -85,25 +93,32 @@ function RegisterPage() {
     e.preventDefault();
     if (isLoading) return;
     if (!validateForm()) return;
-    const result = await register({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      password: formData.password,
-    });
 
-    if (result.success && result.requiresEmailConfirmation) {
-      setShowSuccessModal(true);
-      setErrors({
-        submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
+    try {
+      const result = await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
       });
-      return;
-    }
 
-    if (result.success) {
-      navigate(ROUTES.DASHBOARD);
-    } else {
+      if (result.success) {
+        // Account created — redirect to login immediately
+        navigate(ROUTES.LOGIN, {
+          state: {
+            verificationEmail: formData.email,
+            verificationRequired: true,
+            accountCreated: true,
+          },
+        });
+        return;
+      }
+
       setErrors({ submit: mapSignupError(result.error) });
+    } catch (unexpectedError) {
+      setErrors({
+        submit: 'An unexpected error occurred. Please try again or contact support if the issue persists.',
+      });
     }
   };
 
@@ -148,6 +163,7 @@ function RegisterPage() {
       state: {
         verificationEmail: formData.email,
         verificationRequired: true,
+        accountCreated: true,
       },
     });
   };
@@ -159,27 +175,33 @@ function RegisterPage() {
       {showSuccessModal && (
         <div className="auth-modal-backdrop" role="dialog" aria-modal="true">
           <div className="auth-modal">
-            <h3 className="auth-modal-title">Check your email</h3>
+            <div className="forgot-success-icon" style={{ marginBottom: 16 }}>
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="23" stroke="#FBAF00" strokeWidth="2" />
+                <path d="M14 24l7 7 13-13" stroke="#FBAF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h3 className="auth-modal-title">Account Created!</h3>
             <p className="auth-modal-body">
-              We sent a verification link to
-              <span className="auth-modal-highlight"> {formData.email}</span>.
-              Please verify your account to continue.
+              Your account has been successfully created.
+              {formData.email && (
+                <>
+                  {' '}A verification email has been sent to
+                  <span className="auth-modal-highlight"> {formData.email}</span>.
+                  Please check your inbox and verify your email before logging in.
+                </>
+              )}
+            </p>
+            <p className="auth-modal-body" style={{ fontSize: 12, color: '#8C8C8C' }}>
+              Redirecting to login in a few seconds...
             </p>
             <div className="auth-modal-actions">
-              <button
-                type="button"
-                className="auth-submit-btn"
-                onClick={handleResendVerification}
-                disabled={isLoading}
-              >
-                Resend Email
-              </button>
               <button
                 type="button"
                 className="auth-submit-btn auth-submit-btn-primary"
                 onClick={handleGoToLogin}
               >
-                Go to Login
+                Go to Login Now
               </button>
             </div>
           </div>

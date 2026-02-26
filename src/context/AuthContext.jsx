@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
   const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(null);
   const signupCooldownUntilRef = useRef(0);
+  const signupInProgressRef = useRef(false);
 
   const resolveAvatarUrl = useCallback((avatarValue) => {
     if (!avatarValue) return null;
@@ -79,6 +80,10 @@ export function AuthProvider({ children }) {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      // Skip auth state changes while signup is in progress to prevent race conditions
+      // that would reset pendingEmailVerification or cause unwanted navigation
+      if (signupInProgressRef.current) return;
+
       const nextUser = buildUser(session);
       const emailConfirmed = !!session?.user?.email_confirmed_at;
 
@@ -104,17 +109,46 @@ export function AuthProvider({ children }) {
     setError(null);
     const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
     setIsLoading(false);
-    if (err) { setError(err.message); return { success: false, error: err.message }; }
+
+    if (err) {
+      const msg = (err.message || '').toLowerCase();
+
+      // Email not confirmed — Supabase returns 400 with this message
+      if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
+        setPendingEmailVerification(true);
+        setPendingEmail(email);
+        const message = 'Your email has not been verified yet. Please check your inbox for the verification link.';
+        setError(message);
+        return { success: false, error: message, requiresEmailConfirmation: true };
+      }
+
+      // Wrong email/password
+      if (msg.includes('invalid login') || msg.includes('invalid credentials') || msg.includes('invalid email or password')) {
+        const message = 'Incorrect email or password. Please try again.';
+        setError(message);
+        return { success: false, error: message };
+      }
+
+      // Rate limited
+      if (msg.includes('too many') || msg.includes('rate limit')) {
+        const message = 'Too many login attempts. Please wait a moment and try again.';
+        setError(message);
+        return { success: false, error: message };
+      }
+
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
 
     const emailConfirmed = !!data.user?.email_confirmed_at;
     if (!emailConfirmed) {
       setPendingEmailVerification(true);
       setPendingEmail(email);
-      setError('Please verify your email address before logging in.');
+      setError('Your email has not been verified yet. Please check your inbox for the verification link.');
       await supabase.auth.signOut();
       return {
         success: false,
-        error: 'Please verify your email address before logging in.',
+        error: 'Your email has not been verified yet. Please check your inbox for the verification link.',
         requiresEmailConfirmation: true,
       };
     }
@@ -137,6 +171,7 @@ export function AuthProvider({ children }) {
 
     setIsLoading(true);
     setError(null);
+    signupInProgressRef.current = true;
     const normalizedEmail = (email || '').trim();
     const resolvedFirstName = (firstName || '').trim();
     const resolvedLastName = (lastName || '').trim();
@@ -144,40 +179,130 @@ export function AuthProvider({ children }) {
       (name || '').trim() ||
       `${resolvedFirstName} ${resolvedLastName}`.trim();
 
-    const { data, error: err } = await supabase.auth.signUp({
-      email: normalizedEmail,
-      password,
-      options: {
-        data: {
-          full_name: resolvedFullName,
-          first_name: resolvedFirstName || undefined,
-          last_name: resolvedLastName || undefined,
+    const emailRedirectTo = getWebRedirectPath('/verify-email');
+
+    try {
+      // Race the signup against a 15-second timeout.
+      // When Supabase's SMTP hangs (trying to send confirmation email),
+      // the signUp() promise never resolves — this prevents infinite loading.
+      const signupPromise = supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          emailRedirectTo,
+          data: {
+            full_name: resolvedFullName,
+            first_name: resolvedFirstName || undefined,
+            last_name: resolvedLastName || undefined,
+          },
         },
-      },
-    });
-    setIsLoading(false);
-    if (err) {
-      const isRateLimited = err.status === 429 || err.code === 429 || `${err.message || ''}`.includes('429');
-      if (isRateLimited) {
-        const cooldownUntilTs = Date.now() + 60_000;
-        signupCooldownUntilRef.current = cooldownUntilTs;
-        setSignupCooldownUntil(cooldownUntilTs);
-        const message = 'Too many signup attempts. Please wait 60 seconds and try again.';
+      });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('SIGNUP_TIMEOUT')), 15000)
+      );
+
+      const { data, error: err } = await Promise.race([signupPromise, timeoutPromise]);
+      setIsLoading(false);
+
+      if (err) {
+        const errMsg = err.message || '';
+        const errStatus = err.status || err?.code || 0;
+
+        // Rate-limited
+        if (errStatus === 429 || `${errMsg}`.includes('429') || errMsg.toLowerCase().includes('rate limit') || errMsg.toLowerCase().includes('too many')) {
+          const cooldownUntilTs = Date.now() + 60_000;
+          signupCooldownUntilRef.current = cooldownUntilTs;
+          setSignupCooldownUntil(cooldownUntilTs);
+          const message = 'Too many signup attempts. Please wait 60 seconds and try again.';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // Already registered
+        if (errMsg.toLowerCase().includes('already registered') || errMsg.toLowerCase().includes('already exists') || errMsg.toLowerCase().includes('already been registered')) {
+          const message = 'This email is already registered. Try logging in instead.';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // SMTP / email sending failure (500 from Supabase)
+        // The user may have been created but the confirmation email failed.
+        // Try to recover by resending the confirmation email separately.
+        if (errStatus === 500 || errMsg.toLowerCase().includes('internal server') || errMsg.toLowerCase().includes('sending confirmation')) {
+          try {
+            const { error: resendErr } = await supabase.auth.resend({
+              type: 'signup',
+              email: normalizedEmail,
+              options: { emailRedirectTo },
+            });
+
+            if (!resendErr) {
+              // Recovery succeeded — the confirmation email was sent
+              setPendingEmailVerification(true);
+              setPendingEmail(normalizedEmail);
+              return { success: true, requiresEmailConfirmation: true };
+            }
+          } catch {
+            // Resend also failed, fall through to error
+          }
+
+          const message = 'Account may have been created but the verification email could not be sent. Please try logging in, or try again in a few minutes.';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // Password too weak
+        if (errMsg.toLowerCase().includes('password')) {
+          const message = 'Password does not meet the requirements. Please choose a stronger password (at least 8 characters).';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // Generic fallback
+        setError(errMsg);
+        return { success: false, error: errMsg };
+      }
+
+      // Supabase returns data.user but with a fake session for already-existing unconfirmed users
+      // Check if user already existed (identities array is empty)
+      if (data?.user?.identities?.length === 0) {
+        const message = 'An account with this email already exists. Please log in or check your email for a verification link.';
         setError(message);
         return { success: false, error: message };
       }
 
-      setError(err.message);
-      return { success: false, error: err.message };
-    }
+      if (!data.session) {
+        // Email confirmation required — Supabase sends via Brevo SMTP
+        setPendingEmailVerification(true);
+        setPendingEmail(normalizedEmail);
+        return { success: true, requiresEmailConfirmation: true };
+      }
+      return { success: true, user: buildUser(data.session) };
+    } catch (networkError) {
+      setIsLoading(false);
+      const message = networkError?.message || '';
 
-    if (!data.session) {
-      // Email confirmation required — Supabase sends via Brevo SMTP
-      setPendingEmailVerification(true);
-      setPendingEmail(normalizedEmail);
-      return { success: true, requiresEmailConfirmation: true };
+      // Signup request timed out — SMTP is likely hanging
+      if (message === 'SIGNUP_TIMEOUT') {
+        const errorMsg = 'Account creation is taking too long (email service may be slow). Your account may have been created — try logging in. If not, please try again.';
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      if (message.toLowerCase().includes('fetch') || message.toLowerCase().includes('network') || message.toLowerCase().includes('failed')) {
+        const errorMsg = 'Network error. Please check your internet connection and try again.';
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      const errorMsg = 'An unexpected error occurred during sign-up. Please try again.';
+      setError(errorMsg);
+      return { success: false, error: errorMsg };
+    } finally {
+      // Reset flag after a short delay to let any pending auth events settle
+      setTimeout(() => { signupInProgressRef.current = false; }, 3000);
     }
-    return { success: true, user: buildUser(data.session) };
   }, [buildUser]);
 
   /* ── Google OAuth Login ── */
@@ -210,10 +335,13 @@ export function AuthProvider({ children }) {
       return { success: false, error: 'Enter your email to resend verification.' };
     }
 
+    const emailRedirectTo = getWebRedirectPath('/verify-email');
+
     // Resend via Supabase (sends through Brevo SMTP)
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
       email: normalizedEmail,
+      options: { emailRedirectTo },
     });
 
     if (err) {
