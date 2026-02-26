@@ -31,17 +31,32 @@ function LoginPage() {
   const [showUnverified, setShowUnverified] = useState(false);
   const [showAccountCreated, setShowAccountCreated] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   // Show the "Account created" banner from navigation state, auto-clear after 3s
   useEffect(() => {
     if (location.state?.accountCreated) {
       setShowAccountCreated(true);
       const timer = setTimeout(() => setShowAccountCreated(false), 3000);
-      // Clear the location state so it doesn't persist on back/forward
       window.history.replaceState({}, '');
       return () => clearTimeout(timer);
     }
   }, [location.state]);
+
+  // Resend cooldown countdown
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,6 +87,7 @@ function LoginPage() {
     setShowUnverified(false);
     setShowAccountCreated(false);
     setResendSuccess(false);
+    setErrors({});
 
     const result = await login(formData.email, formData.password);
     if (result.success) {
@@ -79,7 +95,6 @@ function LoginPage() {
     } else if (result.requiresEmailConfirmation) {
       // User account exists but email is not verified
       setShowUnverified(true);
-      setErrors({});
     } else {
       setErrors({ submit: result.error });
     }
@@ -96,6 +111,8 @@ function LoginPage() {
   };
 
   const handleResendVerification = async () => {
+    if (resendCooldown > 0) return;
+
     const email = (formData.email || '').trim();
     if (!email) {
       setErrors((prev) => ({
@@ -111,8 +128,7 @@ function LoginPage() {
 
     if (result.success) {
       setResendSuccess(true);
-      setErrors({});
-      // Auto-clear success after 5 seconds
+      setResendCooldown(60);
       setTimeout(() => setResendSuccess(false), 5000);
       return;
     }
@@ -158,11 +174,7 @@ function LoginPage() {
           <h2 className="auth-form-title">LOG IN</h2>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            {errors.submit && (
-              <div className="auth-error-banner">{errors.submit}</div>
-            )}
-
-            {showAccountCreated && !showUnverified && (
+            {showAccountCreated && !showUnverified && !errors.submit && (
               <div className="auth-success-banner">
                 Account created successfully! Please check your email to verify your account before logging in.
               </div>
@@ -174,18 +186,26 @@ function LoginPage() {
               </div>
             )}
 
+            {errors.submit && !showUnverified && (
+              <div className="auth-error-banner">{errors.submit}</div>
+            )}
+
             {showUnverified && (
               <div className="auth-unverified-banner">
                 <p className="auth-unverified-text">
-                  Email verification is required. Please check your inbox (and spam folder) for the verification link.
+                  Please verify your email address before logging in. Check your inbox and spam folder for the verification link.
                 </p>
                 <button
                   type="button"
                   className="auth-resend-btn"
                   onClick={handleResendVerification}
-                  disabled={resendLoading}
+                  disabled={resendLoading || resendCooldown > 0}
                 >
-                  {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                  {resendLoading
+                    ? 'Sending...'
+                    : resendCooldown > 0
+                      ? `Resend available in ${resendCooldown}s`
+                      : 'Resend Verification Email'}
                 </button>
               </div>
             )}
