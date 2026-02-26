@@ -1,41 +1,67 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from fastapi import APIRouter
-import httpx
 
 
 router = APIRouter(prefix="/content", tags=["Content"])
 
 
-DEFAULT_QUOTE = {
-    "text": "Courage is what it takes to stand up and speak.",
-    "author": "Winston Churchill",
-}
+DAILY_QUOTES = [
+    {
+        "text": "Courage is what it takes to stand up and speak.",
+        "author": "Winston Churchill",
+    },
+    {
+        "text": "The way to get started is to quit talking and begin doing.",
+        "author": "Walt Disney",
+    },
+    {
+        "text": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+        "author": "Winston Churchill",
+    },
+    {
+        "text": "Believe you can and you're halfway there.",
+        "author": "Theodore Roosevelt",
+    },
+    {
+        "text": "Do one thing every day that scares you.",
+        "author": "Eleanor Roosevelt",
+    },
+    {
+        "text": "Start where you are. Use what you have. Do what you can.",
+        "author": "Arthur Ashe",
+    },
+    {
+        "text": "Act as if what you do makes a difference. It does.",
+        "author": "William James",
+    },
+    {
+        "text": "You don't have to be great to start, but you have to start to be great.",
+        "author": "Zig Ziglar",
+    },
+    {
+        "text": "Great things are done by a series of small things brought together.",
+        "author": "Vincent van Gogh",
+    },
+    {
+        "text": "The future depends on what you do today.",
+        "author": "Mahatma Gandhi",
+    },
+]
+
+
+def _daily_index_utc() -> int:
+    today_utc = datetime.now(timezone.utc).date()
+    return today_utc.toordinal() % len(DAILY_QUOTES)
 
 
 @router.get("/daily-quote")
 async def get_daily_quote():
-    """Returns the same daily motivation source used by mobile (ZenQuotes)."""
-    try:
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            response = await client.get("https://zenquotes.io/api/today")
-            response.raise_for_status()
-            data = response.json()
-
-        if isinstance(data, list) and len(data) > 0:
-            quote = data[0]
-            text = quote.get("q")
-            author = quote.get("a")
-            if text and author:
-                return {
-                    "text": text,
-                    "author": author,
-                    "source": "zenquotes",
-                }
-    except Exception:
-        pass
-
+    quote = DAILY_QUOTES[_daily_index_utc()]
     return {
-        **DEFAULT_QUOTE,
-        "source": "fallback",
+        "text": quote["text"],
+        "author": quote["author"],
+        "source": "bigkas-static-daily",
     }
