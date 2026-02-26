@@ -229,16 +229,6 @@ function LoginPage() {
             </button>
           </form>
 
-          {(pendingEmailVerification || verificationRequiredFromState) && (
-            <button
-              type="button"
-              className="auth-submit-btn"
-              onClick={handleResendVerification}
-              disabled={isLoading || resendLoading}
-            >
-              {resendLoading ? 'SENDING...' : 'RESEND VERIFICATION EMAIL'}
-            </button>
-          )}
 
           <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot-link">FORGOT PASSWORD?</Link>
 
