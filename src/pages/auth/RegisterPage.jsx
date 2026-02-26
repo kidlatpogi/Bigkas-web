@@ -103,20 +103,14 @@ function RegisterPage() {
       });
 
       if (result.success) {
-        // Account created — show success modal and auto-redirect to login
-        setShowSuccessModal(true);
-        setErrors({});
-
-        // Auto-redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate(ROUTES.LOGIN, {
-            state: {
-              verificationEmail: formData.email,
-              verificationRequired: true,
-              accountCreated: true,
-            },
-          });
-        }, 3000);
+        // Account created — redirect to login immediately
+        navigate(ROUTES.LOGIN, {
+          state: {
+            verificationEmail: formData.email,
+            verificationRequired: true,
+            accountCreated: true,
+          },
+        });
         return;
       }
 

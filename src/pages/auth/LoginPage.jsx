@@ -34,6 +34,8 @@ function LoginPage() {
   });
   const [errors, setErrors] = useState({});
   const [resendLoading, setResendLoading] = useState(false);
+  const [showUnverified, setShowUnverified] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,9 +62,15 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    setShowUnverified(false);
     const result = await login(formData.email, formData.password);
     if (result.success) {
       navigate(ROUTES.DASHBOARD);
+    } else if (result.requiresEmailConfirmation) {
+      // User account exists but email is not verified
+      setShowUnverified(true);
+      setUnverifiedEmail(formData.email);
+      setErrors({});
     } else {
       setErrors({ submit: result.error });
     }
@@ -145,13 +153,29 @@ function LoginPage() {
               <div className="auth-error-banner">{errors.submit}</div>
             )}
 
-            {accountCreatedFromState && (
+            {accountCreatedFromState && !showUnverified && (
               <div className="auth-success-banner">
                 Account created successfully! Please check your email to verify your account before logging in.
               </div>
             )}
 
-            {(pendingEmailVerification || verificationRequiredFromState) && !accountCreatedFromState && (
+            {showUnverified && (
+              <div className="auth-unverified-banner">
+                <p className="auth-unverified-text">
+                  Your email <strong>{unverifiedEmail}</strong> has not been verified yet. Please check your inbox (and spam folder) for the verification link.
+                </p>
+                <button
+                  type="button"
+                  className="auth-resend-btn"
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                >
+                  {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                </button>
+              </div>
+            )}
+
+            {(pendingEmailVerification || verificationRequiredFromState) && !accountCreatedFromState && !showUnverified && (
               <div className="auth-info-banner">
                 Verification required for {pendingEmail || verificationEmailFromState || formData.email}. Please check your email.
               </div>
