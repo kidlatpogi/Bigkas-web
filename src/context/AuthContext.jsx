@@ -24,8 +24,67 @@ function setSignupCooldownUntil(untilTs) {
   window.localStorage.setItem(SIGNUP_COOLDOWN_KEY, String(untilTs));
 }
 
+function normalizeLoginError(err, email) {
+  const rawMessage = (err?.message || '').trim();
+  const msg = rawMessage.toLowerCase();
+  const code = (err?.code || '').toLowerCase();
+
+  if (
+    msg.includes('email not confirmed') ||
+    msg.includes('not confirmed') ||
+    code.includes('email_not_confirmed')
+  ) {
+    return {
+      code: 'email_not_confirmed',
+      message: 'Verify your email address first. Then click resend email below if you need a new link.',
+      requiresEmailConfirmation: true,
+      pendingEmail: email,
+    };
+  }
+
+  if (
+    msg.includes('user not found') ||
+    msg.includes('no user') ||
+    msg.includes('email not found')
+  ) {
+    return {
+      code: 'account_not_found',
+      message: 'No account found for this email address.',
+      requiresEmailConfirmation: false,
+    };
+  }
+
+  if (
+    msg.includes('invalid login') ||
+    msg.includes('invalid credentials') ||
+    msg.includes('invalid email or password') ||
+    code.includes('invalid_credentials')
+  ) {
+    return {
+      code: 'invalid_credentials',
+      message: 'Wrong email or password, or no account found for this email.',
+      requiresEmailConfirmation: false,
+    };
+  }
+
+  if (msg.includes('too many') || msg.includes('rate limit') || err?.status === 429) {
+    return {
+      code: 'rate_limited',
+      message: 'Too many login attempts. Please wait a moment and try again.',
+      requiresEmailConfirmation: false,
+    };
+  }
+
+  return {
+    code: 'unknown_auth_error',
+    message: rawMessage || 'Unable to log in right now. Please try again.',
+    requiresEmailConfirmation: false,
+  };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
@@ -77,6 +136,10 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(buildUser(session));
       setIsLoading(false);
+      setIsInitializing(false);
+    }).catch(() => {
+      setIsLoading(false);
+      setIsInitializing(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -107,55 +170,64 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     setIsLoading(true);
     setError(null);
-    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
-    setIsLoading(false);
 
-    if (err) {
-      const msg = (err.message || '').toLowerCase();
+    try {
+      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
+      setIsLoading(false);
 
-      // Email not confirmed — Supabase returns 400 with this message
-      if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
+      if (err) {
+        const normalizedError = normalizeLoginError(err, email);
+
+        if (normalizedError.requiresEmailConfirmation) {
+          setPendingEmailVerification(true);
+          setPendingEmail(normalizedError.pendingEmail || email);
+          setError(normalizedError.message);
+          return {
+            success: false,
+            code: normalizedError.code,
+            error: normalizedError.message,
+            requiresEmailConfirmation: true,
+          };
+        }
+
+        setError(normalizedError.message);
+        return {
+          success: false,
+          code: normalizedError.code,
+          error: normalizedError.message,
+          requiresEmailConfirmation: false,
+        };
+      }
+
+      const emailConfirmed = !!data.user?.email_confirmed_at;
+      if (!emailConfirmed) {
         setPendingEmailVerification(true);
         setPendingEmail(email);
-        const message = 'Your email has not been verified yet. Please check your inbox for the verification link.';
+        const message = 'Verify your email address first. Then click resend email below if you need a new link.';
         setError(message);
-        return { success: false, error: message, requiresEmailConfirmation: true };
+        await supabase.auth.signOut();
+        return {
+          success: false,
+          code: 'email_not_confirmed',
+          error: message,
+          requiresEmailConfirmation: true,
+        };
       }
 
-      // Wrong email/password
-      if (msg.includes('invalid login') || msg.includes('invalid credentials') || msg.includes('invalid email or password')) {
-        const message = 'Incorrect email or password. Please try again.';
-        setError(message);
-        return { success: false, error: message };
-      }
-
-      // Rate limited
-      if (msg.includes('too many') || msg.includes('rate limit')) {
-        const message = 'Too many login attempts. Please wait a moment and try again.';
-        setError(message);
-        return { success: false, error: message };
-      }
-
-      setError(err.message);
-      return { success: false, error: err.message };
-    }
-
-    const emailConfirmed = !!data.user?.email_confirmed_at;
-    if (!emailConfirmed) {
-      setPendingEmailVerification(true);
-      setPendingEmail(email);
-      setError('Your email has not been verified yet. Please check your inbox for the verification link.');
-      await supabase.auth.signOut();
+      setPendingEmailVerification(false);
+      setPendingEmail(null);
+      return { success: true, user: buildUser(data.session) };
+    } catch (networkError) {
+      setIsLoading(false);
+      const message = 'Unable to connect. Please check your internet connection and try again.';
+      setError(message);
       return {
         success: false,
-        error: 'Your email has not been verified yet. Please check your inbox for the verification link.',
-        requiresEmailConfirmation: true,
+        code: 'network_error',
+        error: message,
+        requiresEmailConfirmation: false,
       };
     }
-
-    setPendingEmailVerification(false);
-    setPendingEmail(null);
-    return { success: true, user: buildUser(data.session) };
   }, [buildUser]);
 
   /* ── Register ── */
@@ -345,6 +417,10 @@ export function AuthProvider({ children }) {
     });
 
     if (err) {
+      const msg = (err.message || '').toLowerCase();
+      if (msg.includes('rate limit') || msg.includes('too many') || err.status === 429) {
+        return { success: false, error: 'Please wait before requesting another verification email.' };
+      }
       return { success: false, error: err.message };
     }
 
@@ -465,7 +541,7 @@ export function AuthProvider({ children }) {
   const clearError = useCallback(() => setError(null), []);
 
   const value = {
-    user, isLoading, isAuthenticated: !!user, error,
+    user, isInitializing, isLoading, isAuthenticated: !!user, error,
     pendingEmailVerification, pendingEmail,
     login, logout, register, updateNickname, updateProfile,
     changePassword, uploadAvatar, deleteAccount, clearError,

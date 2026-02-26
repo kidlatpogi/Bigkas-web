@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail } from '../../utils/validators';
@@ -19,14 +19,8 @@ function LoginPage() {
     login,
     loginWithGoogle,
     resendVerificationEmail,
-    pendingEmailVerification,
-    pendingEmail,
     isLoading,
   } = useAuthContext();
-
-  const verificationEmailFromState = location.state?.verificationEmail || '';
-  const verificationRequiredFromState = !!location.state?.verificationRequired;
-  const accountCreatedFromState = !!location.state?.accountCreated;
 
   const [formData, setFormData] = useState({
     email: '',
@@ -35,10 +29,38 @@ function LoginPage() {
   const [errors, setErrors] = useState({});
   const [resendLoading, setResendLoading] = useState(false);
   const [showUnverified, setShowUnverified] = useState(false);
-  const [unverifiedEmail, setUnverifiedEmail] = useState('');
+  const [showAccountCreated, setShowAccountCreated] = useState(() => Boolean(location.state?.accountCreated));
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Show the "Account created" banner from navigation state, auto-clear after 3s
+  useEffect(() => {
+    if (!showAccountCreated) return;
+    const timer = setTimeout(() => setShowAccountCreated(false), 3000);
+    window.history.replaceState({}, '');
+    return () => clearTimeout(timer);
+  }, [showAccountCreated]);
+
+  // Resend cooldown countdown
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (showAccountCreated) {
+      setShowAccountCreated(false);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
@@ -61,16 +83,21 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!validateForm()) return;
+    // Clear all banners when attempting to log in
     setShowUnverified(false);
+    setShowAccountCreated(false);
+    setResendSuccess(false);
+    setErrors({});
+
     const result = await login(formData.email, formData.password);
     if (result.success) {
       navigate(ROUTES.DASHBOARD);
     } else if (result.requiresEmailConfirmation) {
       // User account exists but email is not verified
       setShowUnverified(true);
-      setUnverifiedEmail(formData.email);
-      setErrors({});
+      setFormData({ email: '', password: '' });
     } else {
       setErrors({ submit: result.error });
     }
@@ -87,11 +114,13 @@ function LoginPage() {
   };
 
   const handleResendVerification = async () => {
-    const email = (pendingEmail || verificationEmailFromState || formData.email || '').trim();
+    if (resendCooldown > 0) return;
+
+    const email = (formData.email || '').trim();
     if (!email) {
       setErrors((prev) => ({
         ...prev,
-        submit: 'Enter your email to resend verification.',
+        submit: 'Enter your email in the field above to resend verification.',
       }));
       return;
     }
@@ -101,10 +130,9 @@ function LoginPage() {
     setResendLoading(false);
 
     if (result.success) {
-      setErrors((prev) => ({
-        ...prev,
-        submit: `Verification email resent to ${email}.`,
-      }));
+      setResendSuccess(true);
+      setResendCooldown(60);
+      setTimeout(() => setResendSuccess(false), 5000);
       return;
     }
 
@@ -149,35 +177,39 @@ function LoginPage() {
           <h2 className="auth-form-title">LOG IN</h2>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            {errors.submit && (
-              <div className="auth-error-banner">{errors.submit}</div>
-            )}
-
-            {accountCreatedFromState && !showUnverified && (
+            {showAccountCreated && !showUnverified && !errors.submit && (
               <div className="auth-success-banner">
                 Account created successfully! Please check your email to verify your account before logging in.
               </div>
             )}
 
+            {resendSuccess && (
+              <div className="auth-success-banner">
+                Verification email resent! Please check your inbox.
+              </div>
+            )}
+
+            {errors.submit && !showUnverified && (
+              <div className="auth-error-banner">{errors.submit}</div>
+            )}
+
             {showUnverified && (
               <div className="auth-unverified-banner">
                 <p className="auth-unverified-text">
-                  Your email <strong>{unverifiedEmail}</strong> has not been verified yet. Please check your inbox (and spam folder) for the verification link.
+                  Verify your Email Address. Check your inbox and spam folder for the verification link.
                 </p>
                 <button
                   type="button"
                   className="auth-resend-btn"
                   onClick={handleResendVerification}
-                  disabled={resendLoading}
+                  disabled={resendLoading || resendCooldown > 0}
                 >
-                  {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                  {resendLoading
+                    ? 'Sending...'
+                    : resendCooldown > 0
+                      ? `Resend available in ${resendCooldown}s`
+                      : 'Resend Verification Email'}
                 </button>
-              </div>
-            )}
-
-            {(pendingEmailVerification || verificationRequiredFromState) && !accountCreatedFromState && !showUnverified && (
-              <div className="auth-info-banner">
-                Verification required for {pendingEmail || verificationEmailFromState || formData.email}. Please check your email.
               </div>
             )}
 
@@ -220,16 +252,6 @@ function LoginPage() {
             </button>
           </form>
 
-          {(pendingEmailVerification || verificationRequiredFromState) && (
-            <button
-              type="button"
-              className="auth-submit-btn"
-              onClick={handleResendVerification}
-              disabled={isLoading || resendLoading}
-            >
-              {resendLoading ? 'SENDING...' : 'RESEND VERIFICATION EMAIL'}
-            </button>
-          )}
 
           <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot-link">FORGOT PASSWORD?</Link>
 
