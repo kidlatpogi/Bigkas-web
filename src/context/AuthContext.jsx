@@ -144,40 +144,89 @@ export function AuthProvider({ children }) {
       (name || '').trim() ||
       `${resolvedFirstName} ${resolvedLastName}`.trim();
 
-    const { data, error: err } = await supabase.auth.signUp({
-      email: normalizedEmail,
-      password,
-      options: {
-        data: {
-          full_name: resolvedFullName,
-          first_name: resolvedFirstName || undefined,
-          last_name: resolvedLastName || undefined,
+    try {
+      const { data, error: err } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          data: {
+            full_name: resolvedFullName,
+            first_name: resolvedFirstName || undefined,
+            last_name: resolvedLastName || undefined,
+          },
         },
-      },
-    });
-    setIsLoading(false);
-    if (err) {
-      const isRateLimited = err.status === 429 || err.code === 429 || `${err.message || ''}`.includes('429');
-      if (isRateLimited) {
-        const cooldownUntilTs = Date.now() + 60_000;
-        signupCooldownUntilRef.current = cooldownUntilTs;
-        setSignupCooldownUntil(cooldownUntilTs);
-        const message = 'Too many signup attempts. Please wait 60 seconds and try again.';
+      });
+      setIsLoading(false);
+
+      if (err) {
+        const errMsg = err.message || '';
+        const errStatus = err.status || err?.code || 0;
+
+        // Rate-limited
+        if (errStatus === 429 || `${errMsg}`.includes('429') || errMsg.toLowerCase().includes('rate limit') || errMsg.toLowerCase().includes('too many')) {
+          const cooldownUntilTs = Date.now() + 60_000;
+          signupCooldownUntilRef.current = cooldownUntilTs;
+          setSignupCooldownUntil(cooldownUntilTs);
+          const message = 'Too many signup attempts. Please wait 60 seconds and try again.';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // Already registered
+        if (errMsg.toLowerCase().includes('already registered') || errMsg.toLowerCase().includes('already exists') || errMsg.toLowerCase().includes('already been registered')) {
+          const message = 'This email is already registered. Try logging in instead.';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // SMTP / email sending failure (500 from Supabase)
+        if (errStatus === 500 || errMsg.toLowerCase().includes('internal server') || errMsg.toLowerCase().includes('sending confirmation')) {
+          const message = 'Sign-up service is temporarily unavailable. The email service may be experiencing issues. Please try again in a few minutes.';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // Password too weak
+        if (errMsg.toLowerCase().includes('password')) {
+          const message = 'Password does not meet the requirements. Please choose a stronger password (at least 8 characters).';
+          setError(message);
+          return { success: false, error: message };
+        }
+
+        // Generic fallback
+        setError(errMsg);
+        return { success: false, error: errMsg };
+      }
+
+      // Supabase returns data.user but with a fake session for already-existing unconfirmed users
+      // Check if user already existed (identities array is empty)
+      if (data?.user?.identities?.length === 0) {
+        const message = 'An account with this email already exists. Please log in or check your email for a verification link.';
         setError(message);
         return { success: false, error: message };
       }
 
-      setError(err.message);
-      return { success: false, error: err.message };
-    }
+      if (!data.session) {
+        // Email confirmation required — Supabase sends via Brevo SMTP
+        setPendingEmailVerification(true);
+        setPendingEmail(normalizedEmail);
+        return { success: true, requiresEmailConfirmation: true };
+      }
+      return { success: true, user: buildUser(data.session) };
+    } catch (networkError) {
+      setIsLoading(false);
+      const message = networkError?.message?.toLowerCase?.() || '';
 
-    if (!data.session) {
-      // Email confirmation required — Supabase sends via Brevo SMTP
-      setPendingEmailVerification(true);
-      setPendingEmail(normalizedEmail);
-      return { success: true, requiresEmailConfirmation: true };
+      if (message.includes('fetch') || message.includes('network') || message.includes('failed')) {
+        const errorMsg = 'Network error. Please check your internet connection and try again.';
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      const errorMsg = 'An unexpected error occurred during sign-up. Please try again.';
+      setError(errorMsg);
+      return { success: false, error: errorMsg };
     }
-    return { success: true, user: buildUser(data.session) };
   }, [buildUser]);
 
   /* ── Google OAuth Login ── */

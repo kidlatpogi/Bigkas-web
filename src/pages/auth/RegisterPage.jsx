@@ -63,19 +63,27 @@ function RegisterPage() {
     const normalized = message.toLowerCase();
 
     if (normalized.includes('too many') || normalized.includes('429') || normalized.includes('rate limit')) {
-      return 'Too many signup attempts. Please wait a bit, then try again.';
+      return 'Too many signup attempts. Please wait a minute and try again.';
     }
 
-    if (normalized.includes('already registered') || normalized.includes('already exists')) {
+    if (normalized.includes('already registered') || normalized.includes('already exists') || normalized.includes('already been registered')) {
       return 'This email is already registered. Try logging in instead.';
     }
 
     if (normalized.includes('password')) {
-      return 'Password does not meet the requirements. Please choose a stronger one.';
+      return 'Password does not meet the requirements. Use at least 8 characters with a mix of letters and numbers.';
     }
 
-    if (normalized.includes('500') || normalized.includes('internal server')) {
-      return 'Sign-up service is temporarily unavailable. If email confirmation is required, check Supabase email/SMTP settings and try again.';
+    if (normalized.includes('500') || normalized.includes('internal server') || normalized.includes('unavailable') || normalized.includes('email service')) {
+      return 'The sign-up service is temporarily unavailable. This can happen when the email verification service is unreachable. Please try again in a few minutes.';
+    }
+
+    if (normalized.includes('network') || normalized.includes('fetch') || normalized.includes('internet')) {
+      return 'Unable to reach the server. Please check your internet connection and try again.';
+    }
+
+    if (normalized.includes('invalid') && normalized.includes('email')) {
+      return 'Please enter a valid email address.';
     }
 
     return message;
@@ -85,25 +93,32 @@ function RegisterPage() {
     e.preventDefault();
     if (isLoading) return;
     if (!validateForm()) return;
-    const result = await register({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      password: formData.password,
-    });
 
-    if (result.success && result.requiresEmailConfirmation) {
-      setShowSuccessModal(true);
-      setErrors({
-        submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
+    try {
+      const result = await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
       });
-      return;
-    }
 
-    if (result.success) {
-      navigate(ROUTES.DASHBOARD);
-    } else {
-      setErrors({ submit: mapSignupError(result.error) });
+      if (result.success && result.requiresEmailConfirmation) {
+        setShowSuccessModal(true);
+        setErrors({
+          submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
+        });
+        return;
+      }
+
+      if (result.success) {
+        navigate(ROUTES.DASHBOARD);
+      } else {
+        setErrors({ submit: mapSignupError(result.error) });
+      }
+    } catch (unexpectedError) {
+      setErrors({
+        submit: 'An unexpected error occurred. Please try again or contact support if the issue persists.',
+      });
     }
   };
 
