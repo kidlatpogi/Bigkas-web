@@ -102,19 +102,25 @@ function RegisterPage() {
         password: formData.password,
       });
 
-      if (result.success && result.requiresEmailConfirmation) {
+      if (result.success) {
+        // Account created — show success modal and auto-redirect to login
         setShowSuccessModal(true);
-        setErrors({
-          submit: `Verification email sent to ${formData.email}. Please verify your account before logging in.`,
-        });
+        setErrors({});
+
+        // Auto-redirect to login after 3 seconds
+        setTimeout(() => {
+          navigate(ROUTES.LOGIN, {
+            state: {
+              verificationEmail: formData.email,
+              verificationRequired: true,
+              accountCreated: true,
+            },
+          });
+        }, 3000);
         return;
       }
 
-      if (result.success) {
-        navigate(ROUTES.DASHBOARD);
-      } else {
-        setErrors({ submit: mapSignupError(result.error) });
-      }
+      setErrors({ submit: mapSignupError(result.error) });
     } catch (unexpectedError) {
       setErrors({
         submit: 'An unexpected error occurred. Please try again or contact support if the issue persists.',
@@ -163,6 +169,7 @@ function RegisterPage() {
       state: {
         verificationEmail: formData.email,
         verificationRequired: true,
+        accountCreated: true,
       },
     });
   };
@@ -174,27 +181,33 @@ function RegisterPage() {
       {showSuccessModal && (
         <div className="auth-modal-backdrop" role="dialog" aria-modal="true">
           <div className="auth-modal">
-            <h3 className="auth-modal-title">Check your email</h3>
+            <div className="forgot-success-icon" style={{ marginBottom: 16 }}>
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="23" stroke="#FBAF00" strokeWidth="2" />
+                <path d="M14 24l7 7 13-13" stroke="#FBAF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h3 className="auth-modal-title">Account Created!</h3>
             <p className="auth-modal-body">
-              We sent a verification link to
-              <span className="auth-modal-highlight"> {formData.email}</span>.
-              Please verify your account to continue.
+              Your account has been successfully created.
+              {formData.email && (
+                <>
+                  {' '}A verification email has been sent to
+                  <span className="auth-modal-highlight"> {formData.email}</span>.
+                  Please check your inbox and verify your email before logging in.
+                </>
+              )}
+            </p>
+            <p className="auth-modal-body" style={{ fontSize: 12, color: '#8C8C8C' }}>
+              Redirecting to login in a few seconds...
             </p>
             <div className="auth-modal-actions">
-              <button
-                type="button"
-                className="auth-submit-btn"
-                onClick={handleResendVerification}
-                disabled={isLoading}
-              >
-                Resend Email
-              </button>
               <button
                 type="button"
                 className="auth-submit-btn auth-submit-btn-primary"
                 onClick={handleGoToLogin}
               >
-                Go to Login
+                Go to Login Now
               </button>
             </div>
           </div>

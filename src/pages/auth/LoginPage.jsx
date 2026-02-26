@@ -26,6 +26,7 @@ function LoginPage() {
 
   const verificationEmailFromState = location.state?.verificationEmail || '';
   const verificationRequiredFromState = !!location.state?.verificationRequired;
+  const accountCreatedFromState = !!location.state?.accountCreated;
 
   const [formData, setFormData] = useState({
     email: '',
@@ -144,7 +145,13 @@ function LoginPage() {
               <div className="auth-error-banner">{errors.submit}</div>
             )}
 
-            {(pendingEmailVerification || verificationRequiredFromState) && (
+            {accountCreatedFromState && (
+              <div className="auth-success-banner">
+                Account created successfully! Please check your email to verify your account before logging in.
+              </div>
+            )}
+
+            {(pendingEmailVerification || verificationRequiredFromState) && !accountCreatedFromState && (
               <div className="auth-info-banner">
                 Verification required for {pendingEmail || verificationEmailFromState || formData.email}. Please check your email.
               </div>
