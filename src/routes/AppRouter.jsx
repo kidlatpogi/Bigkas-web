@@ -10,6 +10,7 @@ import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import NicknamePage from '../pages/auth/NicknamePage';
 import VerifyEmailPage from '../pages/auth/VerifyEmailPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 
 // Main Pages
 import DashboardPage from '../pages/main/DashboardPage';
@@ -95,7 +96,7 @@ function NicknameRoute() {
   }
 
   if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />;
-  if (user?.nickname)   return <Navigate to={ROUTES.DASHBOARD} replace />;
+  if (user?.nickname) return <Navigate to={ROUTES.DASHBOARD} replace />;
 
   return <Outlet />;
 }
@@ -132,12 +133,15 @@ function AppRouter() {
     <Routes>
       {/* Public Routes - accessible only when not logged in */}
       <Route element={<PublicRoute />}>
-        <Route path={ROUTES.LOGIN}    element={<LoginPage />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
       </Route>
 
       {/* Email Verification - accessible anytime */}
       <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
+
+      {/* Forgot Password - accessible anytime */}
+      <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
 
       {/* Nickname Route — authenticated users without a nickname */}
       <Route element={<NicknameRoute />}>
@@ -150,36 +154,36 @@ function AppRouter() {
         <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
 
         {/* Scripts */}
-        <Route path={ROUTES.SCRIPTS}            element={<ScriptsPage />} />
-        <Route path={ROUTES.SCRIPT_EDITOR}      element={<ScriptEditorPage />} />
+        <Route path={ROUTES.SCRIPTS} element={<ScriptsPage />} />
+        <Route path={ROUTES.SCRIPT_EDITOR} element={<ScriptEditorPage />} />
         <Route path={ROUTES.SCRIPT_EDITOR_EDIT} element={<ScriptEditorPage />} />
-        <Route path={ROUTES.GENERATE_SCRIPT}    element={<GenerateScriptPage />} />
+        <Route path={ROUTES.GENERATE_SCRIPT} element={<GenerateScriptPage />} />
 
         {/* Practice */}
-        <Route path={ROUTES.PRACTICE}       element={<PracticePage />} />
+        <Route path={ROUTES.PRACTICE} element={<PracticePage />} />
 
         {/* Training */}
         <Route path={ROUTES.TRAINING_SETUP} element={<TrainingSetupPage />} />
-        <Route path={ROUTES.TRAINING}       element={<TrainingPage />} />
+        <Route path={ROUTES.TRAINING} element={<TrainingPage />} />
 
         {/* History / Progress */}
-        <Route path={ROUTES.HISTORY}      element={<HistoryPage />} />
+        <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
         <Route path={ROUTES.ALL_SESSIONS} element={<AllSessionsPage />} />
-        <Route path={ROUTES.PROGRESS}     element={<ProgressPage />} />
+        <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
 
         {/* Profile */}
-        <Route path={ROUTES.PROFILE}      element={<ProfilePage />} />
+        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.EDIT_PROFILE} element={<EditProfilePage />} />
 
         {/* Settings */}
-        <Route path={ROUTES.SETTINGS}         element={<SettingsPage />} />
-        <Route path={ROUTES.CHANGE_PASSWORD}  element={<ChangePasswordPage />} />
+        <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+        <Route path={ROUTES.CHANGE_PASSWORD} element={<ChangePasswordPage />} />
         <Route path={ROUTES.ACCOUNT_SETTINGS} element={<AccountSettingsPage />} />
-        <Route path={ROUTES.AUDIO_TEST}       element={<TestAudioVideoPage />} />
+        <Route path={ROUTES.AUDIO_TEST} element={<TestAudioVideoPage />} />
 
         {/* Session */}
-        <Route path={ROUTES.SESSION_DETAIL}    element={<SessionDetailPage />} />
-        <Route path={ROUTES.SESSION_RESULT}    element={<SessionResultPage />} />
+        <Route path={ROUTES.SESSION_DETAIL} element={<SessionDetailPage />} />
+        <Route path={ROUTES.SESSION_RESULT} element={<SessionResultPage />} />
         <Route path={ROUTES.DETAILED_FEEDBACK} element={<DetailedFeedbackPage />} />
       </Route>
 

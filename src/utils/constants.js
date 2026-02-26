@@ -4,41 +4,42 @@
 
 // Route paths
 export const ROUTES = {
-  HOME:               '/',
-  LOGIN:              '/login',
-  REGISTER:           '/register',
-  VERIFY_EMAIL:       '/verify-email',
-  NICKNAME:           '/nickname',
+  HOME: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  VERIFY_EMAIL: '/verify-email',
+  FORGOT_PASSWORD: '/forgot-password',
+  NICKNAME: '/nickname',
   // Main
-  DASHBOARD:          '/dashboard',
-  PRACTICE:           '/practice',
-  TRAINING_SETUP:     '/training/setup',
-  TRAINING:           '/training',
-  SCRIPTS:            '/scripts',
-  SCRIPT_EDITOR:      '/scripts/editor',
+  DASHBOARD: '/dashboard',
+  PRACTICE: '/practice',
+  TRAINING_SETUP: '/training/setup',
+  TRAINING: '/training',
+  SCRIPTS: '/scripts',
+  SCRIPT_EDITOR: '/scripts/editor',
   SCRIPT_EDITOR_EDIT: '/scripts/editor/:scriptId',
-  GENERATE_SCRIPT:    '/scripts/generate',
-  HISTORY:            '/history',
-  ALL_SESSIONS:       '/sessions',
-  PROGRESS:           '/progress',
-  PROFILE:            '/profile',
-  EDIT_PROFILE:       '/profile/edit',
-  SETTINGS:           '/settings',
-  CHANGE_PASSWORD:    '/settings/change-password',
-  ACCOUNT_SETTINGS:   '/settings/account',
-  AUDIO_TEST:         '/settings/test',
+  GENERATE_SCRIPT: '/scripts/generate',
+  HISTORY: '/history',
+  ALL_SESSIONS: '/sessions',
+  PROGRESS: '/progress',
+  PROFILE: '/profile',
+  EDIT_PROFILE: '/profile/edit',
+  SETTINGS: '/settings',
+  CHANGE_PASSWORD: '/settings/change-password',
+  ACCOUNT_SETTINGS: '/settings/account',
+  AUDIO_TEST: '/settings/test',
   // Session
-  SESSION_DETAIL:     '/session/:sessionId',
-  SESSION_RESULT:     '/session/:sessionId/result',
-  DETAILED_FEEDBACK:  '/session/:sessionId/feedback',
+  SESSION_DETAIL: '/session/:sessionId',
+  SESSION_RESULT: '/session/:sessionId/result',
+  DETAILED_FEEDBACK: '/session/:sessionId/feedback',
 };
 
 // Helper to build paths with params
 export const buildRoute = {
-  sessionDetail:    (id) => `/session/${id}`,
-  sessionResult:    (id) => `/session/${id}/result`,
+  sessionDetail: (id) => `/session/${id}`,
+  sessionResult: (id) => `/session/${id}/result`,
   detailedFeedback: (id) => `/session/${id}/feedback`,
-  scriptEditor:     (id) => `/scripts/editor/${id}`,
+  scriptEditor: (id) => `/scripts/editor/${id}`,
 };
 
 // UI Constants
@@ -50,10 +51,10 @@ export const UI = {
 
 // Score tiers
 export const SCORE_TIER = {
-  excellent: { min: 85, label: 'Excellent',  color: '#34C759' },
-  good:      { min: 65, label: 'Good',       color: '#FBAF00' },
-  fair:      { min: 45, label: 'Fair',       color: '#FF9500' },
-  poor:      { min: 0,  label: 'Needs Work', color: '#FF3B30' },
+  excellent: { min: 85, label: 'Excellent', color: '#34C759' },
+  good: { min: 65, label: 'Good', color: '#FBAF00' },
+  fair: { min: 45, label: 'Fair', color: '#FF9500' },
+  poor: { min: 0, label: 'Needs Work', color: '#FF3B30' },
 };
 
 export function getScoreTier(score) {

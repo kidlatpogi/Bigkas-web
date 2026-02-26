@@ -252,7 +252,7 @@ export default function LandingPage() {
       if (r.current) observer.observe(r.current);
     });
     return () => observer.disconnect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -305,8 +305,8 @@ export default function LandingPage() {
               <span className="accent-text">Minus the Stage Fright.</span>
             </h1>
             <p className="hero-sub">
-              Fail in private, shine in public. Bigkas gives you a safe, 
-              judgment-free space to practice speaking — powered by acoustic 
+              Fail in private, shine in public. Bigkas gives you a safe,
+              judgment-free space to practice speaking — powered by acoustic
               biomarkers and computer vision calibrated for Filipino learners.
             </p>
             <div className="hero-actions">
@@ -328,7 +328,7 @@ export default function LandingPage() {
                 className="btn-android-subtle"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M17.523 2.226l1.392-2.415a.288.288 0 00-.499-.288L17.01 1.953C15.5 1.235 13.81.84 12 .84s-3.5.395-5.01 1.113L5.584-.477a.288.288 0 00-.499.288l1.392 2.415C3.038 4.267.72 8.168.72 12.6h22.56c0-4.432-2.318-8.333-5.757-10.374zM7.2 9.6a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm9.6 0a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM.72 13.8v8.4a1.8 1.8 0 003.6 0v-8.4H.72zm19.56 0v8.4a1.8 1.8 0 003.6 0v-8.4h-3.6zm-16.2 0v10.2a2.1 2.1 0 002.1 2.1h1.2v3.3a1.8 1.8 0 003.6 0v-3.3h2.04v3.3a1.8 1.8 0 003.6 0v-3.3h1.2a2.1 2.1 0 002.1-2.1V13.8H4.08z" fill="currentColor"/>
+                  <path d="M17.523 2.226l1.392-2.415a.288.288 0 00-.499-.288L17.01 1.953C15.5 1.235 13.81.84 12 .84s-3.5.395-5.01 1.113L5.584-.477a.288.288 0 00-.499.288l1.392 2.415C3.038 4.267.72 8.168.72 12.6h22.56c0-4.432-2.318-8.333-5.757-10.374zM7.2 9.6a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm9.6 0a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zM.72 13.8v8.4a1.8 1.8 0 003.6 0v-8.4H.72zm19.56 0v8.4a1.8 1.8 0 003.6 0v-8.4h-3.6zm-16.2 0v10.2a2.1 2.1 0 002.1 2.1h1.2v3.3a1.8 1.8 0 003.6 0v-3.3h2.04v3.3a1.8 1.8 0 003.6 0v-3.3h1.2a2.1 2.1 0 002.1-2.1V13.8H4.08z" fill="currentColor" />
                 </svg>
                 Download for Android
               </a>
@@ -340,13 +340,13 @@ export default function LandingPage() {
             <div className="dashboard-card">
               <div className="dashboard-header">
                 <span className="dashboard-title">Speaking Confidence Score</span>
-                <span className="dashboard-session">Session #14</span>
               </div>
+              <span className="dashboard-session-center">Session #14</span>
               <CircularProgress score={85} size={200} strokeWidth={10} />
               <div className="dashboard-metrics">
                 <div className="metric">
                   <span className="metric-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a2 2 0 00-2 2v4a2 2 0 004 0V4a2 2 0 00-2-2z" stroke="#FBAF00" strokeWidth="1.2"/><path d="M13 7v1a5 5 0 01-10 0V7M8 13v2" stroke="#FBAF00" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a2 2 0 00-2 2v4a2 2 0 004 0V4a2 2 0 00-2-2z" stroke="#FBAF00" strokeWidth="1.2" /><path d="M13 7v1a5 5 0 01-10 0V7M8 13v2" stroke="#FBAF00" strokeWidth="1.2" strokeLinecap="round" /></svg>
                   </span>
                   <span className="metric-val">92</span>
                   <span className="metric-lbl">Vocal</span>
@@ -354,7 +354,7 @@ export default function LandingPage() {
                 <div className="metric-divider" />
                 <div className="metric">
                   <span className="metric-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="#FBAF00" strokeWidth="1.2"/><path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z" stroke="#FBAF00" strokeWidth="1.2"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="#FBAF00" strokeWidth="1.2" /><path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z" stroke="#FBAF00" strokeWidth="1.2" /></svg>
                   </span>
                   <span className="metric-val">78</span>
                   <span className="metric-lbl">Visual</span>
@@ -362,7 +362,7 @@ export default function LandingPage() {
                 <div className="metric-divider" />
                 <div className="metric">
                   <span className="metric-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h7M3 11h9" stroke="#FBAF00" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h7M3 11h9" stroke="#FBAF00" strokeWidth="1.2" strokeLinecap="round" /></svg>
                   </span>
                   <span className="metric-val">88</span>
                   <span className="metric-lbl">Fluency</span>
@@ -389,14 +389,14 @@ export default function LandingPage() {
                 <span className="accent-text">Even Above Death.</span>
               </h2>
               <p className="section-body">
-                In Filipino classrooms, glossophobia — the fear of public speaking — 
-                is a silent epidemic. Students freeze during oral recitations. Young 
-                professionals struggle transitioning from text-based digital 
+                In Filipino classrooms, glossophobia — the fear of public speaking —
+                is a silent epidemic. Students freeze during oral recitations. Young
+                professionals struggle transitioning from text-based digital
                 communication to face-to-face workplace presentations.
               </p>
               <p className="section-body">
-                The mental block isn&apos;t about ability. It&apos;s about the 
-                <strong> fear of judgment</strong>. What if you could practice 
+                The mental block isn&apos;t about ability. It&apos;s about the
+                <strong> fear of judgment</strong>. What if you could practice
                 endlessly, with zero audience, and get <em>real</em> feedback?
               </p>
             </div>
@@ -431,9 +431,9 @@ export default function LandingPage() {
             <span className="accent-text">No Stage Required.</span>
           </h2>
           <p className="section-body center max-w-prose">
-            Bigkas combines <strong>acoustic analysis</strong> and <strong>computer 
-            vision</strong> into a multi-modal diagnostic tool that fits in your 
-            pocket. It doesn&apos;t just record — it <em>understands</em> your voice, 
+            Bigkas combines <strong>acoustic analysis</strong> and <strong>computer
+              vision</strong> into a multi-modal diagnostic tool that fits in your
+            pocket. It doesn&apos;t just record — it <em>understands</em> your voice,
             your face, and your flow.
           </p>
 
@@ -546,9 +546,9 @@ export default function LandingPage() {
                 <span className="accent-text">A Diagnostic Instrument.</span>
               </h2>
               <p className="section-body">
-                Bigkas leverages peer-reviewed acoustic biomarkers used in clinical 
-                speech pathology. Jitter and Shimmer analysis — the same metrics 
-                used to diagnose voice disorders — are repurposed here to measure 
+                Bigkas leverages peer-reviewed acoustic biomarkers used in clinical
+                speech pathology. Jitter and Shimmer analysis — the same metrics
+                used to diagnose voice disorders — are repurposed here to measure
                 speaking confidence and vocal control.
               </p>
               <div className="trust-badge">
@@ -598,8 +598,8 @@ export default function LandingPage() {
             <span className="accent-text">Session After Session.</span>
           </h2>
           <p className="section-body center max-w-prose">
-            Every practice session is scored and logged. See your Speaking 
-            Confidence Score climb over time through a personalized growth chart. 
+            Every practice session is scored and logged. See your Speaking
+            Confidence Score climb over time through a personalized growth chart.
             It&apos;s not about being perfect — it&apos;s about getting 1% better every day.
           </p>
 
@@ -618,8 +618,8 @@ export default function LandingPage() {
 
           <div className="bridge-text">
             <p>
-              <strong>The Bridge:</strong> Whether you&apos;re a student preparing for oral exams 
-              or a young professional moving from text-based habits to face-to-face presentations — 
+              <strong>The Bridge:</strong> Whether you&apos;re a student preparing for oral exams
+              or a young professional moving from text-based habits to face-to-face presentations —
               Bigkas is your bridge to confident, articulate communication.
             </p>
           </div>
@@ -636,7 +636,7 @@ export default function LandingPage() {
               <span className="cta-heading-accent">Practice in Private. Perform With Confidence.</span>
             </h2>
             <p className="cta-sub">
-              No sign-up fees. No special equipment. Just you, your voice, and an 
+              No sign-up fees. No special equipment. Just you, your voice, and an
               AI coach that never judges.
             </p>
             <button className="btn-cta-main" onClick={() => navigate(ROUTES.REGISTER)}>

@@ -78,7 +78,7 @@ function LoginPage() {
   };
 
   const handleResendVerification = async () => {
-    const email = pendingEmail || verificationEmailFromState || formData.email;
+    const email = (pendingEmail || verificationEmailFromState || formData.email || '').trim();
     if (!email) {
       setErrors((prev) => ({
         ...prev,
@@ -200,7 +200,7 @@ function LoginPage() {
             </button>
           )}
 
-          <Link to="#" className="auth-forgot-link">FORGOT PASSWORD?</Link>
+          <Link to={ROUTES.FORGOT_PASSWORD} className="auth-forgot-link">FORGOT PASSWORD?</Link>
 
           <div className="auth-divider">
             <span className="auth-divider-line" />

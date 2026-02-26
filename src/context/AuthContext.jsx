@@ -1,22 +1,33 @@
 import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { ENV } from '../config/env';
-import { initEmailJS, sendVerificationEmail } from '../utils/emailService';
 
 /**
  * Authentication Context — backed by Supabase Auth
  */
 const AuthContext = createContext(null);
+const SIGNUP_COOLDOWN_KEY = 'bigkas_signup_cooldown_until';
 
 function getWebRedirectPath(path = '/') {
   if (typeof window === 'undefined') return undefined;
   return `${window.location.origin}${path}`;
 }
 
+function getSignupCooldownUntil() {
+  if (typeof window === 'undefined') return 0;
+  const stored = Number(window.localStorage.getItem(SIGNUP_COOLDOWN_KEY) || 0);
+  return Number.isFinite(stored) ? stored : 0;
+}
+
+function setSignupCooldownUntil(untilTs) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(SIGNUP_COOLDOWN_KEY, String(untilTs));
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser]       = useState(null);
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
   const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(null);
   const signupCooldownUntilRef = useRef(0);
@@ -42,28 +53,26 @@ export function AuthProvider({ children }) {
   /* ── Build user object from Supabase session ── */
   const buildUser = useCallback((supaSession) => {
     if (!supaSession) return null;
-    const u    = supaSession.user || supaSession;
+    const u = supaSession.user || supaSession;
     const meta = u?.user_metadata || {};
     const fullName = meta.full_name || meta.name || u.email?.split('@')[0] || 'User';
     const fallbackFirst = fullName.split(' ')[0] || '';
     const fallbackLast = fullName.split(' ').slice(1).join(' ');
 
     return {
-      id:         u.id,
-      email:      u.email,
-      name:       fullName,
-      firstName:  meta.first_name || fallbackFirst,
-      lastName:   meta.last_name || fallbackLast,
-      nickname:   meta.nickname || null,
+      id: u.id,
+      email: u.email,
+      name: fullName,
+      firstName: meta.first_name || fallbackFirst,
+      lastName: meta.last_name || fallbackLast,
+      nickname: meta.nickname || null,
       avatar_url: resolveAvatarUrl(meta.avatar_url),
-      createdAt:  u.created_at,
+      createdAt: u.created_at,
     };
   }, [resolveAvatarUrl]);
 
   /* ── Restore session on mount ── */
   useEffect(() => {
-    initEmailJS();
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(buildUser(session));
       setIsLoading(false);
@@ -117,7 +126,8 @@ export function AuthProvider({ children }) {
 
   /* ── Register ── */
   const register = useCallback(async ({ name, firstName, lastName, email, password }) => {
-    const remainingMs = signupCooldownUntilRef.current - Date.now();
+    const cooldownUntil = Math.max(signupCooldownUntilRef.current, getSignupCooldownUntil());
+    const remainingMs = cooldownUntil - Date.now();
     if (remainingMs > 0) {
       const waitSeconds = Math.ceil(remainingMs / 1000);
       const message = `Too many signup attempts. Please wait ${waitSeconds}s and try again.`;
@@ -149,8 +159,10 @@ export function AuthProvider({ children }) {
     if (err) {
       const isRateLimited = err.status === 429 || err.code === 429 || `${err.message || ''}`.includes('429');
       if (isRateLimited) {
-        signupCooldownUntilRef.current = Date.now() + 30_000;
-        const message = 'Too many signup attempts. Please wait 30 seconds and try again.';
+        const cooldownUntilTs = Date.now() + 60_000;
+        signupCooldownUntilRef.current = cooldownUntilTs;
+        setSignupCooldownUntil(cooldownUntilTs);
+        const message = 'Too many signup attempts. Please wait 60 seconds and try again.';
         setError(message);
         return { success: false, error: message };
       }
@@ -158,20 +170,11 @@ export function AuthProvider({ children }) {
       setError(err.message);
       return { success: false, error: err.message };
     }
-    
+
     if (!data.session) {
-      // Email confirmation required - send via EmailJS
+      // Email confirmation required — Supabase sends via Brevo SMTP
       setPendingEmailVerification(true);
       setPendingEmail(normalizedEmail);
-
-      // Send verification email via EmailJS
-      const verificationLink = getWebRedirectPath('/verify-email');
-      const emailResult = await sendVerificationEmail(normalizedEmail, verificationLink);
-      if (!emailResult.success) {
-          setError(`Account created but verification email failed: ${emailResult.error}`);
-          return { success: true, requiresEmailConfirmation: true, emailSendError: emailResult.error };
-        }
-      
       return { success: true, requiresEmailConfirmation: true };
     }
     return { success: true, user: buildUser(data.session) };
@@ -207,15 +210,7 @@ export function AuthProvider({ children }) {
       return { success: false, error: 'Enter your email to resend verification.' };
     }
 
-    // Send via EmailJS (our custom service)
-    const verificationLink = getWebRedirectPath('/verify-email');
-    const emailResult = await sendVerificationEmail(normalizedEmail, verificationLink);
-    
-    if (emailResult.success) {
-      return { success: true };
-    }
-
-    // Fallback to Supabase resend
+    // Resend via Supabase (sends through Brevo SMTP)
     const { error: err } = await supabase.auth.resend({
       type: 'signup',
       email: normalizedEmail,
@@ -301,7 +296,7 @@ export function AuthProvider({ children }) {
   const uploadAvatar = useCallback(async (file) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return { success: false, error: 'Not authenticated' };
-    const ext  = file.name.split('.').pop();
+    const ext = file.name.split('.').pop();
     const path = `${session.user.id}/avatar.${ext}`;
     const { error: upErr } = await supabase.storage
       .from('avatars').upload(path, file, { upsert: true });
