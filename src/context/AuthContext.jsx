@@ -153,7 +153,10 @@ export function AuthProvider({ children }) {
     const emailRedirectTo = getWebRedirectPath('/verify-email');
 
     try {
-      const { data, error: err } = await supabase.auth.signUp({
+      // Race the signup against a 15-second timeout.
+      // When Supabase's SMTP hangs (trying to send confirmation email),
+      // the signUp() promise never resolves — this prevents infinite loading.
+      const signupPromise = supabase.auth.signUp({
         email: normalizedEmail,
         password,
         options: {
@@ -165,6 +168,12 @@ export function AuthProvider({ children }) {
           },
         },
       });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('SIGNUP_TIMEOUT')), 15000)
+      );
+
+      const { data, error: err } = await Promise.race([signupPromise, timeoutPromise]);
       setIsLoading(false);
 
       if (err) {
@@ -243,9 +252,16 @@ export function AuthProvider({ children }) {
       return { success: true, user: buildUser(data.session) };
     } catch (networkError) {
       setIsLoading(false);
-      const message = networkError?.message?.toLowerCase?.() || '';
+      const message = networkError?.message || '';
 
-      if (message.includes('fetch') || message.includes('network') || message.includes('failed')) {
+      // Signup request timed out — SMTP is likely hanging
+      if (message === 'SIGNUP_TIMEOUT') {
+        const errorMsg = 'Account creation is taking too long (email service may be slow). Your account may have been created — try logging in. If not, please try again.';
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+
+      if (message.toLowerCase().includes('fetch') || message.toLowerCase().includes('network') || message.toLowerCase().includes('failed')) {
         const errorMsg = 'Network error. Please check your internet connection and try again.';
         setError(errorMsg);
         return { success: false, error: errorMsg };
