@@ -84,6 +84,7 @@ function normalizeLoginError(err, email) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pendingEmailVerification, setPendingEmailVerification] = useState(false);
@@ -135,6 +136,10 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(buildUser(session));
       setIsLoading(false);
+      setIsInitializing(false);
+    }).catch(() => {
+      setIsLoading(false);
+      setIsInitializing(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -536,7 +541,7 @@ export function AuthProvider({ children }) {
   const clearError = useCallback(() => setError(null), []);
 
   const value = {
-    user, isLoading, isAuthenticated: !!user, error,
+    user, isInitializing, isLoading, isAuthenticated: !!user, error,
     pendingEmailVerification, pendingEmail,
     login, logout, register, updateNickname, updateProfile,
     changePassword, uploadAvatar, deleteAccount, clearError,

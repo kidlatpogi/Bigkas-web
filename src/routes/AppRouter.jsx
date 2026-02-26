@@ -48,9 +48,9 @@ import ThemeToggleBtn from '../components/common/ThemeToggleBtn';
  * - Otherwise render the protected page with Navbar
  */
 function ProtectedRoute() {
-  const { isAuthenticated, isLoading, user } = useAuthContext();
+  const { isAuthenticated, isInitializing, user } = useAuthContext();
 
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <div className="loading-screen">
         <div className="loading-logo">Bigkas</div>
@@ -84,9 +84,9 @@ function ProtectedRoute() {
  * Only accessible when authenticated but nickname not yet set.
  */
 function NicknameRoute() {
-  const { isAuthenticated, isLoading, user } = useAuthContext();
+  const { isAuthenticated, isInitializing, user } = useAuthContext();
 
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <div className="loading-screen">
         <div className="loading-logo">Bigkas</div>
@@ -106,9 +106,9 @@ function NicknameRoute() {
  * Redirects to dashboard if user is already authenticated
  */
 function PublicRoute() {
-  const { isAuthenticated, isLoading } = useAuthContext();
+  const { isAuthenticated, isInitializing } = useAuthContext();
 
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <div className="loading-screen">
         <div className="loading-logo">Bigkas</div>
