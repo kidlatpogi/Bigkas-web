@@ -109,17 +109,46 @@ export function AuthProvider({ children }) {
     setError(null);
     const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
     setIsLoading(false);
-    if (err) { setError(err.message); return { success: false, error: err.message }; }
+
+    if (err) {
+      const msg = (err.message || '').toLowerCase();
+
+      // Email not confirmed — Supabase returns 400 with this message
+      if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
+        setPendingEmailVerification(true);
+        setPendingEmail(email);
+        const message = 'Your email has not been verified yet. Please check your inbox for the verification link.';
+        setError(message);
+        return { success: false, error: message, requiresEmailConfirmation: true };
+      }
+
+      // Wrong email/password
+      if (msg.includes('invalid login') || msg.includes('invalid credentials') || msg.includes('invalid email or password')) {
+        const message = 'Incorrect email or password. Please try again.';
+        setError(message);
+        return { success: false, error: message };
+      }
+
+      // Rate limited
+      if (msg.includes('too many') || msg.includes('rate limit')) {
+        const message = 'Too many login attempts. Please wait a moment and try again.';
+        setError(message);
+        return { success: false, error: message };
+      }
+
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
 
     const emailConfirmed = !!data.user?.email_confirmed_at;
     if (!emailConfirmed) {
       setPendingEmailVerification(true);
       setPendingEmail(email);
-      setError('Please verify your email address before logging in.');
+      setError('Your email has not been verified yet. Please check your inbox for the verification link.');
       await supabase.auth.signOut();
       return {
         success: false,
-        error: 'Please verify your email address before logging in.',
+        error: 'Your email has not been verified yet. Please check your inbox for the verification link.',
         requiresEmailConfirmation: true,
       };
     }
