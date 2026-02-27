@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
+import { generateSpeech } from '../../api/aiService';
 import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
@@ -34,7 +35,6 @@ function GenerateScriptPage() {
     setPrompt(t);
   };
 
-  // Simple local generation (until a real AI endpoint is wired)
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       setError('Please enter a prompt or pick a random topic.');
@@ -43,17 +43,16 @@ function GenerateScriptPage() {
     setError('');
     setIsGenerating(true);
 
-    // Simulate a brief delay
-    await new Promise((r) => setTimeout(r, 800));
-
-    const wordCount = duration === 'Short' ? 60 : duration === 'Medium' ? 120 : 220;
-    const content = generatePlaceholder(prompt.trim(), vibe.toLowerCase(), wordCount);
-    const title   = `${vibe} — ${prompt.trim().slice(0, 40)}`;
-
-    setGenerated({ title, content });
-    setEditTitle(title);
-    setEditContent(content);
-    setIsGenerating(false);
+    try {
+      const result = await generateSpeech({ prompt: prompt.trim(), vibe, duration });
+      setGenerated(result);
+      setEditTitle(result.title);
+      setEditContent(result.content);
+    } catch (err) {
+      setError(err.message || 'Failed to generate script. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSave = async () => {
@@ -198,22 +197,6 @@ function GenerateScriptPage() {
       )}
     </div>
   );
-}
-
-// Rough placeholder generator until a real AI endpoint is wired
-function generatePlaceholder(topic, vibe, words) {
-  const intros = {
-    professional: `Good day. Today, I would like to share my thoughts on ${topic}.`,
-    casual:       `Hey everyone! So today I want to talk about something I really enjoy — ${topic}.`,
-    humorous:     `Alright, buckle up! We're diving into the world of ${topic}, and I promise it's more fun than it sounds.`,
-    inspirational:`Every great journey begins with a single step. Today, let's talk about ${topic} and why it matters.`,
-  };
-  const body = `This topic has always fascinated me because of the way it connects to our everyday lives. When we think about ${topic}, we often overlook how deeply it influences us. Whether it's through the choices we make or the habits we develop, ${topic} plays a central role. I encourage everyone to take a closer look and reflect on how they can apply these ideas in their own life.`;
-  const outro = `In conclusion, ${topic} is something worth exploring further. Thank you for listening.`;
-
-  const combined = `${intros[vibe] || intros.professional} ${body} ${outro}`;
-  const w = combined.split(' ');
-  return w.slice(0, words).join(' ') + (w.length > words ? '…' : '');
 }
 
 export default GenerateScriptPage;
