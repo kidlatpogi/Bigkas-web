@@ -31,13 +31,36 @@ class BackoffService:
             "Content-Type": "application/json",
         }
 
-    async def _fetch_profile_by_email(self, client: httpx.AsyncClient, email: str) -> Optional[Dict[str, Any]]:
+    @property
+    def _admin_auth_headers(self) -> Dict[str, str]:
+        return {
+            "apikey": self._service_key,
+            "Authorization": f"Bearer {self._service_key}",
+            "Content-Type": "application/json",
+        }
+
+    async def _fetch_user_id_by_email(self, client: httpx.AsyncClient, email: str) -> Optional[str]:
+        response = await client.get(
+            f"{self._supabase_url}/auth/v1/admin/users",
+            headers=self._admin_auth_headers,
+            params={"email": email},
+            timeout=15.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+
+        users = payload.get("users", []) if isinstance(payload, dict) else []
+        if users:
+            return users[0].get("id")
+        return None
+
+    async def _fetch_profile_by_id(self, client: httpx.AsyncClient, user_id: str) -> Optional[Dict[str, Any]]:
         response = await client.get(
             f"{self._supabase_url}/rest/v1/profiles",
             headers=self._rest_headers,
             params={
-                "select": "id,email,failed_login_attempts,lockout_until",
-                "email": f"eq.{email}",
+                "select": "id,failed_login_attempts,lockout_until",
+                "id": f"eq.{user_id}",
                 "limit": "1",
             },
             timeout=15.0,
@@ -100,7 +123,8 @@ class BackoffService:
         now = datetime.now(timezone.utc)
 
         async with httpx.AsyncClient() as client:
-            profile = await self._fetch_profile_by_email(client, email)
+            user_id = await self._fetch_user_id_by_email(client, email)
+            profile = await self._fetch_profile_by_id(client, user_id) if user_id else None
 
             if profile:
                 lockout_until = self._parse_lockout_until(profile.get("lockout_until"))
@@ -117,8 +141,8 @@ class BackoffService:
             success, payload = await self._password_login(client, email, password)
 
             if success:
-                user_id = payload.get("user", {}).get("id")
-                target_profile_id = user_id or (profile or {}).get("id")
+                authenticated_user_id = payload.get("user", {}).get("id")
+                target_profile_id = authenticated_user_id or (profile or {}).get("id")
                 if target_profile_id:
                     await self._update_profile_by_id(
                         client,
@@ -141,7 +165,7 @@ class BackoffService:
                     },
                 }
 
-            if not profile:
+            if not user_id or not profile:
                 # Keep generic response to avoid account enumeration.
                 return {
                     "success": False,

@@ -2517,7 +2517,7 @@ Request body:
 ```
 
 Behavior:
-1. Reads `profiles.lockout_until` for the email.
+1. Resolves auth user ID by email via Supabase Admin API, then reads `profiles.lockout_until` by `profiles.id`.
 2. If still locked, returns **423 Locked** with remaining seconds.
 3. On failed password:
    - increments `failed_login_attempts`;
