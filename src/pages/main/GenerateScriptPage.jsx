@@ -202,9 +202,14 @@ function GenerateScriptPage() {
       <div className="token-summary">
         <div className="token-summary__title">Daily token balance</div>
         <div className="token-summary__values">
-          New generations {generationTokens}/10
-          <span className="token-summary__divider" aria-hidden="true">•</span>
-          Regenerations {regenerationTokens}/10
+          <div className="token-summary__item">
+            <div className="token-summary__label">New generations</div>
+            <div className="token-summary__value">{generationTokens}/10</div>
+          </div>
+          <div className="token-summary__item">
+            <div className="token-summary__label">Regenerations</div>
+            <div className="token-summary__value">{regenerationTokens}/10</div>
+          </div>
         </div>
       </div>
 
