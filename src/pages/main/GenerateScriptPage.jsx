@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
+import { supabase } from '../../lib/supabase';
 import BackButton from '../../components/common/BackButton';
 import { ROUTES, WORDS_PER_MINUTE } from '../../utils/constants';
 import { ENV } from '../../config/env';
@@ -58,7 +59,17 @@ function GenerateScriptPage() {
 
     const fetchTokens = async () => {
       try {
-        const response = await fetch(`${ENV.API_BASE_URL}/api/ai/user-tokens`);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) return;
+
+        const response = await fetch(`${ENV.API_BASE_URL}/api/ai/user-tokens`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        });
+
         if (response.ok) {
           const data = await response.json();
           setGenerationTokens(Number(data.generation_tokens ?? 10));
