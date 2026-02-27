@@ -125,6 +125,29 @@ function PublicRoute() {
 }
 
 /**
+ * Root Route Wrapper
+ * Redirects authenticated users to dashboard when hitting landing page.
+ */
+function HomeRoute() {
+  const { isAuthenticated, isInitializing } = useAuthContext();
+
+  if (isInitializing) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-logo">Bigkas</div>
+        <div className="loading-spinner" aria-label="Loading" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  }
+
+  return <LandingPage />;
+}
+
+/**
  * App Router Component
  * Defines all application routes
  */
@@ -187,8 +210,8 @@ function AppRouter() {
         <Route path={ROUTES.DETAILED_FEEDBACK} element={<DetailedFeedbackPage />} />
       </Route>
 
-      {/* Landing Page — public root */}
-      <Route path={ROUTES.HOME} element={<LandingPage />} />
+      {/* Landing Page — redirects authenticated users to dashboard */}
+      <Route path={ROUTES.HOME} element={<HomeRoute />} />
 
       {/* 404 - Redirect to landing */}
       <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
