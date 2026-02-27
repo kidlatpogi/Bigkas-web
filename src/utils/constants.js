@@ -49,6 +49,8 @@ export const UI = {
   PAGE_SIZE: 10,
 };
 
+export const WORDS_PER_MINUTE = 150;
+
 // Score tiers
 export const SCORE_TIER = {
   excellent: { min: 85, label: 'Excellent', color: '#34C759' },

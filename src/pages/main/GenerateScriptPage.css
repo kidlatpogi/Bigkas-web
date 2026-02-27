@@ -55,6 +55,24 @@
   border-color: #AAAAAA;
 }
 
+.duration-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-slider {
+  width: 100%;
+  accent-color: #FBAF00;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* Generate modal */
 .generate-modal {
   max-height: 90vh;
@@ -83,4 +101,8 @@
 
 [data-theme='dark'] .chip:hover:not(.active) {
   border-color: #5A5A5A;
+}
+
+[data-theme='dark'] .slider-labels {
+  color: rgba(240,240,240,0.85);
 }

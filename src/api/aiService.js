@@ -3,40 +3,44 @@
  */
 
 const SYSTEM_PROMPT = `You are a professional Speech Writing Assistant for the "Bigkas" platform.
-Your goal is to generate high-quality, structured speech scripts based on user inputs.
+Your task is to generate a structured speech script based on user inputs.
+
+PARAMETERS:
+- TOPIC: {prompt}
+- VIBE: {vibe} (Professional, Casual, Humorous, or Inspirational)
+- TARGET DURATION: {durationMinutes} minutes
+- ESTIMATED WORD COUNT: {targetWordCount} words (calculated at 150 words per minute)
 
 CONSTRAINTS:
-1. WORD COUNT: Strictly adhere to the requested length:
-   - Short: ~60 words
-   - Medium: ~120 words
-   - Long: ~220 words
-2. VIBE: Adjust your vocabulary, tone, and sentence structure based on:
+1. WORD COUNT: Stay within +/- 10% of the target word count.
+2. TONE:
    - Professional: Formal, authoritative, clear, and structured.
    - Casual: Relatable, friendly, using conversational contractions.
    - Humorous: Witty, includes light-hearted observations or jokes.
    - Inspirational: Emotive, rhythmic, and focuses on "why" and "possibility."
-3. FORMAT: Return the response in a valid JSON format with two keys:
+3. OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these two keys:
    - "title": A concise, catchy title for the speech.
-   - "content": The full text of the speech.`;
+  - "content": The full text of the speech.`;
 
 /**
  * Generate a speech script using AI (Gemini → Groq fallback).
- * @param {{ prompt: string, vibe: string, duration: string }} userData
+ * @param {{ prompt: string, vibe: string, wordCount?: number, targetWordCount?: number, durationMinutes?: number }} userData
  * @returns {Promise<{ title: string, content: string }>}
  */
 export const generateSpeech = async (userData) => {
-  const { prompt, vibe, duration } = userData;
-  const wordCount = duration === 'Short' ? 60 : duration === 'Medium' ? 120 : 220;
+  const { prompt, vibe, durationMinutes } = userData;
+  const targetWordCount = Math.round(userData.wordCount ?? userData.targetWordCount ?? 450);
+  const minutes = durationMinutes ?? Math.max(1, Math.round((targetWordCount / 150) * 10) / 10);
 
   // Primary: Gemini
   try {
-    return await callGemini(prompt, vibe, wordCount);
+    return await callGemini(prompt, vibe, targetWordCount, minutes);
   } catch (error) {
     console.error('Gemini failed, falling back to Groq:', error);
 
     // Fallback: Groq
     try {
-      return await callGroq(prompt, vibe, wordCount);
+      return await callGroq(prompt, vibe, targetWordCount, minutes);
     } catch (fallbackError) {
       console.error('Groq also failed:', fallbackError);
       throw new Error('All AI services failed. Please try again later.');
@@ -45,7 +49,7 @@ export const generateSpeech = async (userData) => {
 };
 
 // --------------- Gemini ---------------
-async function callGemini(prompt, vibe, wordCount) {
+async function callGemini(prompt, vibe, targetWordCount, durationMinutes) {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) throw new Error('Gemini API key is not configured.');
 
@@ -60,7 +64,7 @@ async function callGemini(prompt, vibe, wordCount) {
           {
             parts: [
               {
-                text: `Topic: ${prompt}\nVibe: ${vibe}\nDuration target word count: ${wordCount}`,
+                text: `TOPIC: ${prompt}\nVIBE: ${vibe}\nTARGET DURATION: ${durationMinutes} minutes\nESTIMATED WORD COUNT: ${targetWordCount} words`,
               },
             ],
           },
@@ -80,7 +84,7 @@ async function callGemini(prompt, vibe, wordCount) {
 }
 
 // --------------- Groq ---------------
-async function callGroq(prompt, vibe, wordCount) {
+async function callGroq(prompt, vibe, targetWordCount, durationMinutes) {
   const apiKey = import.meta.env.VITE_GROQ_API_KEY;
   if (!apiKey) throw new Error('Groq API key is not configured.');
 
@@ -96,7 +100,7 @@ async function callGroq(prompt, vibe, wordCount) {
         { role: 'system', content: SYSTEM_PROMPT },
         {
           role: 'user',
-          content: `Topic: ${prompt}\nVibe: ${vibe}\nDuration target word count: ${wordCount}`,
+          content: `TOPIC: ${prompt}\nVIBE: ${vibe}\nTARGET DURATION: ${durationMinutes} minutes\nESTIMATED WORD COUNT: ${targetWordCount} words`,
         },
       ],
       response_format: { type: 'json_object' },
