@@ -13,7 +13,8 @@ function ScriptsPage() {
   const location = useLocation();
   const { user } = useAuthContext();
 
-  const initialTab = location.state?.filter === 'auto-generated' ? 'generated' : 'self';
+  const requestedTab = location.state?.initialTab || location.state?.filter;
+  const initialTab = requestedTab === 'auto-generated' ? 'generated' : 'self';
   const [activeTab, setActiveTab] = useState(initialTab);  // 'self' | 'generated'
   const [scripts, setScripts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

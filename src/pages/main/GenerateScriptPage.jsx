@@ -10,18 +10,7 @@ import './InnerPages.css';
 import './GenerateScriptPage.css';
 
 const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
-const TOPICS     = [
-  'The impact of AI on education',
-  'Sustainable living in cities',
-  'The future of remote work',
-  'Mental health awareness in tech',
-  'The evolution of social media',
-  'Public speaking as a life skill',
-  'Climate change and local action',
-  'The importance of data privacy',
-];
-
-const COOLDOWN_TIME = 60000;
+const COOLDOWN_MS = 60000;
 
 function GenerateScriptPage() {
   const navigate  = useNavigate();
@@ -36,18 +25,24 @@ function GenerateScriptPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
   const [error,      setError]      = useState('');
-  const [lastGenerated, setLastGenerated] = useState(0);
+  const [lastGenTime, setLastGenTime] = useState(0);
 
-  const handleRandomTopic = () => {
-    const t = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-    setPrompt(t);
+  const handleRandomTopic = async () => {
+    try {
+      const { default: allTopics } = await import('../../assets/topics.json');
+      const randomIndex = Math.floor(Math.random() * allTopics.length);
+      setPrompt(allTopics[randomIndex]);
+    } catch (err) {
+      console.error('Error loading topics:', err);
+      setError('Failed to load random topics. Please try again.');
+    }
   };
 
   const handleGenerate = async () => {
     const now = Date.now();
-    if (now - lastGenerated < COOLDOWN_TIME) {
-      const remaining = Math.ceil((COOLDOWN_TIME - (now - lastGenerated)) / 1000);
-      setError(`Please wait ${remaining} seconds before generating again.`);
+    if (now - lastGenTime < COOLDOWN_MS) {
+      const wait = Math.ceil((COOLDOWN_MS - (now - lastGenTime)) / 1000);
+      setError(`Please wait ${wait}s to prevent API exhaustion.`);
       return;
     }
 
@@ -56,7 +51,6 @@ function GenerateScriptPage() {
       return;
     }
     setError('');
-    setLastGenerated(now);
     setIsGenerating(true);
     const targetWordCount = Math.round(duration * WORDS_PER_MINUTE);
 
@@ -70,6 +64,7 @@ function GenerateScriptPage() {
       setGenerated(result);
       setEditTitle(result.title);
       setEditContent(result.content);
+      setLastGenTime(now);
     } catch (err) {
       setError(err.message || 'Failed to generate script. Please try again.');
     } finally {
@@ -87,7 +82,7 @@ function GenerateScriptPage() {
         content: editContent.trim(),
         type:    'auto-generated',
       });
-      navigate(ROUTES.SCRIPTS, { state: { filter: 'auto-generated' } });
+      navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated' } });
     } catch {
       setError('Failed to save script.');
     } finally {
