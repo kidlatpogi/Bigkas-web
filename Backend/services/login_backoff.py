@@ -12,9 +12,9 @@ class BackoffService:
     """Encapsulates profile lockout + Supabase password login orchestration."""
 
     def __init__(self) -> None:
-        self._supabase_url = settings.SUPABASE_URL.rstrip("/")
-        self._anon_key = settings.SUPABASE_ANON_KEY
-        self._service_key = settings.SUPABASE_SERVICE_ROLE_KEY
+        self._supabase_url = (settings.SUPABASE_URL or "").rstrip("/")
+        self._anon_key = settings.SUPABASE_ANON_KEY or ""
+        self._service_key = settings.SUPABASE_SERVICE_ROLE_KEY or ""
 
     @property
     def is_configured(self) -> bool:
