@@ -75,10 +75,14 @@ app.add_middleware(
 
 # ── Register route modules (analysis only) ─────────────────────────
 from api.routes.analysis import router as analysis_router  # noqa: E402
+from api.routes.auth import router as auth_router  # noqa: E402
 from api.routes.content import router as content_router  # noqa: E402
+from api.routes.ai import router as ai_router  # noqa: E402
 
 app.include_router(analysis_router, prefix="/api")
 app.include_router(content_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
+app.include_router(ai_router, prefix="/api")
 
 
 # ── Health check ────────────────────────────────────────────────────

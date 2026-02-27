@@ -1,16 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
-import { generateSpeech } from '../../api/aiService';
 import BackButton from '../../components/common/BackButton';
 import { ROUTES, WORDS_PER_MINUTE } from '../../utils/constants';
+import { ENV } from '../../config/env';
 import './InnerPages.css';
 import './GenerateScriptPage.css';
 
 const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
-const COOLDOWN_MS = 60000;
+const COOLDOWN_STORAGE_KEY = 'bigkas_generate_cooldown_end_time';
+
+function getInitialCooldownSeconds() {
+  const stored = window.localStorage.getItem(COOLDOWN_STORAGE_KEY);
+  if (!stored) return 0;
+  const endMs = Number(stored);
+  if (!Number.isFinite(endMs)) {
+    window.localStorage.removeItem(COOLDOWN_STORAGE_KEY);
+    return 0;
+  }
+  const remaining = Math.ceil((endMs - Date.now()) / 1000);
+  if (remaining <= 0) {
+    window.localStorage.removeItem(COOLDOWN_STORAGE_KEY);
+    return 0;
+  }
+  return remaining;
+}
+
+function formatCooldown(seconds) {
+  const safe = Math.max(0, Math.floor(Number(seconds) || 0));
+  const minutes = Math.floor(safe / 60);
+  const remainder = safe % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`;
+}
 
 function GenerateScriptPage() {
   const navigate  = useNavigate();
@@ -25,24 +48,69 @@ function GenerateScriptPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
   const [error,      setError]      = useState('');
-  const [lastGenTime, setLastGenTime] = useState(0);
+  const [cooldownSeconds, setCooldownSeconds] = useState(() => getInitialCooldownSeconds());
+  const [generationTokens, setGenerationTokens] = useState(10);
+  const [regenerationTokens, setRegenerationTokens] = useState(10);
+
+  // Fetch and initialize token counts from backend
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchTokens = async () => {
+      try {
+        const response = await fetch(
+          `${ENV.API_BASE_URL}/api/ai/user-tokens?user_id=${encodeURIComponent(user.id)}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setGenerationTokens(Number(data.generation_tokens ?? 10));
+          setRegenerationTokens(Number(data.regeneration_tokens ?? 10));
+        }
+      } catch {
+        // Use default values
+      }
+    };
+
+    fetchTokens();
+  }, [user?.id]);
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const interval = setInterval(() => {
+      setCooldownSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          window.localStorage.removeItem(COOLDOWN_STORAGE_KEY);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownSeconds]);
+
+  const startCooldown = (seconds) => {
+    const safeSeconds = Math.max(1, Number(seconds) || 60);
+    const cooldownEndMs = Date.now() + safeSeconds * 1000;
+    window.localStorage.setItem(COOLDOWN_STORAGE_KEY, String(cooldownEndMs));
+    setCooldownSeconds(safeSeconds);
+  };
 
   const handleRandomTopic = async () => {
     try {
       const { default: allTopics } = await import('../../assets/topics.json');
       const randomIndex = Math.floor(Math.random() * allTopics.length);
       setPrompt(allTopics[randomIndex]);
-    } catch (err) {
-      console.error('Error loading topics:', err);
+    } catch {
       setError('Failed to load random topics. Please try again.');
     }
   };
 
-  const handleGenerate = async () => {
-    const now = Date.now();
-    if (now - lastGenTime < COOLDOWN_MS) {
-      const wait = Math.ceil((COOLDOWN_MS - (now - lastGenTime)) / 1000);
-      setError(`Please wait ${wait}s to prevent API exhaustion.`);
+  const handleGenerate = async (action = 'new') => {
+    if (action === 'new' && cooldownSeconds > 0) {
+      setError(`Please wait before generating another script. Wait (${formatCooldown(cooldownSeconds)}).`);
       return;
     }
 
@@ -50,21 +118,61 @@ function GenerateScriptPage() {
       setError('Please enter a prompt or pick a random topic.');
       return;
     }
+
+    if (!user?.id) {
+      setError('You must be logged in to generate a script.');
+      return;
+    }
+
     setError('');
     setIsGenerating(true);
     const targetWordCount = Math.round(duration * WORDS_PER_MINUTE);
 
     try {
-      const result = await generateSpeech({
-        prompt: prompt.trim(),
-        vibe,
-        wordCount: targetWordCount,
-        durationMinutes: duration,
+      const response = await fetch(`${ENV.API_BASE_URL}/api/ai/generate-script`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          prompt: prompt.trim(),
+          vibe,
+          target_word_count: targetWordCount,
+          duration_minutes: duration,
+          action,
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+
+        if (response.status === 429) {
+          const remainingSeconds = errorData?.detail?.remaining_seconds || 60;
+          startCooldown(remainingSeconds);
+          setGenerationTokens(Number(errorData?.detail?.generation_tokens ?? generationTokens));
+          setRegenerationTokens(Number(errorData?.detail?.regeneration_tokens ?? regenerationTokens));
+          setError(errorData?.detail?.error || 'Please wait before generating another script.');
+          return;
+        }
+
+        if (response.status === 403) {
+          setGenerationTokens(Number(errorData?.detail?.generation_tokens ?? generationTokens));
+          setRegenerationTokens(Number(errorData?.detail?.regeneration_tokens ?? regenerationTokens));
+          setError(errorData?.detail?.error || 'You have reached your daily limit.');
+          return;
+        }
+
+        throw new Error(errorData?.detail?.error || 'Failed to generate script. Please try again.');
+      }
+
+      const result = await response.json();
       setGenerated(result);
       setEditTitle(result.title);
       setEditContent(result.content);
-      setLastGenTime(now);
+      setGenerationTokens(Number(result.generation_tokens ?? generationTokens));
+      setRegenerationTokens(Number(result.regeneration_tokens ?? regenerationTokens));
+      if (action === 'new') {
+        startCooldown(60);
+      }
     } catch (err) {
       setError(err.message || 'Failed to generate script. Please try again.');
     } finally {
@@ -114,6 +222,20 @@ function GenerateScriptPage() {
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
         <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Generate Script</h1>
+      </div>
+
+      <div className="token-summary">
+        <div className="token-summary__title">Daily token balance</div>
+        <div className="token-summary__values">
+          <div className="token-summary__item">
+            <div className="token-summary__label">New generations</div>
+            <div className="token-summary__value">{generationTokens}/10</div>
+          </div>
+          <div className="token-summary__item">
+            <div className="token-summary__label">Regenerations</div>
+            <div className="token-summary__value">{regenerationTokens}/10</div>
+          </div>
+        </div>
       </div>
 
       {error && <div className="page-error">{error}</div>}
@@ -169,10 +291,10 @@ function GenerateScriptPage() {
       <button
         className="btn-primary"
         style={{ width: '100%' }}
-        onClick={handleGenerate}
-        disabled={isGenerating}
+        onClick={() => handleGenerate('new')}
+        disabled={isGenerating || cooldownSeconds > 0}
       >
-        {isGenerating ? 'Generating…' : 'Generate Script'}
+        {isGenerating ? 'Generating…' : cooldownSeconds > 0 ? `Wait (${formatCooldown(cooldownSeconds)})` : 'Generate Script'}
       </button>
 
       {/* Preview / edit modal */}
@@ -201,8 +323,12 @@ function GenerateScriptPage() {
             </div>
 
             <div className="btn-row">
-              <button className="btn-secondary" onClick={() => { setGenerated(null); handleGenerate(); }}>
-                Regenerate
+              <button
+                className="btn-secondary"
+                onClick={() => handleGenerate('regenerate')}
+                disabled={isGenerating}
+              >
+                {isGenerating ? 'Regenerating…' : 'Regenerate'}
               </button>
               <button className="btn-secondary" onClick={handleSave} disabled={isSaving}>
                 Save

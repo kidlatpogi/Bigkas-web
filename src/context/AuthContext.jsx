@@ -29,6 +29,23 @@ function normalizeLoginError(err, email) {
   const msg = rawMessage.toLowerCase();
   const code = (err?.code || '').toLowerCase();
 
+  if (err?.status === 423 || code.includes('locked')) {
+    const remainingSeconds = Number(err?.remainingSeconds || 0);
+    const unlockTimeMs = err?.unlockTime ? Date.parse(err.unlockTime) : NaN;
+    const fallbackSeconds = Number.isFinite(unlockTimeMs)
+      ? Math.max(1, Math.ceil((unlockTimeMs - Date.now()) / 1000))
+      : 60;
+    const waitSeconds = Number.isFinite(remainingSeconds) && remainingSeconds > 0
+      ? Math.max(1, Math.ceil(remainingSeconds))
+      : fallbackSeconds;
+    return {
+      code: 'account_locked',
+      message: `Too many failed attempts. Try again in ${waitSeconds}s.`,
+      requiresEmailConfirmation: false,
+      lockoutSeconds: waitSeconds,
+    };
+  }
+
   if (
     msg.includes('email not confirmed') ||
     msg.includes('not confirmed') ||
@@ -62,7 +79,7 @@ function normalizeLoginError(err, email) {
   ) {
     return {
       code: 'invalid_credentials',
-      message: 'Wrong email or password, or no account found for this email.',
+      message: 'Wrong email or password.',
       requiresEmailConfirmation: false,
     };
   }
@@ -171,25 +188,13 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     setError(null);
 
-    try {
+    const fallbackToDirectSupabaseLogin = async () => {
       const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
+
       setIsLoading(false);
 
       if (err) {
         const normalizedError = normalizeLoginError(err, email);
-
-        if (normalizedError.requiresEmailConfirmation) {
-          setPendingEmailVerification(true);
-          setPendingEmail(normalizedError.pendingEmail || email);
-          setError(normalizedError.message);
-          return {
-            success: false,
-            code: normalizedError.code,
-            error: normalizedError.message,
-            requiresEmailConfirmation: true,
-          };
-        }
-
         setError(normalizedError.message);
         return {
           success: false,
@@ -217,16 +222,92 @@ export function AuthProvider({ children }) {
       setPendingEmailVerification(false);
       setPendingEmail(null);
       return { success: true, user: buildUser(data.session) };
-    } catch (networkError) {
+    };
+
+    try {
+      const response = await fetch(`${ENV.API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        if (response.status >= 500) {
+          return await fallbackToDirectSupabaseLogin();
+        }
+
+        let payload = null;
+        try {
+          payload = await response.json();
+        } catch {
+          payload = null;
+        }
+
+        const remainingSeconds = payload?.detail?.remaining_seconds;
+        const unlockTime = payload?.detail?.unlock_time;
+        const backendError = payload?.detail?.error || payload?.error || 'Unable to log in right now. Please try again.';
+        const normalizedError = normalizeLoginError(
+          {
+            status: response.status,
+            code: response.status === 423 ? 'account_locked' : 'invalid_credentials',
+            message: backendError,
+            remainingSeconds,
+            unlockTime,
+          },
+          email
+        );
+
+        setIsLoading(false);
+        setError(normalizedError.message);
+        return {
+          success: false,
+          code: normalizedError.code,
+          error: normalizedError.message,
+          requiresEmailConfirmation: false,
+          lockoutSeconds: normalizedError.lockoutSeconds,
+          unlockTime,
+        };
+      }
+
+      const payload = await response.json();
+      const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
+        access_token: payload.access_token,
+        refresh_token: payload.refresh_token,
+      });
+
       setIsLoading(false);
-      const message = 'Unable to connect. Please check your internet connection and try again.';
-      setError(message);
-      return {
-        success: false,
-        code: 'network_error',
-        error: message,
-        requiresEmailConfirmation: false,
-      };
+
+      if (setSessionError) {
+        const normalizedError = normalizeLoginError(setSessionError, email);
+        setError(normalizedError.message);
+        return {
+          success: false,
+          code: normalizedError.code,
+          error: normalizedError.message,
+          requiresEmailConfirmation: false,
+        };
+      }
+
+      const emailConfirmed = !!sessionData?.session?.user?.email_confirmed_at;
+      if (!emailConfirmed) {
+        setPendingEmailVerification(true);
+        setPendingEmail(email);
+        const message = 'Verify your email address first. Then click resend email below if you need a new link.';
+        setError(message);
+        await supabase.auth.signOut();
+        return {
+          success: false,
+          code: 'email_not_confirmed',
+          error: message,
+          requiresEmailConfirmation: true,
+        };
+      }
+
+      setPendingEmailVerification(false);
+      setPendingEmail(null);
+      return { success: true, user: buildUser(sessionData.session) };
+    } catch (networkError) {
+      return await fallbackToDirectSupabaseLogin();
     }
   }, [buildUser]);
 

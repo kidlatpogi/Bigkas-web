@@ -49,6 +49,7 @@
    - [Supabase Database Schema](#811-supabase-database-schema-required-tables)
    - [Running the Backend](#812-running-the-backend)
    - [Testing](#813-testing)
+9. [Security Hardening Updates (Exponential Login Backoff)](#9-security-hardening-updates-exponential-login-backoff)
 
 ---
 
@@ -2460,3 +2461,238 @@ pytest tests/test_acoustic_analysis.py -v
 ---
 
 *Document generated for cross-platform variable reuse (React Native → Web).*
+
+---
+
+## 9. Security Hardening Updates (Exponential Login Backoff)
+
+Implemented: **February 2026**  
+Scope: Supabase `profiles` lockout fields + FastAPI login orchestration + React lockout countdown UX.
+
+### 9.1 Database Migration (Profiles Table)
+
+**File Added**: `Backend/sql/20260227_add_exponential_login_backoff.sql`
+
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS failed_login_attempts integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS lockout_until timestamptz NULL;
+```
+
+Purpose:
+- `failed_login_attempts`: tracks consecutive failed password attempts.
+- `lockout_until`: blocks login while in the future.
+
+### 9.2 Backend Environment Variables (Security Fundamentals)
+
+**File Changed**: `Backend/config/settings.py`
+
+New required env vars:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+These are required so the backend can:
+1. authenticate credentials via Supabase Auth password grant;
+2. update lockout counters server-side using PostgREST with service role credentials.
+
+### 9.3 New Backend Auth Endpoint
+
+**Files Added**:
+- `Backend/api/routes/auth.py`
+- `Backend/services/login_backoff.py`
+
+**File Changed**:
+- `Backend/main.py` (router registration)
+
+Endpoint:
+- `POST /api/auth/login`
+
+Request body:
+```json
+{
+  "email": "user@example.com",
+  "password": "plaintext-password"
+}
+```
+
+Behavior:
+1. Resolves auth user ID by email via Supabase Admin API, then reads `profiles.lockout_until` by `profiles.id`.
+2. If still locked, returns **423 Locked** with remaining seconds.
+3. On failed password:
+   - increments `failed_login_attempts`;
+   - at 3rd fail, sets 5-minute lockout;
+  - 4th fail = 15 minutes, 5th = 30 minutes;
+  - after that, lock duration doubles (60m, 120m, ...).
+4. On successful password:
+   - resets `failed_login_attempts = 0`;
+   - clears `lockout_until`;
+   - returns session tokens.
+
+423 error payload shape:
+```json
+{
+  "detail": {
+    "error": "Account temporarily locked due to failed login attempts.",
+    "remaining_seconds": 287,
+    "unlock_time": "2026-02-27T13:55:27.123456+00:00"
+  }
+}
+```
+
+### 9.4 Frontend Login Integration
+
+**Files Changed**:
+- `src/context/AuthContext.jsx`
+- `src/pages/auth/LoginPage.jsx`
+
+Auth flow update:
+- Web login now calls `POST ${ENV.API_BASE_URL}/api/auth/login` first.
+- On success, frontend stores session via `supabase.auth.setSession({ access_token, refresh_token })`.
+- On `423`, context returns:
+  - `code: 'account_locked'`
+  - `lockoutSeconds`
+
+Login page UX update:
+- Adds `lockoutSeconds` countdown timer state.
+- Disables email/password fields and login button while locked.
+- Shows button label `LOCKED (xxs)` until countdown reaches zero.
+
+### 9.5 Capstone Notes (Brief)
+
+- Lockout logic is enforced server-side to reduce brute-force and direct endpoint abuse.
+- Credentials are never hardcoded; all secrets are sourced from environment variables.
+- Frontend countdown improves user clarity and prevents repeated locked requests.
+
+### 9.6 Related Documentation Updates
+
+**File Changed**: `Backend/README.md`
+
+- Added `/api/auth/login` endpoint to the endpoint list.
+- Added lockout policy summary in Security Notes.
+
+### 9.7 Script Generation Rate Limiting
+
+Implemented: **February 2026**  
+Scope: Prevent AI API key exhaustion by enforcing 60-second cooldown between script generations per user.
+
+#### 9.7.1 Database Migration (Profiles Table)
+
+**File Added**: `Backend/sql/20260227_add_script_generation_cooldown.sql`
+
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS last_script_generated_at timestamptz NULL;
+```
+
+Purpose:
+- `last_script_generated_at`: tracks the timestamp of the last AI script generation request. Used for 60-second cooldown enforcement.
+
+#### 9.7.2 Backend Environment Variables (AI API Keys)
+
+**Files Changed**:
+- `Backend/config/settings.py`
+- `Backend/.env`
+- `Backend/.env.example`
+
+New optional env vars:
+- `GEMINI_API_KEY`: Google Gemini API key for primary script generation
+- `GROQ_API_KEY`: Groq API key for fallback script generation
+
+These are used by the backend to call AI services server-side, preventing client-side API key exposure and enabling proper rate limiting.
+
+#### 9.7.3 Backend AI Service & Rate Limiter
+
+**Files Added**:
+- `Backend/services/ai_service.py`: Calls Gemini (primary) and Groq (fallback) to generate speech scripts
+- `Backend/services/script_generation_limiter.py`: Enforces 60-second cooldown via profile timestamp tracking
+- `Backend/api/routes/ai.py`: FastAPI route handling script generation requests
+
+**File Changed**:
+- `Backend/main.py` (router registration)
+
+Endpoint:
+- `POST /api/ai/generate-script`
+
+Request body:
+```json
+{
+  "user_id": "uuid-from-supabase-auth",
+  "prompt": "The importance of public speaking",
+  "vibe": "Professional",
+  "target_word_count": 450,
+  "duration_minutes": 3.0
+}
+```
+
+Behavior:
+1. Checks if `last_script_generated_at` is within 60 seconds (cooldown period).
+2. If in cooldown, returns **429 Too Many Requests** with remaining seconds.
+3. If cooldown passed:
+   - Calls Gemini API first (primary)
+   - Falls back to Groq API if Gemini fails
+   - Updates `last_script_generated_at` timestamp
+   - Returns generated script with title and content
+
+429 error payload shape:
+```json
+{
+  "detail": {
+    "error": "Please wait before generating another script.",
+    "remaining_seconds": 42,
+    "cooldown_until": "2026-02-27T14:22:15.123456+00:00"
+  }
+}
+```
+
+200 success payload shape:
+```json
+{
+  "title": "The Power of Effective Communication",
+  "content": "Good morning everyone... [full script text with paragraph breaks]"
+}
+```
+
+#### 9.7.4 Frontend Integration
+
+**Files Changed**:
+- `src/pages/main/GenerateScriptPage.jsx`
+
+Script generation flow update:
+- Frontend now calls `POST ${ENV.API_BASE_URL}/api/ai/generate-script` instead of calling AI services directly.
+- Removed client-side cooldown tracking (now enforced server-side).
+- Added `cooldownSeconds` state with countdown timer.
+- On `429` response:
+  - Parses `remaining_seconds` from error payload
+  - Displays countdown timer on generate button
+  - Disables button during cooldown
+  - Shows `Wait ${cooldownSeconds}s` label
+
+Benefits:
+- Prevents API key exhaustion from direct endpoint hits or browser tools
+- API keys secured on backend (not exposed in client-side code)
+- Server-side enforcement prevents cooldown bypass
+- Consistent rate limiting across web and future mobile apps
+
+#### 9.7.5 Migration Instructions
+
+To enable script generation rate limiting:
+
+1. **Run SQL migration** in Supabase SQL Editor:
+   ```bash
+   # Copy contents of Backend/sql/20260227_add_script_generation_cooldown.sql
+   # Paste and run in Supabase dashboard → SQL Editor
+   ```
+
+2. **Add AI API keys** to `Backend/.env`:
+   ```bash
+   GEMINI_API_KEY=your-gemini-api-key
+   GROQ_API_KEY=your-groq-api-key
+   ```
+
+3. **Restart backend server** to load new environment variables and routes.
+
+4. **Test the feature**:
+   - Generate a script (should succeed)
+   - Try generating again immediately (should show 60s countdown)
+   - Wait for countdown to complete (should allow generation again)

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts, deleteScript } from '../../api/scriptsApi';
@@ -21,6 +21,8 @@ function ScriptsPage() {
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const menuButtonRefs = useRef({});
 
   const loadScripts = useCallback(async () => {
     if (!user?.id) return;
@@ -53,6 +55,17 @@ function ScriptsPage() {
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const handleMenuOpen = (scriptId, event) => {
+    event.stopPropagation();
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+    setMenuOpenId(scriptId);
+    setMenuPosition({
+      top: rect.bottom + 8,
+      right: window.innerWidth - rect.right,
+    });
   };
 
   return (
@@ -118,7 +131,8 @@ function ScriptsPage() {
               </span>
               <button
                 className="script-menu-btn"
-                onClick={(e) => { e.stopPropagation(); setMenuOpenId(script.id); }}
+                onClick={(e) => handleMenuOpen(script.id, e)}
+                ref={(el) => { menuButtonRefs.current[script.id] = el; }}
                 aria-label="Script options"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -142,8 +156,18 @@ function ScriptsPage() {
 
       {/* ── Script options modal (ellipsis menu) ── */}
       {menuOpenId && (
-        <div className="script-menu-overlay" onClick={() => setMenuOpenId(null)}>
-          <div className="script-menu-box" onClick={(e) => e.stopPropagation()}>
+        <>
+          <div className="script-menu-overlay" onClick={() => setMenuOpenId(null)} />
+          <div
+            className="script-menu-box"
+            style={{
+              position: 'fixed',
+              top: `${menuPosition.top}px`,
+              right: `${menuPosition.right}px`,
+              zIndex: 1000,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Edit */}
             <button
               className="script-menu-item"
@@ -172,7 +196,7 @@ function ScriptsPage() {
               Delete
             </button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
