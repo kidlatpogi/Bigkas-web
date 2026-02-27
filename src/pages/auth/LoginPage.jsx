@@ -120,8 +120,11 @@ function LoginPage() {
     } else if (result.code === 'account_locked') {
       setLockoutSeconds(Math.max(1, Number(result.lockoutSeconds || 60)));
       setErrors({ submit: result.error || 'Too many failed attempts. Please wait before trying again.' });
+      setFormData({ email: '', password: '' });
     } else {
+      // Clear fields for invalid credentials or account not found
       setErrors({ submit: result.error });
+      setFormData({ email: '', password: '' });
     }
   };
 

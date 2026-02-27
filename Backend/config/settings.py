@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     MAX_AUDIO_DURATION_SEC: int = 120
     MAX_UPLOAD_SIZE_MB: int = 25
 
+    # ── AI API Keys (for server-side script generation) ──
+    GEMINI_API_KEY: Optional[str] = None
+    GROQ_API_KEY: Optional[str] = None
+
     @property
     def max_upload_size_bytes(self) -> int:
         return self.MAX_UPLOAD_SIZE_MB * 1024 * 1024

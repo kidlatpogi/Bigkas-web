@@ -36,13 +36,10 @@ export const generateSpeech = async (userData) => {
   try {
     return await callGemini(prompt, vibe, targetWordCount, minutes);
   } catch (error) {
-    console.error('Gemini failed, falling back to Groq:', error);
-
     // Fallback: Groq
     try {
       return await callGroq(prompt, vibe, targetWordCount, minutes);
     } catch (fallbackError) {
-      console.error('Groq also failed:', fallbackError);
       throw new Error('All AI services failed. Please try again later.');
     }
   }

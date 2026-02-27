@@ -2571,3 +2571,128 @@ Login page UX update:
 - Added `/api/auth/login` endpoint to the endpoint list.
 - Added lockout policy summary in Security Notes.
 
+### 9.7 Script Generation Rate Limiting
+
+Implemented: **February 2026**  
+Scope: Prevent AI API key exhaustion by enforcing 60-second cooldown between script generations per user.
+
+#### 9.7.1 Database Migration (Profiles Table)
+
+**File Added**: `Backend/sql/20260227_add_script_generation_cooldown.sql`
+
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS last_script_generated_at timestamptz NULL;
+```
+
+Purpose:
+- `last_script_generated_at`: tracks the timestamp of the last AI script generation request. Used for 60-second cooldown enforcement.
+
+#### 9.7.2 Backend Environment Variables (AI API Keys)
+
+**Files Changed**:
+- `Backend/config/settings.py`
+- `Backend/.env`
+- `Backend/.env.example`
+
+New optional env vars:
+- `GEMINI_API_KEY`: Google Gemini API key for primary script generation
+- `GROQ_API_KEY`: Groq API key for fallback script generation
+
+These are used by the backend to call AI services server-side, preventing client-side API key exposure and enabling proper rate limiting.
+
+#### 9.7.3 Backend AI Service & Rate Limiter
+
+**Files Added**:
+- `Backend/services/ai_service.py`: Calls Gemini (primary) and Groq (fallback) to generate speech scripts
+- `Backend/services/script_generation_limiter.py`: Enforces 60-second cooldown via profile timestamp tracking
+- `Backend/api/routes/ai.py`: FastAPI route handling script generation requests
+
+**File Changed**:
+- `Backend/main.py` (router registration)
+
+Endpoint:
+- `POST /api/ai/generate-script`
+
+Request body:
+```json
+{
+  "user_id": "uuid-from-supabase-auth",
+  "prompt": "The importance of public speaking",
+  "vibe": "Professional",
+  "target_word_count": 450,
+  "duration_minutes": 3.0
+}
+```
+
+Behavior:
+1. Checks if `last_script_generated_at` is within 60 seconds (cooldown period).
+2. If in cooldown, returns **429 Too Many Requests** with remaining seconds.
+3. If cooldown passed:
+   - Calls Gemini API first (primary)
+   - Falls back to Groq API if Gemini fails
+   - Updates `last_script_generated_at` timestamp
+   - Returns generated script with title and content
+
+429 error payload shape:
+```json
+{
+  "detail": {
+    "error": "Please wait before generating another script.",
+    "remaining_seconds": 42,
+    "cooldown_until": "2026-02-27T14:22:15.123456+00:00"
+  }
+}
+```
+
+200 success payload shape:
+```json
+{
+  "title": "The Power of Effective Communication",
+  "content": "Good morning everyone... [full script text with paragraph breaks]"
+}
+```
+
+#### 9.7.4 Frontend Integration
+
+**Files Changed**:
+- `src/pages/main/GenerateScriptPage.jsx`
+
+Script generation flow update:
+- Frontend now calls `POST ${ENV.API_BASE_URL}/api/ai/generate-script` instead of calling AI services directly.
+- Removed client-side cooldown tracking (now enforced server-side).
+- Added `cooldownSeconds` state with countdown timer.
+- On `429` response:
+  - Parses `remaining_seconds` from error payload
+  - Displays countdown timer on generate button
+  - Disables button during cooldown
+  - Shows `Wait ${cooldownSeconds}s` label
+
+Benefits:
+- Prevents API key exhaustion from direct endpoint hits or browser tools
+- API keys secured on backend (not exposed in client-side code)
+- Server-side enforcement prevents cooldown bypass
+- Consistent rate limiting across web and future mobile apps
+
+#### 9.7.5 Migration Instructions
+
+To enable script generation rate limiting:
+
+1. **Run SQL migration** in Supabase SQL Editor:
+   ```bash
+   # Copy contents of Backend/sql/20260227_add_script_generation_cooldown.sql
+   # Paste and run in Supabase dashboard → SQL Editor
+   ```
+
+2. **Add AI API keys** to `Backend/.env`:
+   ```bash
+   GEMINI_API_KEY=your-gemini-api-key
+   GROQ_API_KEY=your-groq-api-key
+   ```
+
+3. **Restart backend server** to load new environment variables and routes.
+
+4. **Test the feature**:
+   - Generate a script (should succeed)
+   - Try generating again immediately (should show 60s countdown)
+   - Wait for countdown to complete (should allow generation again)

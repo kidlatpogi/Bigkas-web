@@ -1,16 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
-import { generateSpeech } from '../../api/aiService';
 import BackButton from '../../components/common/BackButton';
 import { ROUTES, WORDS_PER_MINUTE } from '../../utils/constants';
+import { ENV } from '../../config/env';
 import './InnerPages.css';
 import './GenerateScriptPage.css';
 
 const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
-const COOLDOWN_MS = 60000;
 
 function GenerateScriptPage() {
   const navigate  = useNavigate();
@@ -25,7 +24,22 @@ function GenerateScriptPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
   const [error,      setError]      = useState('');
-  const [lastGenTime, setLastGenTime] = useState(0);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const interval = setInterval(() => {
+      setCooldownSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownSeconds]);
 
   const handleRandomTopic = async () => {
     try {
@@ -33,16 +47,13 @@ function GenerateScriptPage() {
       const randomIndex = Math.floor(Math.random() * allTopics.length);
       setPrompt(allTopics[randomIndex]);
     } catch (err) {
-      console.error('Error loading topics:', err);
       setError('Failed to load random topics. Please try again.');
     }
   };
 
   const handleGenerate = async () => {
-    const now = Date.now();
-    if (now - lastGenTime < COOLDOWN_MS) {
-      const wait = Math.ceil((COOLDOWN_MS - (now - lastGenTime)) / 1000);
-      setError(`Please wait ${wait}s to prevent API exhaustion.`);
+    if (cooldownSeconds > 0) {
+      setError(`Please wait ${cooldownSeconds}s before generating another script.`);
       return;
     }
 
@@ -50,21 +61,47 @@ function GenerateScriptPage() {
       setError('Please enter a prompt or pick a random topic.');
       return;
     }
+
+    if (!user?.id) {
+      setError('You must be logged in to generate a script.');
+      return;
+    }
+
     setError('');
     setIsGenerating(true);
     const targetWordCount = Math.round(duration * WORDS_PER_MINUTE);
 
     try {
-      const result = await generateSpeech({
-        prompt: prompt.trim(),
-        vibe,
-        wordCount: targetWordCount,
-        durationMinutes: duration,
+      const response = await fetch(`${ENV.API_BASE_URL}/api/ai/generate-script`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          prompt: prompt.trim(),
+          vibe,
+          target_word_count: targetWordCount,
+          duration_minutes: duration,
+        }),
       });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          // Cooldown active
+          const errorData = await response.json();
+          const remainingSeconds = errorData?.detail?.remaining_seconds || 60;
+          setCooldownSeconds(Math.max(1, remainingSeconds));
+          setError(errorData?.detail?.error || `Please wait ${remainingSeconds}s before generating another script.`);
+          return;
+        }
+
+        const errorData = await response.json();
+        throw new Error(errorData?.detail?.error || 'Failed to generate script. Please try again.');
+      }
+
+      const result = await response.json();
       setGenerated(result);
       setEditTitle(result.title);
       setEditContent(result.content);
-      setLastGenTime(now);
     } catch (err) {
       setError(err.message || 'Failed to generate script. Please try again.');
     } finally {
@@ -170,9 +207,9 @@ function GenerateScriptPage() {
         className="btn-primary"
         style={{ width: '100%' }}
         onClick={handleGenerate}
-        disabled={isGenerating}
+        disabled={isGenerating || cooldownSeconds > 0}
       >
-        {isGenerating ? 'Generating…' : 'Generate Script'}
+        {isGenerating ? 'Generating…' : cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : 'Generate Script'}
       </button>
 
       {/* Preview / edit modal */}
