@@ -200,7 +200,7 @@ function GenerateScriptPage() {
       </div>
 
       <div className="page-caption" style={{ marginBottom: 12 }}>
-        ✨ New: {generationTokens}/10 &nbsp; • &nbsp; 🔄 Re-gen: {regenerationTokens}/10
+        Daily token balance: New generations {generationTokens}/10 • Regenerations {regenerationTokens}/10
       </div>
 
       {error && <div className="page-error">{error}</div>}
