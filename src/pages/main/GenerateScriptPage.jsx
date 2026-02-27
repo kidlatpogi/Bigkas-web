@@ -199,9 +199,13 @@ function GenerateScriptPage() {
         <h1 className="inner-page-title">Generate Script</h1>
       </div>
 
-      <div className="page-caption" style={{ marginBottom: 12 }}>
-        Daily token balance: 
-        <br />New Script Generations {generationTokens}/10 • Regenerations {regenerationTokens}/10
+      <div className="token-summary">
+        <div className="token-summary__title">Daily token balance</div>
+        <div className="token-summary__values">
+          New generations {generationTokens}/10
+          <span className="token-summary__divider" aria-hidden="true">•</span>
+          Regenerations {regenerationTokens}/10
+        </div>
       </div>
 
       {error && <div className="page-error">{error}</div>}
