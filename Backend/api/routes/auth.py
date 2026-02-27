@@ -45,6 +45,12 @@ async def login(payload: LoginRequest):
             },
         )
 
+    if result["status"] == 503:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"error": result.get("error", "Auth service unavailable.")},
+        )
+
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail={"error": result.get("error", "Invalid email or password.")},

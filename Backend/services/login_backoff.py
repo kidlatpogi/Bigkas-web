@@ -17,6 +17,10 @@ class BackoffService:
         self._service_key = settings.SUPABASE_SERVICE_ROLE_KEY
 
     @property
+    def is_configured(self) -> bool:
+        return bool(self._supabase_url and self._anon_key and self._service_key)
+
+    @property
     def _rest_headers(self) -> Dict[str, str]:
         return {
             "apikey": self._service_key,
@@ -120,6 +124,13 @@ class BackoffService:
         return 30 * (2 ** exponent)
 
     async def login_with_backoff(self, email: str, password: str) -> Dict[str, Any]:
+        if not self.is_configured:
+            return {
+                "success": False,
+                "status": 503,
+                "error": "Auth backoff service is not configured on the backend.",
+            }
+
         now = datetime.now(timezone.utc)
 
         async with httpx.AsyncClient() as client:
