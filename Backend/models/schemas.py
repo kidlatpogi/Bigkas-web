@@ -13,6 +13,22 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
+# ── Auth Backoff Login ────────────────────────────────────────────
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    success: bool
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None
+    expires_in: Optional[int] = None
+    token_type: Optional[str] = None
+    user: Optional[Dict[str, Any]] = None
+
+
 # ── Acoustic Analysis ──────────────────────────────────────────────
 
 class AcousticMetricsResponse(BaseModel):

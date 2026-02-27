@@ -12,6 +12,11 @@ from typing import List
 class Settings(BaseSettings):
     """Global application settings sourced from .env or environment."""
 
+    # ── Supabase (server-side auth + profile lockout updates) ───
+    SUPABASE_URL: str
+    SUPABASE_ANON_KEY: str
+    SUPABASE_SERVICE_ROLE_KEY: str
+
     # ── JWT (to verify Supabase tokens from the frontend) ───
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"

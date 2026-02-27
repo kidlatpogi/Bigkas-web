@@ -49,6 +49,7 @@
    - [Supabase Database Schema](#811-supabase-database-schema-required-tables)
    - [Running the Backend](#812-running-the-backend)
    - [Testing](#813-testing)
+9. [Security Hardening Updates (Exponential Login Backoff)](#9-security-hardening-updates-exponential-login-backoff)
 
 ---
 
@@ -2460,3 +2461,111 @@ pytest tests/test_acoustic_analysis.py -v
 ---
 
 *Document generated for cross-platform variable reuse (React Native → Web).*
+
+---
+
+## 9. Security Hardening Updates (Exponential Login Backoff)
+
+Implemented: **February 2026**  
+Scope: Supabase `profiles` lockout fields + FastAPI login orchestration + React lockout countdown UX.
+
+### 9.1 Database Migration (Profiles Table)
+
+**File Added**: `Backend/sql/20260227_add_exponential_login_backoff.sql`
+
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS failed_login_attempts integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS lockout_until timestamptz NULL;
+```
+
+Purpose:
+- `failed_login_attempts`: tracks consecutive failed password attempts.
+- `lockout_until`: blocks login while in the future.
+
+### 9.2 Backend Environment Variables (Security Fundamentals)
+
+**File Changed**: `Backend/config/settings.py`
+
+New required env vars:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+These are required so the backend can:
+1. authenticate credentials via Supabase Auth password grant;
+2. update lockout counters server-side using PostgREST with service role credentials.
+
+### 9.3 New Backend Auth Endpoint
+
+**Files Added**:
+- `Backend/api/routes/auth.py`
+- `Backend/services/login_backoff.py`
+
+**File Changed**:
+- `Backend/main.py` (router registration)
+
+Endpoint:
+- `POST /api/auth/login`
+
+Request body:
+```json
+{
+  "email": "user@example.com",
+  "password": "plaintext-password"
+}
+```
+
+Behavior:
+1. Reads `profiles.lockout_until` for the email.
+2. If still locked, returns **423 Locked** with remaining seconds.
+3. On failed password:
+   - increments `failed_login_attempts`;
+   - at 3rd fail, sets 5-minute lockout;
+   - after that, lock duration doubles (10m, 20m, 40m, ...).
+4. On successful password:
+   - resets `failed_login_attempts = 0`;
+   - clears `lockout_until`;
+   - returns session tokens.
+
+423 error payload shape:
+```json
+{
+  "detail": {
+    "error": "Account temporarily locked due to failed login attempts.",
+    "remaining_seconds": 287
+  }
+}
+```
+
+### 9.4 Frontend Login Integration
+
+**Files Changed**:
+- `src/context/AuthContext.jsx`
+- `src/pages/auth/LoginPage.jsx`
+
+Auth flow update:
+- Web login now calls `POST ${ENV.API_BASE_URL}/api/auth/login` first.
+- On success, frontend stores session via `supabase.auth.setSession({ access_token, refresh_token })`.
+- On `423`, context returns:
+  - `code: 'account_locked'`
+  - `lockoutSeconds`
+
+Login page UX update:
+- Adds `lockoutSeconds` countdown timer state.
+- Disables email/password fields and login button while locked.
+- Shows button label `LOCKED (xxs)` until countdown reaches zero.
+
+### 9.5 Capstone Notes (Brief)
+
+- Lockout logic is enforced server-side to reduce brute-force and direct endpoint abuse.
+- Credentials are never hardcoded; all secrets are sourced from environment variables.
+- Frontend countdown improves user clarity and prevents repeated locked requests.
+
+### 9.6 Related Documentation Updates
+
+**File Changed**: `Backend/README.md`
+
+- Added `/api/auth/login` endpoint to the endpoint list.
+- Added lockout policy summary in Security Notes.
+

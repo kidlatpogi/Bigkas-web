@@ -29,6 +29,17 @@ function normalizeLoginError(err, email) {
   const msg = rawMessage.toLowerCase();
   const code = (err?.code || '').toLowerCase();
 
+  if (err?.status === 423 || code.includes('locked')) {
+    const remainingSeconds = Number(err?.remainingSeconds || 0);
+    const waitSeconds = Number.isFinite(remainingSeconds) ? Math.max(1, Math.ceil(remainingSeconds)) : 60;
+    return {
+      code: 'account_locked',
+      message: `Too many failed attempts. Try again in ${waitSeconds}s.`,
+      requiresEmailConfirmation: false,
+      lockoutSeconds: waitSeconds,
+    };
+  }
+
   if (
     msg.includes('email not confirmed') ||
     msg.includes('not confirmed') ||
@@ -172,24 +183,53 @@ export function AuthProvider({ children }) {
     setError(null);
 
     try {
-      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
-      setIsLoading(false);
+      const response = await fetch(`${ENV.API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (err) {
-        const normalizedError = normalizeLoginError(err, email);
-
-        if (normalizedError.requiresEmailConfirmation) {
-          setPendingEmailVerification(true);
-          setPendingEmail(normalizedError.pendingEmail || email);
-          setError(normalizedError.message);
-          return {
-            success: false,
-            code: normalizedError.code,
-            error: normalizedError.message,
-            requiresEmailConfirmation: true,
-          };
+      if (!response.ok) {
+        let payload = null;
+        try {
+          payload = await response.json();
+        } catch {
+          payload = null;
         }
 
+        const remainingSeconds = payload?.detail?.remaining_seconds;
+        const backendError = payload?.detail?.error || payload?.error || 'Unable to log in right now. Please try again.';
+        const normalizedError = normalizeLoginError(
+          {
+            status: response.status,
+            code: response.status === 423 ? 'account_locked' : 'invalid_credentials',
+            message: backendError,
+            remainingSeconds,
+          },
+          email
+        );
+
+        setIsLoading(false);
+        setError(normalizedError.message);
+        return {
+          success: false,
+          code: normalizedError.code,
+          error: normalizedError.message,
+          requiresEmailConfirmation: false,
+          lockoutSeconds: normalizedError.lockoutSeconds,
+        };
+      }
+
+      const payload = await response.json();
+      const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
+        access_token: payload.access_token,
+        refresh_token: payload.refresh_token,
+      });
+
+      setIsLoading(false);
+
+      if (setSessionError) {
+        const normalizedError = normalizeLoginError(setSessionError, email);
         setError(normalizedError.message);
         return {
           success: false,
@@ -199,7 +239,7 @@ export function AuthProvider({ children }) {
         };
       }
 
-      const emailConfirmed = !!data.user?.email_confirmed_at;
+      const emailConfirmed = !!sessionData?.session?.user?.email_confirmed_at;
       if (!emailConfirmed) {
         setPendingEmailVerification(true);
         setPendingEmail(email);
@@ -216,7 +256,7 @@ export function AuthProvider({ children }) {
 
       setPendingEmailVerification(false);
       setPendingEmail(null);
-      return { success: true, user: buildUser(data.session) };
+      return { success: true, user: buildUser(sessionData.session) };
     } catch (networkError) {
       setIsLoading(false);
       const message = 'Unable to connect. Please check your internet connection and try again.';

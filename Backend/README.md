@@ -24,6 +24,13 @@ FastAPI backend for Bigkas — AI-powered public speaking practice platform.
 - `GET /health` - Health check
 - `POST /api/analysis/analyze` - Submit audio/video for ML analysis
 - `GET /api/content/daily-quote` - Fetch daily motivational quote
+- `POST /api/auth/login` - Password login with exponential lockout backoff
+
+## Security Notes
+
+- Login backoff is enforced server-side via `profiles.failed_login_attempts` and `profiles.lockout_until`.
+- Lock policy: 3rd failed password = 5m lock, then doubles (10m, 20m, ...).
+- Successful login resets lockout counters to baseline.
 
 ## Tech Stack
 

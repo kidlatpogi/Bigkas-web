@@ -32,6 +32,7 @@ function LoginPage() {
   const [showAccountCreated, setShowAccountCreated] = useState(() => Boolean(location.state?.accountCreated));
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [lockoutSeconds, setLockoutSeconds] = useState(0);
 
   // Show the "Account created" banner from navigation state, auto-clear after 3s
   useEffect(() => {
@@ -55,6 +56,20 @@ function LoginPage() {
     }, 1000);
     return () => clearInterval(interval);
   }, [resendCooldown]);
+
+  useEffect(() => {
+    if (lockoutSeconds <= 0) return;
+    const interval = setInterval(() => {
+      setLockoutSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lockoutSeconds]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,6 +98,10 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (lockoutSeconds > 0) {
+      setErrors({ submit: `Account locked. Try again in ${lockoutSeconds}s.` });
+      return;
+    }
     if (isLoading) return;
     if (!validateForm()) return;
     // Clear all banners when attempting to log in
@@ -98,6 +117,9 @@ function LoginPage() {
       // User account exists but email is not verified
       setShowUnverified(true);
       setFormData({ email: '', password: '' });
+    } else if (result.code === 'account_locked') {
+      setLockoutSeconds(Math.max(1, Number(result.lockoutSeconds || 60)));
+      setErrors({ submit: result.error || 'Too many failed attempts. Please wait before trying again.' });
     } else {
       setErrors({ submit: result.error });
     }
@@ -223,7 +245,7 @@ function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="name@gmail.com"
-                disabled={isLoading}
+                disabled={isLoading || lockoutSeconds > 0}
               />
               {errors.email && <span className="form-error">{errors.email}</span>}
             </div>
@@ -238,7 +260,7 @@ function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                disabled={isLoading}
+                disabled={isLoading || lockoutSeconds > 0}
               />
               {errors.password && <span className="form-error">{errors.password}</span>}
             </div>
@@ -246,9 +268,9 @@ function LoginPage() {
             <button
               type="submit"
               className="auth-submit-btn"
-              disabled={isLoading}
+              disabled={isLoading || lockoutSeconds > 0}
             >
-              {isLoading ? 'LOGGING IN...' : 'LOG IN'}
+              {isLoading ? 'LOGGING IN...' : lockoutSeconds > 0 ? `LOCKED (${lockoutSeconds}s)` : 'LOG IN'}
             </button>
           </form>
 
