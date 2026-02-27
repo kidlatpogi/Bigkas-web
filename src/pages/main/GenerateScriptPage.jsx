@@ -52,6 +52,26 @@ function GenerateScriptPage() {
   const [generationTokens, setGenerationTokens] = useState(10);
   const [regenerationTokens, setRegenerationTokens] = useState(10);
 
+  // Fetch and initialize token counts from backend
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchTokens = async () => {
+      try {
+        const response = await fetch(`${ENV.API_BASE_URL}/api/ai/user-tokens`);
+        if (response.ok) {
+          const data = await response.json();
+          setGenerationTokens(Number(data.generation_tokens ?? 10));
+          setRegenerationTokens(Number(data.regeneration_tokens ?? 10));
+        }
+      } catch {
+        // Use default values
+      }
+    };
+
+    fetchTokens();
+  }, [user?.id]);
+
   // Cooldown countdown timer
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
@@ -300,13 +320,10 @@ function GenerateScriptPage() {
             <div className="btn-row">
               <button
                 className="btn-secondary"
-                onClick={() => {
-                  setGenerated(null);
-                  handleGenerate('regenerate');
-                }}
+                onClick={() => handleGenerate('regenerate')}
                 disabled={isGenerating || cooldownSeconds > 0}
               >
-                Regenerate
+                {isGenerating ? 'Regenerating…' : 'Regenerate'}
               </button>
               <button className="btn-secondary" onClick={handleSave} disabled={isSaving}>
                 Save

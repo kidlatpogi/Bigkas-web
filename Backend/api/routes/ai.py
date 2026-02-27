@@ -7,10 +7,11 @@ Server-side script generation with rate limiting to prevent API key exhaustion.
 from __future__ import annotations
 
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import Literal
 
+from api.middleware.auth import get_current_user
 from services.script_generation_limiter import limiter_service
 from services.ai_service import generate_script_with_ai
 
@@ -34,6 +35,43 @@ class ScriptGenerationResponse(BaseModel):
     content: str
     generation_tokens: int
     regeneration_tokens: int
+
+
+class UserTokensResponse(BaseModel):
+    """Response body for user token balance."""
+    generation_tokens: int
+    regeneration_tokens: int
+
+
+@router.get("/user-tokens", response_model=UserTokensResponse)
+async def get_user_tokens(user: dict = Depends(get_current_user)):
+    """
+    Get the current token balance for the authenticated user.
+    
+    Returns:
+        generation_tokens: Number of new generation tokens available
+        regeneration_tokens: Number of regeneration tokens available
+    """
+    if not limiter_service.is_configured:
+        raise HTTPException(
+            status_code=503,
+            detail="Script generation rate limiter is not configured on the backend.",
+        )
+    
+    async with httpx.AsyncClient() as client:
+        profile = await limiter_service._fetch_profile_limits(client, user["sub"])
+        
+        if not profile:
+            return UserTokensResponse(
+                generation_tokens=10,
+                regeneration_tokens=10,
+            )
+        
+        return UserTokensResponse(
+            generation_tokens=int(profile.get("generation_tokens") or 10),
+            regeneration_tokens=int(profile.get("regeneration_tokens") or 10),
+        )
+
 
 
 @router.post("/generate-script", response_model=ScriptGenerationResponse, status_code=200)
