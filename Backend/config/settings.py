@@ -6,16 +6,16 @@ This backend only handles Python ML processing — no database access.
 """
 
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
     """Global application settings sourced from .env or environment."""
 
     # ── Supabase (server-side auth + profile lockout updates) ───
-    SUPABASE_URL: str = ""
-    SUPABASE_ANON_KEY: str = ""
-    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_ANON_KEY: Optional[str] = None
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
 
     # ── JWT (to verify Supabase tokens from the frontend) ───
     JWT_SECRET: str
