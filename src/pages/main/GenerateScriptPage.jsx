@@ -3,17 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
+import { generateSpeech } from '../../api/aiService';
 import BackButton from '../../components/common/BackButton';
-import { ROUTES } from '../../utils/constants';
+import { ROUTES, WORDS_PER_MINUTE } from '../../utils/constants';
 import './InnerPages.css';
 import './GenerateScriptPage.css';
 
 const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
-const DURATIONS  = ['Short', 'Medium', 'Long'];
-const TOPICS     = [
-  'The importance of communication', 'My favourite hobby', 'A memorable trip',
-  'Technology in daily life', 'Health and wellness', 'Overcoming challenges',
-];
+const COOLDOWN_MS = 60000;
 
 function GenerateScriptPage() {
   const navigate  = useNavigate();
@@ -21,39 +18,58 @@ function GenerateScriptPage() {
 
   const [prompt,     setPrompt]     = useState('');
   const [vibe,       setVibe]       = useState('Professional');
-  const [duration,   setDuration]   = useState('Medium');
+  const [duration,   setDuration]   = useState(3);
   const [generated,  setGenerated]  = useState(null);   // { title, content }
   const [editTitle,  setEditTitle]  = useState('');
   const [editContent,setEditContent]= useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
   const [error,      setError]      = useState('');
+  const [lastGenTime, setLastGenTime] = useState(0);
 
-  const handleRandomTopic = () => {
-    const t = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-    setPrompt(t);
+  const handleRandomTopic = async () => {
+    try {
+      const { default: allTopics } = await import('../../assets/topics.json');
+      const randomIndex = Math.floor(Math.random() * allTopics.length);
+      setPrompt(allTopics[randomIndex]);
+    } catch (err) {
+      console.error('Error loading topics:', err);
+      setError('Failed to load random topics. Please try again.');
+    }
   };
 
-  // Simple local generation (until a real AI endpoint is wired)
   const handleGenerate = async () => {
+    const now = Date.now();
+    if (now - lastGenTime < COOLDOWN_MS) {
+      const wait = Math.ceil((COOLDOWN_MS - (now - lastGenTime)) / 1000);
+      setError(`Please wait ${wait}s to prevent API exhaustion.`);
+      return;
+    }
+
     if (!prompt.trim()) {
       setError('Please enter a prompt or pick a random topic.');
       return;
     }
     setError('');
     setIsGenerating(true);
+    const targetWordCount = Math.round(duration * WORDS_PER_MINUTE);
 
-    // Simulate a brief delay
-    await new Promise((r) => setTimeout(r, 800));
-
-    const wordCount = duration === 'Short' ? 60 : duration === 'Medium' ? 120 : 220;
-    const content = generatePlaceholder(prompt.trim(), vibe.toLowerCase(), wordCount);
-    const title   = `${vibe} — ${prompt.trim().slice(0, 40)}`;
-
-    setGenerated({ title, content });
-    setEditTitle(title);
-    setEditContent(content);
-    setIsGenerating(false);
+    try {
+      const result = await generateSpeech({
+        prompt: prompt.trim(),
+        vibe,
+        wordCount: targetWordCount,
+        durationMinutes: duration,
+      });
+      setGenerated(result);
+      setEditTitle(result.title);
+      setEditContent(result.content);
+      setLastGenTime(now);
+    } catch (err) {
+      setError(err.message || 'Failed to generate script. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSave = async () => {
@@ -66,7 +82,7 @@ function GenerateScriptPage() {
         content: editContent.trim(),
         type:    'auto-generated',
       });
-      navigate(ROUTES.SCRIPTS);
+      navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated' } });
     } catch {
       setError('Failed to save script.');
     } finally {
@@ -134,18 +150,20 @@ function GenerateScriptPage() {
         ))}
       </div>
 
-      {/* Duration chips */}
-      <p className="section-label">Approx. Duration</p>
-      <div className="chip-group" style={{ marginBottom: 24 }}>
-        {DURATIONS.map((d) => (
-          <button
-            key={d}
-            className={`chip ${duration === d ? 'active' : ''}`}
-            onClick={() => setDuration(d)}
-          >
-            {d}
-          </button>
-        ))}
+      <p className="section-label">Duration: {duration} Minute{duration > 1 ? 's' : ''}</p>
+      <div className="duration-slider-container" style={{ marginBottom: 24 }}>
+        <input
+          type="range"
+          min="1"
+          max="10"
+          step="0.5"
+          value={duration}
+          onChange={(e) => setDuration(parseFloat(e.target.value))}
+          className="form-slider"
+        />
+        <div className="slider-labels">
+          <span>~{Math.round(duration * WORDS_PER_MINUTE)} words</span>
+        </div>
       </div>
 
       <button
@@ -198,22 +216,6 @@ function GenerateScriptPage() {
       )}
     </div>
   );
-}
-
-// Rough placeholder generator until a real AI endpoint is wired
-function generatePlaceholder(topic, vibe, words) {
-  const intros = {
-    professional: `Good day. Today, I would like to share my thoughts on ${topic}.`,
-    casual:       `Hey everyone! So today I want to talk about something I really enjoy — ${topic}.`,
-    humorous:     `Alright, buckle up! We're diving into the world of ${topic}, and I promise it's more fun than it sounds.`,
-    inspirational:`Every great journey begins with a single step. Today, let's talk about ${topic} and why it matters.`,
-  };
-  const body = `This topic has always fascinated me because of the way it connects to our everyday lives. When we think about ${topic}, we often overlook how deeply it influences us. Whether it's through the choices we make or the habits we develop, ${topic} plays a central role. I encourage everyone to take a closer look and reflect on how they can apply these ideas in their own life.`;
-  const outro = `In conclusion, ${topic} is something worth exploring further. Thank you for listening.`;
-
-  const combined = `${intros[vibe] || intros.professional} ${body} ${outro}`;
-  const w = combined.split(' ');
-  return w.slice(0, words).join(' ') + (w.length > words ? '…' : '');
 }
 
 export default GenerateScriptPage;
