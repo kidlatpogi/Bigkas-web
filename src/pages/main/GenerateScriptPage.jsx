@@ -46,7 +46,7 @@ function GenerateScriptPage() {
       const { default: allTopics } = await import('../../assets/topics.json');
       const randomIndex = Math.floor(Math.random() * allTopics.length);
       setPrompt(allTopics[randomIndex]);
-    } catch (err) {
+    } catch {
       setError('Failed to load random topics. Please try again.');
     }
   };

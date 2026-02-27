@@ -265,6 +265,7 @@ export function AuthProvider({ children }) {
           error: normalizedError.message,
           requiresEmailConfirmation: false,
           lockoutSeconds: normalizedError.lockoutSeconds,
+          unlockTime,
         };
       }
 

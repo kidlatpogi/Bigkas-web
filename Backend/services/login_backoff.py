@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, Tuple
 import httpx
 
 from config.settings import settings
+from utils.auth_utils import calculate_lock_minutes
 
 
 class BackoffService:
@@ -111,18 +112,6 @@ class BackoffService:
             return parsed.replace(tzinfo=timezone.utc)
         return parsed
 
-    @staticmethod
-    def _next_lock_minutes(failed_attempts: int) -> int:
-        # Policy: 3rd fail => 5m, 4th => 15m, 5th => 30m, then doubles (60m, 120m, ...)
-        if failed_attempts <= 2:
-            return 0
-        if failed_attempts == 3:
-            return 5
-        if failed_attempts == 4:
-            return 15
-        exponent = max(0, failed_attempts - 5)
-        return 30 * (2 ** exponent)
-
     async def login_with_backoff(self, email: str, password: str) -> Dict[str, Any]:
         if not self.is_configured:
             return {
@@ -189,7 +178,7 @@ class BackoffService:
             remaining_seconds = None
 
             if failed_attempts >= 3:
-                lock_minutes = self._next_lock_minutes(failed_attempts)
+                lock_minutes = calculate_lock_minutes(failed_attempts)
                 lockout_until = now + timedelta(minutes=lock_minutes)
                 lockout_until_iso = lockout_until.isoformat()
                 remaining_seconds = int((lockout_until - now).total_seconds())

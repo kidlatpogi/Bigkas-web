@@ -35,11 +35,11 @@ export const generateSpeech = async (userData) => {
   // Primary: Gemini
   try {
     return await callGemini(prompt, vibe, targetWordCount, minutes);
-  } catch (error) {
+  } catch {
     // Fallback: Groq
     try {
       return await callGroq(prompt, vibe, targetWordCount, minutes);
-    } catch (fallbackError) {
+    } catch {
       throw new Error('All AI services failed. Please try again later.');
     }
   }

@@ -8,6 +8,34 @@ import BackButton from '../../components/common/BackButton';
 import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './AuthPages.css';
 
+const LOGIN_LOCKOUT_UNTIL_KEY = 'bigkas_login_lockout_until';
+
+function getStoredLockoutSeconds() {
+  const storedUnlockTime = window.localStorage.getItem(LOGIN_LOCKOUT_UNTIL_KEY);
+  if (!storedUnlockTime) return 0;
+
+  const unlockTimeMs = Date.parse(storedUnlockTime);
+  if (!Number.isFinite(unlockTimeMs)) {
+    window.localStorage.removeItem(LOGIN_LOCKOUT_UNTIL_KEY);
+    return 0;
+  }
+
+  const remaining = Math.ceil((unlockTimeMs - Date.now()) / 1000);
+  if (remaining <= 0) {
+    window.localStorage.removeItem(LOGIN_LOCKOUT_UNTIL_KEY);
+    return 0;
+  }
+
+  return remaining;
+}
+
+function formatCountdown(seconds) {
+  const safeSeconds = Math.max(0, Math.floor(Number(seconds) || 0));
+  const minutes = Math.floor(safeSeconds / 60);
+  const remaining = safeSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remaining).padStart(2, '0')}`;
+}
+
 /**
  * Login Page — 1:1 from Figma screenshot
  * Split layout: left branding panel + right form panel
@@ -32,7 +60,7 @@ function LoginPage() {
   const [showAccountCreated, setShowAccountCreated] = useState(() => Boolean(location.state?.accountCreated));
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [lockoutSeconds, setLockoutSeconds] = useState(0);
+  const [lockoutSeconds, setLockoutSeconds] = useState(() => getStoredLockoutSeconds());
 
   // Show the "Account created" banner from navigation state, auto-clear after 3s
   useEffect(() => {
@@ -63,6 +91,7 @@ function LoginPage() {
       setLockoutSeconds((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
+          window.localStorage.removeItem(LOGIN_LOCKOUT_UNTIL_KEY);
           return 0;
         }
         return prev - 1;
@@ -96,10 +125,10 @@ function LoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (lockoutSeconds > 0) {
-      setErrors({ submit: `Account locked. Try again in ${lockoutSeconds}s.` });
+      setErrors({ submit: `Too many attempts. Try again in ${formatCountdown(lockoutSeconds)}` });
       return;
     }
     if (isLoading) return;
@@ -118,8 +147,10 @@ function LoginPage() {
       setShowUnverified(true);
       setFormData({ email: '', password: '' });
     } else if (result.code === 'account_locked') {
-      setLockoutSeconds(Math.max(1, Number(result.lockoutSeconds || 60)));
-      setErrors({ submit: result.error || 'Too many failed attempts. Please wait before trying again.' });
+      const lockSeconds = Math.max(1, Number(result.lockoutSeconds || 60));
+      const unlockTime = result.unlockTime || new Date(Date.now() + lockSeconds * 1000).toISOString();
+      window.localStorage.setItem(LOGIN_LOCKOUT_UNTIL_KEY, unlockTime);
+      setLockoutSeconds(lockSeconds);
       setFormData({ email: '', password: '' });
     } else {
       // Clear fields for invalid credentials or account not found
@@ -167,6 +198,10 @@ function LoginPage() {
     }));
   };
 
+  const lockoutMessage = lockoutSeconds > 0
+    ? `Too many attempts. Try again in ${formatCountdown(lockoutSeconds)}`
+    : null;
+
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
@@ -201,7 +236,7 @@ function LoginPage() {
         <div className="auth-form-container">
           <h2 className="auth-form-title">LOG IN</h2>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleLogin}>
             {showAccountCreated && !showUnverified && !errors.submit && (
               <div className="auth-success-banner">
                 Account created successfully! Please check your email to verify your account before logging in.
@@ -214,8 +249,8 @@ function LoginPage() {
               </div>
             )}
 
-            {errors.submit && !showUnverified && (
-              <div className="auth-error-banner">{errors.submit}</div>
+            {(lockoutMessage || errors.submit) && !showUnverified && (
+              <div className="auth-error-banner">{lockoutMessage || errors.submit}</div>
             )}
 
             {showUnverified && (
@@ -273,7 +308,7 @@ function LoginPage() {
               className="auth-submit-btn"
               disabled={isLoading || lockoutSeconds > 0}
             >
-              {isLoading ? 'LOGGING IN...' : lockoutSeconds > 0 ? `LOCKED (${lockoutSeconds}s)` : 'LOG IN'}
+              {isLoading ? 'LOGGING IN...' : lockoutSeconds > 0 ? `LOCKED (${formatCountdown(lockoutSeconds)})` : 'LOG IN'}
             </button>
           </form>
 
