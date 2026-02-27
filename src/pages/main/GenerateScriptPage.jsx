@@ -10,6 +10,30 @@ import './InnerPages.css';
 import './GenerateScriptPage.css';
 
 const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
+const COOLDOWN_STORAGE_KEY = 'bigkas_generate_cooldown_end_time';
+
+function getInitialCooldownSeconds() {
+  const stored = window.localStorage.getItem(COOLDOWN_STORAGE_KEY);
+  if (!stored) return 0;
+  const endMs = Number(stored);
+  if (!Number.isFinite(endMs)) {
+    window.localStorage.removeItem(COOLDOWN_STORAGE_KEY);
+    return 0;
+  }
+  const remaining = Math.ceil((endMs - Date.now()) / 1000);
+  if (remaining <= 0) {
+    window.localStorage.removeItem(COOLDOWN_STORAGE_KEY);
+    return 0;
+  }
+  return remaining;
+}
+
+function formatCooldown(seconds) {
+  const safe = Math.max(0, Math.floor(Number(seconds) || 0));
+  const minutes = Math.floor(safe / 60);
+  const remainder = safe % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`;
+}
 
 function GenerateScriptPage() {
   const navigate  = useNavigate();
@@ -24,7 +48,9 @@ function GenerateScriptPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
   const [error,      setError]      = useState('');
-  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [cooldownSeconds, setCooldownSeconds] = useState(() => getInitialCooldownSeconds());
+  const [generationTokens, setGenerationTokens] = useState(10);
+  const [regenerationTokens, setRegenerationTokens] = useState(10);
 
   // Cooldown countdown timer
   useEffect(() => {
@@ -33,6 +59,7 @@ function GenerateScriptPage() {
       setCooldownSeconds((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
+          window.localStorage.removeItem(COOLDOWN_STORAGE_KEY);
           return 0;
         }
         return prev - 1;
@@ -40,6 +67,13 @@ function GenerateScriptPage() {
     }, 1000);
     return () => clearInterval(interval);
   }, [cooldownSeconds]);
+
+  const startCooldown = (seconds) => {
+    const safeSeconds = Math.max(1, Number(seconds) || 60);
+    const cooldownEndMs = Date.now() + safeSeconds * 1000;
+    window.localStorage.setItem(COOLDOWN_STORAGE_KEY, String(cooldownEndMs));
+    setCooldownSeconds(safeSeconds);
+  };
 
   const handleRandomTopic = async () => {
     try {
@@ -51,9 +85,9 @@ function GenerateScriptPage() {
     }
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (action = 'new') => {
     if (cooldownSeconds > 0) {
-      setError(`Please wait ${cooldownSeconds}s before generating another script.`);
+      setError(`Please wait before generating another script. Wait (${formatCooldown(cooldownSeconds)}).`);
       return;
     }
 
@@ -81,20 +115,29 @@ function GenerateScriptPage() {
           vibe,
           target_word_count: targetWordCount,
           duration_minutes: duration,
+          action,
         }),
       });
 
       if (!response.ok) {
+        const errorData = await response.json();
+
         if (response.status === 429) {
-          // Cooldown active
-          const errorData = await response.json();
           const remainingSeconds = errorData?.detail?.remaining_seconds || 60;
-          setCooldownSeconds(Math.max(1, remainingSeconds));
-          setError(errorData?.detail?.error || `Please wait ${remainingSeconds}s before generating another script.`);
+          startCooldown(remainingSeconds);
+          setGenerationTokens(Number(errorData?.detail?.generation_tokens ?? generationTokens));
+          setRegenerationTokens(Number(errorData?.detail?.regeneration_tokens ?? regenerationTokens));
+          setError(errorData?.detail?.error || 'Please wait before generating another script.');
           return;
         }
 
-        const errorData = await response.json();
+        if (response.status === 403) {
+          setGenerationTokens(Number(errorData?.detail?.generation_tokens ?? generationTokens));
+          setRegenerationTokens(Number(errorData?.detail?.regeneration_tokens ?? regenerationTokens));
+          setError(errorData?.detail?.error || 'You have reached your daily limit.');
+          return;
+        }
+
         throw new Error(errorData?.detail?.error || 'Failed to generate script. Please try again.');
       }
 
@@ -102,6 +145,9 @@ function GenerateScriptPage() {
       setGenerated(result);
       setEditTitle(result.title);
       setEditContent(result.content);
+      setGenerationTokens(Number(result.generation_tokens ?? generationTokens));
+      setRegenerationTokens(Number(result.regeneration_tokens ?? regenerationTokens));
+      startCooldown(60);
     } catch (err) {
       setError(err.message || 'Failed to generate script. Please try again.');
     } finally {
@@ -151,6 +197,10 @@ function GenerateScriptPage() {
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
         <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Generate Script</h1>
+      </div>
+
+      <div className="page-caption" style={{ marginBottom: 12 }}>
+        ✨ New: {generationTokens}/10 &nbsp; • &nbsp; 🔄 Re-gen: {regenerationTokens}/10
       </div>
 
       {error && <div className="page-error">{error}</div>}
@@ -206,10 +256,10 @@ function GenerateScriptPage() {
       <button
         className="btn-primary"
         style={{ width: '100%' }}
-        onClick={handleGenerate}
+        onClick={() => handleGenerate('new')}
         disabled={isGenerating || cooldownSeconds > 0}
       >
-        {isGenerating ? 'Generating…' : cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : 'Generate Script'}
+        {isGenerating ? 'Generating…' : cooldownSeconds > 0 ? `Wait (${formatCooldown(cooldownSeconds)})` : 'Generate Script'}
       </button>
 
       {/* Preview / edit modal */}
@@ -238,7 +288,14 @@ function GenerateScriptPage() {
             </div>
 
             <div className="btn-row">
-              <button className="btn-secondary" onClick={() => { setGenerated(null); handleGenerate(); }}>
+              <button
+                className="btn-secondary"
+                onClick={() => {
+                  setGenerated(null);
+                  handleGenerate('regenerate');
+                }}
+                disabled={isGenerating || cooldownSeconds > 0}
+              >
                 Regenerate
               </button>
               <button className="btn-secondary" onClick={handleSave} disabled={isSaving}>
