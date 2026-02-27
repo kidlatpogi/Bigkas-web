@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
 import { createScript } from '../../api/scriptsApi';
-import { supabase } from '../../lib/supabase';
 import BackButton from '../../components/common/BackButton';
 import { ROUTES, WORDS_PER_MINUTE } from '../../utils/constants';
 import { ENV } from '../../config/env';
@@ -59,16 +58,9 @@ function GenerateScriptPage() {
 
     const fetchTokens = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) return;
-
-        const response = await fetch(`${ENV.API_BASE_URL}/api/ai/user-tokens`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-        });
+        const response = await fetch(
+          `${ENV.API_BASE_URL}/api/ai/user-tokens?user_id=${encodeURIComponent(user.id)}`
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -117,7 +109,7 @@ function GenerateScriptPage() {
   };
 
   const handleGenerate = async (action = 'new') => {
-    if (cooldownSeconds > 0) {
+    if (action === 'new' && cooldownSeconds > 0) {
       setError(`Please wait before generating another script. Wait (${formatCooldown(cooldownSeconds)}).`);
       return;
     }
@@ -178,7 +170,9 @@ function GenerateScriptPage() {
       setEditContent(result.content);
       setGenerationTokens(Number(result.generation_tokens ?? generationTokens));
       setRegenerationTokens(Number(result.regeneration_tokens ?? regenerationTokens));
-      startCooldown(60);
+      if (action === 'new') {
+        startCooldown(60);
+      }
     } catch (err) {
       setError(err.message || 'Failed to generate script. Please try again.');
     } finally {
@@ -332,7 +326,7 @@ function GenerateScriptPage() {
               <button
                 className="btn-secondary"
                 onClick={() => handleGenerate('regenerate')}
-                disabled={isGenerating || cooldownSeconds > 0}
+                disabled={isGenerating}
               >
                 {isGenerating ? 'Regenerating…' : 'Regenerate'}
               </button>

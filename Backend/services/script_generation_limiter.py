@@ -79,25 +79,26 @@ class ScriptGenerationLimiter:
         else:
             patch_payload["token_reset_at"] = now.isoformat()
 
-        # Cooldown check (always gate before token consumption)
-        last_generated = profile.get("last_generated_at")
+        # Cooldown check applies only to new generation action
+        if action == "new":
+            last_generated = profile.get("last_generated_at")
 
-        if last_generated:
-            last_gen_dt = datetime.fromisoformat(last_generated.replace("Z", "+00:00"))
-            elapsed = (now - last_gen_dt).total_seconds()
-            if elapsed < 60:
-                remaining = int(60 - elapsed) + 1
-                cooldown_until = (last_gen_dt.replace(tzinfo=timezone.utc).timestamp() + 60)
-                cooldown_iso = datetime.fromtimestamp(cooldown_until, tz=timezone.utc).isoformat()
-                return {
-                    "allowed": False,
-                    "status": 429,
-                    "error": "Please wait before generating another script.",
-                    "remaining_seconds": remaining,
-                    "cooldown_until": cooldown_iso,
-                    "generation_tokens": generation_tokens,
-                    "regeneration_tokens": regeneration_tokens,
-                }
+            if last_generated:
+                last_gen_dt = datetime.fromisoformat(last_generated.replace("Z", "+00:00"))
+                elapsed = (now - last_gen_dt).total_seconds()
+                if elapsed < 60:
+                    remaining = int(60 - elapsed) + 1
+                    cooldown_until = (last_gen_dt.replace(tzinfo=timezone.utc).timestamp() + 60)
+                    cooldown_iso = datetime.fromtimestamp(cooldown_until, tz=timezone.utc).isoformat()
+                    return {
+                        "allowed": False,
+                        "status": 429,
+                        "error": "Please wait before generating another script.",
+                        "remaining_seconds": remaining,
+                        "cooldown_until": cooldown_iso,
+                        "generation_tokens": generation_tokens,
+                        "regeneration_tokens": regeneration_tokens,
+                    }
 
         # Token consumption
         if action == "regenerate":
@@ -123,7 +124,8 @@ class ScriptGenerationLimiter:
             generation_tokens -= 1
             patch_payload["generation_tokens"] = generation_tokens
 
-        patch_payload["last_generated_at"] = now.isoformat()
+        if action == "new":
+            patch_payload["last_generated_at"] = now.isoformat()
         await self._update_profile_limits(client, user_id, patch_payload)
 
         return {

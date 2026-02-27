@@ -7,11 +7,10 @@ Server-side script generation with rate limiting to prevent API key exhaustion.
 from __future__ import annotations
 
 import httpx
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import Literal
 
-from api.middleware.auth import get_current_user
 from services.script_generation_limiter import limiter_service
 from services.ai_service import generate_script_with_ai
 
@@ -44,7 +43,7 @@ class UserTokensResponse(BaseModel):
 
 
 @router.get("/user-tokens", response_model=UserTokensResponse)
-async def get_user_tokens(user: dict = Depends(get_current_user)):
+async def get_user_tokens(user_id: str = Query(..., min_length=1)):
     """
     Get the current token balance for the authenticated user.
     
@@ -59,7 +58,7 @@ async def get_user_tokens(user: dict = Depends(get_current_user)):
         )
     
     async with httpx.AsyncClient() as client:
-        profile = await limiter_service._fetch_profile_limits(client, user["sub"])
+        profile = await limiter_service._fetch_profile_limits(client, user_id)
         
         if not profile:
             return UserTokensResponse(
