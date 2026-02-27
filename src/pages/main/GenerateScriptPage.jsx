@@ -11,9 +11,17 @@ import './GenerateScriptPage.css';
 
 const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
 const TOPICS     = [
-  'The importance of communication', 'My favourite hobby', 'A memorable trip',
-  'Technology in daily life', 'Health and wellness', 'Overcoming challenges',
+  'The impact of AI on education',
+  'Sustainable living in cities',
+  'The future of remote work',
+  'Mental health awareness in tech',
+  'The evolution of social media',
+  'Public speaking as a life skill',
+  'Climate change and local action',
+  'The importance of data privacy',
 ];
+
+const COOLDOWN_TIME = 60000;
 
 function GenerateScriptPage() {
   const navigate  = useNavigate();
@@ -28,6 +36,7 @@ function GenerateScriptPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
   const [error,      setError]      = useState('');
+  const [lastGenerated, setLastGenerated] = useState(0);
 
   const handleRandomTopic = () => {
     const t = TOPICS[Math.floor(Math.random() * TOPICS.length)];
@@ -35,11 +44,19 @@ function GenerateScriptPage() {
   };
 
   const handleGenerate = async () => {
+    const now = Date.now();
+    if (now - lastGenerated < COOLDOWN_TIME) {
+      const remaining = Math.ceil((COOLDOWN_TIME - (now - lastGenerated)) / 1000);
+      setError(`Please wait ${remaining} seconds before generating again.`);
+      return;
+    }
+
     if (!prompt.trim()) {
       setError('Please enter a prompt or pick a random topic.');
       return;
     }
     setError('');
+    setLastGenerated(now);
     setIsGenerating(true);
     const targetWordCount = Math.round(duration * WORDS_PER_MINUTE);
 
@@ -70,7 +87,7 @@ function GenerateScriptPage() {
         content: editContent.trim(),
         type:    'auto-generated',
       });
-      navigate(ROUTES.SCRIPTS);
+      navigate(ROUTES.SCRIPTS, { state: { filter: 'auto-generated' } });
     } catch {
       setError('Failed to save script.');
     } finally {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts, deleteScript } from '../../api/scriptsApi';
 import { ROUTES, buildRoute } from '../../utils/constants';
@@ -10,9 +10,11 @@ import './ScriptsPage.css';
 
 function ScriptsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthContext();
 
-  const [activeTab, setActiveTab] = useState('self');  // 'self' | 'generated'
+  const initialTab = location.state?.filter === 'auto-generated' ? 'generated' : 'self';
+  const [activeTab, setActiveTab] = useState(initialTab);  // 'self' | 'generated'
   const [scripts, setScripts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
