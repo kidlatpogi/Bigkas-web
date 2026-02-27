@@ -31,7 +31,13 @@ function normalizeLoginError(err, email) {
 
   if (err?.status === 423 || code.includes('locked')) {
     const remainingSeconds = Number(err?.remainingSeconds || 0);
-    const waitSeconds = Number.isFinite(remainingSeconds) ? Math.max(1, Math.ceil(remainingSeconds)) : 60;
+    const unlockTimeMs = err?.unlockTime ? Date.parse(err.unlockTime) : NaN;
+    const fallbackSeconds = Number.isFinite(unlockTimeMs)
+      ? Math.max(1, Math.ceil((unlockTimeMs - Date.now()) / 1000))
+      : 60;
+    const waitSeconds = Number.isFinite(remainingSeconds) && remainingSeconds > 0
+      ? Math.max(1, Math.ceil(remainingSeconds))
+      : fallbackSeconds;
     return {
       code: 'account_locked',
       message: `Too many failed attempts. Try again in ${waitSeconds}s.`,
@@ -73,7 +79,7 @@ function normalizeLoginError(err, email) {
   ) {
     return {
       code: 'invalid_credentials',
-      message: 'Wrong email or password, or no account found for this email.',
+      message: 'Wrong email or password.',
       requiresEmailConfirmation: false,
     };
   }
@@ -198,6 +204,7 @@ export function AuthProvider({ children }) {
         }
 
         const remainingSeconds = payload?.detail?.remaining_seconds;
+        const unlockTime = payload?.detail?.unlock_time;
         const backendError = payload?.detail?.error || payload?.error || 'Unable to log in right now. Please try again.';
         const normalizedError = normalizeLoginError(
           {
@@ -205,6 +212,7 @@ export function AuthProvider({ children }) {
             code: response.status === 423 ? 'account_locked' : 'invalid_credentials',
             message: backendError,
             remainingSeconds,
+            unlockTime,
           },
           email
         );

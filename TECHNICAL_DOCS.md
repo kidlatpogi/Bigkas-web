@@ -2522,7 +2522,8 @@ Behavior:
 3. On failed password:
    - increments `failed_login_attempts`;
    - at 3rd fail, sets 5-minute lockout;
-   - after that, lock duration doubles (10m, 20m, 40m, ...).
+  - 4th fail = 15 minutes, 5th = 30 minutes;
+  - after that, lock duration doubles (60m, 120m, ...).
 4. On successful password:
    - resets `failed_login_attempts = 0`;
    - clears `lockout_until`;
@@ -2533,7 +2534,8 @@ Behavior:
 {
   "detail": {
     "error": "Account temporarily locked due to failed login attempts.",
-    "remaining_seconds": 287
+    "remaining_seconds": 287,
+    "unlock_time": "2026-02-27T13:55:27.123456+00:00"
   }
 }
 ```

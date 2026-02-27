@@ -15,8 +15,8 @@ async def login(payload: LoginRequest):
 
     Lockout policy:
     - 3rd failed attempt  => 5 minutes
-    - 4th failed attempt  => 10 minutes
-    - 5th failed attempt  => 20 minutes
+    - 4th failed attempt  => 15 minutes
+    - 5th failed attempt  => 30 minutes
     - ... continues doubling
     """
 
@@ -41,6 +41,7 @@ async def login(payload: LoginRequest):
             detail={
                 "error": result["error"],
                 "remaining_seconds": result.get("remaining_seconds", 0),
+                "unlock_time": result.get("unlock_time"),
             },
         )
 

@@ -29,7 +29,7 @@ FastAPI backend for Bigkas — AI-powered public speaking practice platform.
 ## Security Notes
 
 - Login backoff is enforced server-side via `profiles.failed_login_attempts` and `profiles.lockout_until`.
-- Lock policy: 3rd failed password = 5m lock, then doubles (10m, 20m, ...).
+- Lock policy: 3rd failed password = 5m, 4th = 15m, 5th = 30m, then doubles.
 - Successful login resets lockout counters to baseline.
 
 ## Tech Stack

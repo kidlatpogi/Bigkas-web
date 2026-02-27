@@ -86,9 +86,15 @@ class BackoffService:
 
     @staticmethod
     def _next_lock_minutes(failed_attempts: int) -> int:
-        # 3rd fail => 5m, then doubles: 10m, 20m, ...
-        exponent = max(0, failed_attempts - 3)
-        return 5 * (2 ** exponent)
+        # Policy: 3rd fail => 5m, 4th => 15m, 5th => 30m, then doubles (60m, 120m, ...)
+        if failed_attempts <= 2:
+            return 0
+        if failed_attempts == 3:
+            return 5
+        if failed_attempts == 4:
+            return 15
+        exponent = max(0, failed_attempts - 5)
+        return 30 * (2 ** exponent)
 
     async def login_with_backoff(self, email: str, password: str) -> Dict[str, Any]:
         now = datetime.now(timezone.utc)
@@ -105,6 +111,7 @@ class BackoffService:
                         "status": 423,
                         "error": "Account temporarily locked due to failed login attempts.",
                         "remaining_seconds": max(1, remaining_seconds),
+                        "unlock_time": lockout_until.isoformat(),
                     }
 
             success, payload = await self._password_login(client, email, password)
@@ -167,6 +174,7 @@ class BackoffService:
                     "status": 423,
                     "error": "Account temporarily locked due to failed login attempts.",
                     "remaining_seconds": max(1, remaining_seconds),
+                    "unlock_time": lockout_until_iso,
                 }
 
             return {
