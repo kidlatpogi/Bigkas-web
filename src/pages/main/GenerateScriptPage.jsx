@@ -338,7 +338,7 @@ function GenerateScriptPage() {
                 Save
               </button>
               <button className="btn-primary" onClick={handleSaveAndStart} disabled={isSaving}>
-                {isSaving ? 'Saving…' : 'Save &amp; Start'}
+                {isSaving ? 'Saving…' : 'Save and Start'}
               </button>
             </div>
           </div>
