@@ -254,23 +254,26 @@ export default function DashboardPage() {
         </div>
 
         {/* Copy */}
-        <h2 className="dash-hero-title">Ready to speak?</h2>
-        <p className="dash-hero-sub">Practice makes perfect! Start your daily session and improve your public speaking skills.</p>
+        <div className="dash-hero-body">
+          <h2 className="dash-hero-title">Ready to speak?</h2>
+          <p className="dash-hero-sub">Practice makes perfect! Start your daily session and improve your public speaking skills.</p>
+        </div>
 
         {/* CTA buttons */}
-        <button
-          className="dash-btn-practice"
-          onClick={() => navigate(ROUTES.PRACTICE)}
-        >
-          Start Practice
-        </button>
-        <p className="dash-hero-or">or</p>
-        <button
-          className="dash-btn-training"
-          onClick={() => navigate(ROUTES.TRAINING_SETUP)}
-        >
-          Start Training
-        </button>
+        <div className="dash-hero-actions">
+          <button
+            className="dash-btn-practice"
+            onClick={() => navigate(ROUTES.PRACTICE)}
+          >
+            Start Practice
+          </button>
+          <button
+            className="dash-btn-training"
+            onClick={() => navigate(ROUTES.TRAINING_SETUP)}
+          >
+            Start Training
+          </button>
+        </div>
       </div>
 
       {/* ── Stats row (Today · Avg Score · Streak) ── */}
