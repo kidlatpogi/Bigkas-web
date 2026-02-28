@@ -57,7 +57,7 @@ function DetailedFeedbackPage() {
   ], [score]);
 
   if (isLoading && !session) {
-    return <div className="inner-page"><div className="page-loading">Loadingâ€¦</div></div>;
+    return <div className="inner-page"><div className="page-loading">Loading...</div></div>;
   }
 
   if (!session) {

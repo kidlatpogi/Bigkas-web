@@ -198,7 +198,7 @@ export default function PracticePage() {
                   <span className="practice-script-title">{script.title}</span>
                   <p className="practice-script-preview">
                     {(script.content || script.body || '').slice(0, 120)}
-                    {(script.content || script.body || '').length > 120 ? 'â€¦' : ''}
+                    {(script.content || script.body || '').length > 120 ? '...' : ''}
                   </p>
                 </button>
               ))
@@ -251,7 +251,7 @@ export default function PracticePage() {
                 <span className="practice-script-title">{script.title}</span>
                 <p className="practice-script-preview">
                   {(script.content || '').slice(0, 120)}
-                  {(script.content || '').length > 120 ? 'â€¦' : ''}
+                  {(script.content || '').length > 120 ? '...' : ''}
                 </p>
               </button>
             ))}
