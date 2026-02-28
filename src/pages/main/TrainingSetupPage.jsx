@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts } from '../../api/scriptsApi';
+import { SYSTEM_PREWRITTEN_SPEECHES } from '../../utils/practiceData';
 import BackButton from '../../components/common/BackButton';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
@@ -12,37 +13,67 @@ const FOCUS_OPTIONS = [
   { value: 'free',     label: 'Free Speech',       desc: 'Impromptu speaking style. Focus on flow, tone, and pacing.' },
 ];
 
+const FILTER_CHIPS = [
+  { value: 'all',        label: 'All' },
+  { value: 'prewritten', label: 'Pre-Written' },
+  { value: 'generated',  label: 'My AI Scripts' },
+];
+
 function TrainingSetupPage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
 
-  const [activeTab, setActiveTab]   = useState('pre-written');
-  const [scripts, setScripts]       = useState([]);
+  const [userScripts, setUserScripts]       = useState([]);
   const [selectedScript, setSelectedScript] = useState(null);
-  const [focus, setFocus]           = useState('scripted');
-  const [isLoading, setIsLoading]   = useState(false);
-  const [freeTopic, setFreeTopic]   = useState('');
+  const [focus, setFocus]                   = useState('scripted');
+  const [isLoading, setIsLoading]           = useState(false);
+  const [scriptFilter, setScriptFilter]     = useState('all');
+  const [freeTopic, setFreeTopic]           = useState('');
   const [showTopicModal, setShowTopicModal] = useState(false);
 
+  /* Load the user’s auto-generated scripts from Supabase */
   const loadScripts = useCallback(async () => {
     if (!user?.id) return;
     setIsLoading(true);
     try {
-      const type = activeTab === 'pre-written' ? 'self-authored' : 'auto-generated';
-      const { data, error } = await getScripts(user.id, type);
+      const { data, error } = await getScripts(user.id, 'auto-generated');
       if (error) throw error;
-      setScripts(Array.isArray(data) ? data : []);
-      setSelectedScript(null);
+      setUserScripts(
+        (Array.isArray(data) ? data : []).map(s => ({ ...s, type: 'generated' }))
+      );
     } catch {
-      setScripts([]);
+      setUserScripts([]);
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, activeTab]);
+  }, [user?.id]);
 
+  useEffect(() => { loadScripts(); }, [loadScripts]);
+
+  /* Combined + typed system speeches */
+  const systemScripts = useMemo(
+    () => SYSTEM_PREWRITTEN_SPEECHES.map(s => ({ ...s, type: 'prewritten' })),
+    []
+  );
+
+  const allAvailableScripts = useMemo(
+    () => [...systemScripts, ...userScripts],
+    [systemScripts, userScripts]
+  );
+
+  /* Apply filter chip */
+  const filteredScripts = useMemo(() => {
+    if (scriptFilter === 'prewritten') return systemScripts;
+    if (scriptFilter === 'generated')  return userScripts;
+    return allAvailableScripts;
+  }, [scriptFilter, systemScripts, userScripts, allAvailableScripts]);
+
+  /* Keep selectedScript in sync when filter changes */
   useEffect(() => {
-    loadScripts();
-  }, [loadScripts]);
+    if (selectedScript && !filteredScripts.find(s => s.id === selectedScript.id)) {
+      setSelectedScript(null);
+    }
+  }, [filteredScripts, selectedScript]);
 
   const handleStart = () => {
     if (focus === 'free') {
@@ -59,6 +90,8 @@ function TrainingSetupPage() {
     });
   };
 
+  const noGeneratedScripts = scriptFilter === 'generated' && userScripts.length === 0 && !isLoading;
+
   return (
     <div className="inner-page training-setup-page">
       <div className="inner-page-header training-setup-header">
@@ -66,75 +99,76 @@ function TrainingSetupPage() {
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
 
-      {/* Source tabs */}
-      <p className="section-label">Select Script Source</p>
-      <div className="tabs">
-        <button
-          className={`tab-btn ${activeTab === 'pre-written' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pre-written')}
-        >
-          Pre-written
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'auto-generated' ? 'active' : ''}`}
-          onClick={() => setActiveTab('auto-generated')}
-        >
-          Auto-Generated
-        </button>
+      {/* ── Script selection ── */}
+      <p className="section-label">Select Script</p>
+
+      {/* Quick-action: generate new speech */}
+      <button
+        className="btn-primary training-generate-btn"
+        onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
+      >
+        + Generate New Speech
+      </button>
+
+      {/* Filter chips */}
+      <div className="ts-filter-chips">
+        {FILTER_CHIPS.map(chip => (
+          <button
+            key={chip.value}
+            className={`ts-chip${scriptFilter === chip.value ? ' active' : ''}`}
+            onClick={() => setScriptFilter(chip.value)}
+          >
+            {chip.label}
+          </button>
+        ))}
       </div>
 
-      {/* Script selection */}
-      {activeTab === 'auto-generated' ? (
-        <div className="form-group">
-          <button
-            className="btn-primary training-generate-btn"
-            onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
-          >
-            Generate Speech
-          </button>
-        </div>
-      ) : (
-        <div className="form-group">
-          <label className="form-label" style={focus === 'free' ? { opacity: 0.4 } : {}}>Choose Script</label>
-          {isLoading ? (
-            <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
-          ) : (
-            <select
-              className="form-select"
-              value={selectedScript?.id || ''}
-              disabled={focus === 'free'}
-              onChange={(e) => {
-                const s = scripts.find(sc => sc.id === e.target.value);
-                setSelectedScript(s || null);
-              }}
+      {/* Dropdown */}
+      <div className="form-group" style={{ marginTop: 0 }}>
+        {isLoading ? (
+          <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
+        ) : noGeneratedScripts ? (
+          <div className="ts-empty-state">
+            <p className="ts-empty-text">You haven’t generated any AI scripts yet.</p>
+            <button
+              className="btn-primary training-generate-btn"
+              onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
             >
-              <option value="">— Select a script —</option>
-              {scripts.map((s) => (
-                <option key={s.id} value={s.id}>{s.title || 'Untitled Script'}</option>
-              ))}
-            </select>
-          )}
-          {!isLoading && scripts.length === 0 && (
-            <p className="form-hint">
-              No scripts found.{' '}
-              <button
-                className="btn-link"
-                onClick={() => navigate(ROUTES.SCRIPTS)}
-              >
-                Create one
-              </button>
-            </p>
-          )}
-        </div>
-      )}
+              Generate a Speech
+            </button>
+          </div>
+        ) : (
+          <select
+            className="form-select"
+            disabled={focus === 'free'}
+            value={selectedScript?.id || ''}
+            onChange={(e) => {
+              const s = filteredScripts.find(sc => sc.id === e.target.value);
+              setSelectedScript(s || null);
+            }}
+          >
+            <option value="">— Select a script —</option>
+            {filteredScripts.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.type === 'prewritten' ? '📋 ' : '🤖 '}{s.title || 'Untitled Script'}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
       {/* Selected script preview */}
       {selectedScript && (
         <div className="page-card script-preview-card">
-          <p className="script-preview-title">{selectedScript.title}</p>
+          <div className="script-preview-header">
+            <p className="script-preview-title">{selectedScript.title}</p>
+            <span className={`script-preview-badge ${selectedScript.type}`}>
+              {selectedScript.type === 'prewritten' ? 'Pre-Written' : 'AI Generated'}
+            </span>
+          </div>
           <p className="script-preview-content">
-            {selectedScript.content?.slice(0, 140)}
-            {selectedScript.content?.length > 140 ? '…' : ''}
+            {selectedScript.content?.slice(0, 180)}
+            {selectedScript.content?.length > 180 ? '…' : ''}
           </p>
         </div>
       )}
