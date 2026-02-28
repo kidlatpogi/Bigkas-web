@@ -96,9 +96,9 @@
 [data-theme="dark"] .script-preview-badge.generated  { background: rgba(252, 186, 4, 0.10); color: #FCBA04; }
 [data-theme="dark"] .script-preview-badge.myScripts   { background: rgba(96, 165, 250, 0.10); color: #60A5FA; border-color: rgba(96, 165, 250, 0.18); }
 
-/* Center the Training Setup page */
+/* Center the Training Setup page — matches standard inner-page width */
 .training-setup-page {
-  max-width: 600px;
+  max-width: 860px;
 }
 
 .training-setup-header {
