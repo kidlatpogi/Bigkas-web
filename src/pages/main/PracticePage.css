@@ -1,7 +1,7 @@
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PracticePage â€” web port of PracticeScreen (mobile)
-   Tokens: primary #FCBA04 Â· black #010101 Â· bg #F5F5F5
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+﻿/* ══════════════════════════════════════════════════════
+   PracticePage — web port of PracticeScreen (mobile)
+   Tokens: primary #FCBA04 · black #010101 · bg #F5F5F5
+   ══════════════════════════════════════════════════════ */
 
 .practice-page {
   min-height: calc(100vh - 80px);
@@ -37,7 +37,7 @@
 
 .practice-back:hover { background: rgba(1, 1, 1, 0.1); }
 
-/* Header â€” centered title, back button pinned left */
+/* Header — centered title, back button pinned left */
 .practice-header {
   display: flex;
   align-items: center;
@@ -347,7 +347,7 @@
   background: transparent;
 }
 
-/* â”€â”€ Teleprompter Preview Modal â”€â”€ */
+/* ── Teleprompter Preview Modal ── */
 .practice-modal-overlay {
   position: fixed;
   inset: 0;
@@ -502,7 +502,7 @@
   border-color: rgba(255, 59, 48, 0.25);
 }
 
-/* â”€â”€ Dark mode â”€â”€ */
+/* ── Dark mode ── */
 [data-theme="dark"] .practice-page        { --bg: #0B0B0D; }
 [data-theme="dark"] .practice-back        { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-back:hover  { background: rgba(255,255,255,0.13); }
@@ -536,3 +536,8 @@
 [data-theme="dark"] .practice-btn-copy:hover:not(:disabled) { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.5); color: #F0F0F0; }
 [data-theme="dark"] .practice-copy-toast { background: rgba(48, 209, 88, 0.12); color: #30D158; border-color: rgba(48, 209, 88, 0.3); }
 [data-theme="dark"] .practice-copy-toast.error { background: rgba(255, 69, 58, 0.12); color: #FF453A; border-color: rgba(255, 69, 58, 0.25); }
+
+/* ── Hide floating theme toggle on practice setup page ── */
+body:has(.practice-page) .theme-toggle-wrap {
+  display: none !important;
+}

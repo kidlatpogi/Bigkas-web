@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+﻿import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import { useTheme } from '../../context/useTheme';
@@ -6,10 +6,10 @@ import bigkasLogo from '../../assets/Temporary Logo.png';
 import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './LandingPage.css';
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SVG COMPONENTS â€” matching Bigkas-mobile design tokens
-   Colors: primary #FCBA04 Â· secondary #010101 Â· bg #F5F5F5
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════════════════
+   SVG COMPONENTS — matching Bigkas-mobile design tokens
+   Colors: primary #FCBA04 · secondary #010101 · bg #F5F5F5
+   ═══════════════════════════════════════════════════════ */
 
 /* Circular Progress Ring for Confidence Score */
 function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
@@ -63,7 +63,7 @@ function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
   );
 }
 
-/* Waveform visualization â€” Vocal Stability card */
+/* Waveform visualization — Vocal Stability card */
 function WaveformViz() {
   const bars = [0.3, 0.5, 0.8, 0.6, 0.9, 0.4, 0.7, 0.85, 0.5, 0.65, 0.9, 0.35, 0.7, 0.55, 0.8, 0.4, 0.6, 0.75, 0.5, 0.85];
   return (
@@ -82,7 +82,7 @@ function WaveformViz() {
   );
 }
 
-/* Heatmap visualization â€” Visual Engagement card */
+/* Heatmap visualization — Visual Engagement card */
 const HEATMAP_DOTS = Array.from({ length: 24 }, (_, i) => {
   const seed = ((i * 7 + 13) * 17) % 100;
   return {
@@ -118,7 +118,7 @@ function HeatmapViz() {
   );
 }
 
-/* Filler word counter â€” Fluency Tracking card */
+/* Filler word counter — Fluency Tracking card */
 function FluencyViz() {
   return (
     <div className="fluency-viz">
@@ -140,7 +140,7 @@ function FluencyViz() {
   );
 }
 
-/* Mini growth chart â€” progression section */
+/* Mini growth chart — progression section */
 function GrowthChart() {
   const data = [42, 48, 55, 52, 63, 68, 72, 78, 85];
   const max = 100;
@@ -168,9 +168,9 @@ function GrowthChart() {
   );
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════════════
    FEATURE CARD
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ═══════════════════════════════════════════════════════ */
 function FeatureCard({ icon, title, description, children, delay = 0 }) {
   return (
     <div className="feature-card" style={{ transitionDelay: `${delay}s` }}>
@@ -184,9 +184,9 @@ function FeatureCard({ icon, title, description, children, delay = 0 }) {
   );
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   STAT PILL â€” Hero stats
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════════════════
+   STAT PILL — Hero stats
+   ═══════════════════════════════════════════════════════ */
 function StatPill({ value, label }) {
   return (
     <div className="stat-pill">
@@ -196,10 +196,10 @@ function StatPill({ value, label }) {
   );
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════════════════
    LANDING PAGE
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-/* Smooth-scroll helper â€” scrolls to a section ref accounting for fixed nav height */
+   ═══════════════════════════════════════════════════════ */
+/* Smooth-scroll helper — scrolls to a section ref accounting for fixed nav height */
 function scrollToSection(ref) {
   if (!ref?.current) return;
   const navHeight = 60;
@@ -259,7 +259,7 @@ export default function LandingPage() {
     <div className="landing">
       <ThemeToggleBtn />
 
-      {/* â•â•â•â•â•â• NAVIGATION â•â•â•â•â•â• */}
+      {/* ══════ NAVIGATION ══════ */}
       <nav className="landing-nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -267,6 +267,7 @@ export default function LandingPage() {
             <span className="logo-text">Bigkas</span>
           </div>
 
+          {/* Desktop links — visible above 768px */}
           <ul className="nav-links">
             <li><button onClick={() => scrollToSection(problemRef)} className="nav-link-btn">About</button></li>
             <li><button onClick={() => scrollToSection(solutionRef)} className="nav-link-btn">Solution</button></li>
@@ -284,6 +285,23 @@ export default function LandingPage() {
             </button>
           </div>
 
+          {/* Mobile drawer — animated slide-down */}
+          <div className="nav-drawer">
+            <div className="nav-drawer-inner">
+              <ul className="nav-drawer-links">
+                <li><button onClick={() => { scrollToSection(problemRef);  document.querySelector('.landing-nav')?.classList.remove('nav-open'); }} className="nav-link-btn">About</button></li>
+                <li><button onClick={() => { scrollToSection(solutionRef); document.querySelector('.landing-nav')?.classList.remove('nav-open'); }} className="nav-link-btn">Solution</button></li>
+                <li><button onClick={() => { scrollToSection(featuresRef); document.querySelector('.landing-nav')?.classList.remove('nav-open'); }} className="nav-link-btn">Features</button></li>
+                <li><button onClick={() => { scrollToSection(trustRef);    document.querySelector('.landing-nav')?.classList.remove('nav-open'); }} className="nav-link-btn">Science</button></li>
+                <li><button onClick={() => { scrollToSection(growthRef);   document.querySelector('.landing-nav')?.classList.remove('nav-open'); }} className="nav-link-btn">Progress</button></li>
+              </ul>
+              <div className="nav-drawer-actions">
+                <button className="btn-nav-outline" onClick={() => navigate(ROUTES.LOGIN)}>Log In</button>
+                <button className="btn-nav-solid"  onClick={() => navigate(ROUTES.REGISTER)}>Get Started</button>
+              </div>
+            </div>
+          </div>
+
           <button
             className="nav-hamburger"
             aria-label="Menu"
@@ -294,7 +312,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* â•â•â•â•â•â• HERO â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ HERO — 100vh ══════ */}
       <section className="hero-section">
         <div className="hero-bg" />
         <div className="hero-inner">
@@ -306,12 +324,12 @@ export default function LandingPage() {
             </h1>
             <p className="hero-sub">
               Fail in private, shine in public. Bigkas gives you a safe,
-              judgment-free space to practice speaking â€” powered by acoustic
+              judgment-free space to practice speaking — powered by acoustic
               biomarkers and computer vision calibrated for Filipino learners.
             </p>
             <div className="hero-actions">
               <button className="btn-primary" onClick={() => navigate(ROUTES.REGISTER)}>
-                Start Practicing â€” It&apos;s Free
+                Start Practicing — It&apos;s Free
               </button>
               <a href="#features" className="btn-ghost" onClick={(e) => { e.preventDefault(); scrollToSection(featuresRef); }}>See How It Works</a>
             </div>
@@ -335,7 +353,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Dashboard Mockup â€” mirrors mobile DashboardScreen */}
+          {/* Dashboard Mockup — mirrors mobile DashboardScreen */}
           <div className="hero-dashboard">
             <div className="dashboard-card">
               <div className="dashboard-header">
@@ -378,18 +396,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• THE PROBLEM â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ THE PROBLEM — 100vh ══════ */}
       <section id="problem" className="problem-section" ref={problemRef}>
         <div className="section-wrap">
           <div className="problem-grid">
             <div className="problem-text">
               <span className="section-overline">The Problem</span>
               <h2 className="section-heading">
-                Stage Fright Is the #1 Fear â€”<br />
+                Stage Fright Is the #1 Fear —<br />
                 <span className="accent-text">Even Above Death.</span>
               </h2>
               <p className="section-body">
-                In Filipino classrooms, glossophobia â€” the fear of public speaking â€”
+                In Filipino classrooms, glossophobia — the fear of public speaking —
                 is a silent epidemic. Students freeze during oral recitations. Young
                 professionals struggle transitioning from text-based digital
                 communication to face-to-face workplace presentations.
@@ -422,18 +440,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• THE SOLUTION â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ THE SOLUTION — 100vh ══════ */}
       <section id="solution" className="solution-section" ref={solutionRef}>
         <div className="section-wrap">
           <span className="section-overline center">The Solution</span>
           <h2 className="section-heading center">
-            Your Private AI Speaking Coach â€”<br />
+            Your Private AI Speaking Coach —<br />
             <span className="accent-text">No Stage Required.</span>
           </h2>
           <p className="section-body center max-w-prose">
             Bigkas combines <strong>acoustic analysis</strong> and <strong>computer
               vision</strong> into a multi-modal diagnostic tool that fits in your
-            pocket. It doesn&apos;t just record â€” it <em>understands</em> your voice,
+            pocket. It doesn&apos;t just record — it <em>understands</em> your voice,
             your face, and your flow.
           </p>
 
@@ -472,7 +490,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• FEATURES â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ FEATURES — 100vh ══════ */}
       <section id="features" className="features-section" ref={featuresRef}>
         <div className="section-wrap">
           <span className="section-overline center">Diagnostic Features</span>
@@ -509,7 +527,7 @@ export default function LandingPage() {
                 </svg>
               }
               title="Visual Engagement"
-              description="Facial landmark tracking and eye-contact heatmaps measure your non-verbal cues â€” ensuring your body speaks as powerfully as your words."
+              description="Facial landmark tracking and eye-contact heatmaps measure your non-verbal cues — ensuring your body speaks as powerfully as your words."
               delay={0.12}
             >
               <HeatmapViz />
@@ -526,7 +544,7 @@ export default function LandingPage() {
                 </svg>
               }
               title="Fluency Tracking"
-              description="Real-time detection of filler words, prolonged pauses, and silence ratios. Know exactly where your flow breaks â€” and fix it."
+              description="Real-time detection of filler words, prolonged pauses, and silence ratios. Know exactly where your flow breaks — and fix it."
               delay={0.24}
             >
               <FluencyViz />
@@ -535,20 +553,20 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• TRUST / SCIENCE â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ TRUST / SCIENCE — 100vh ══════ */}
       <section id="trust" className="trust-section" ref={trustRef}>
         <div className="section-wrap">
           <div className="trust-grid">
             <div className="trust-text">
               <span className="section-overline">Scientific Credibility</span>
               <h2 className="section-heading">
-                Not Just a Recorder â€”<br />
+                Not Just a Recorder —<br />
                 <span className="accent-text">A Diagnostic Instrument.</span>
               </h2>
               <p className="section-body">
                 Bigkas leverages peer-reviewed acoustic biomarkers used in clinical
-                speech pathology. Jitter and Shimmer analysis â€” the same metrics
-                used to diagnose voice disorders â€” are repurposed here to measure
+                speech pathology. Jitter and Shimmer analysis — the same metrics
+                used to diagnose voice disorders — are repurposed here to measure
                 speaking confidence and vocal control.
               </p>
               <div className="trust-badge">
@@ -589,18 +607,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• GROWTH / PROGRESSION â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ GROWTH / PROGRESSION — 100vh ══════ */}
       <section id="growth" className="growth-section" ref={growthRef}>
         <div className="section-wrap">
           <span className="section-overline center">Progression Tracking</span>
           <h2 className="section-heading center">
-            Watch Yourself Improve â€”<br />
+            Watch Yourself Improve —<br />
             <span className="accent-text">Session After Session.</span>
           </h2>
           <p className="section-body center max-w-prose">
             Every practice session is scored and logged. See your Speaking
             Confidence Score climb over time through a personalized growth chart.
-            It&apos;s not about being perfect â€” it&apos;s about getting 1% better every day.
+            It&apos;s not about being perfect — it&apos;s about getting 1% better every day.
           </p>
 
           <div className="growth-card">
@@ -619,14 +637,14 @@ export default function LandingPage() {
           <div className="bridge-text">
             <p>
               <strong>The Bridge:</strong> Whether you&apos;re a student preparing for oral exams
-              or a young professional moving from text-based habits to face-to-face presentations â€”
+              or a young professional moving from text-based habits to face-to-face presentations —
               Bigkas is your bridge to confident, articulate communication.
             </p>
           </div>
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• CTA â€” 100vh â•â•â•â•â•â• */}
+      {/* ══════ CTA — 100vh ══════ */}
       <section className="cta-section" ref={ctaRef}>
         <div className="cta-inner">
           <div className="cta-card">
@@ -647,7 +665,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â• FOOTER â•â•â•â•â•â• */}
+      {/* ══════ FOOTER ══════ */}
       <footer className="landing-footer">
         <div className="footer-inner">
           <div className="footer-left">

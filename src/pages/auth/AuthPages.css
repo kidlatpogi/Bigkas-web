@@ -1,11 +1,11 @@
-/**
- * Auth Pages â€” Split-panel layout matching Figma screenshots
+﻿/**
+ * Auth Pages — Split-panel layout matching Figma screenshots
  * Left: Branding panel (white, BIGKAS + features)
  * Right: Form panel (white, form fields + yellow CTA)
  * Colors from Bigkas-mobile: primary #FCBA04, secondary #010101, bg #F5F5F5
  */
 
-/* â”€â”€ Page shell â€” full viewport, two columns â”€â”€ */
+/* ── Page shell — full viewport, two columns ── */
 .auth-page {
   min-height: 100vh;
   display: grid;
@@ -13,9 +13,9 @@
   background: #2E2E2E;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   LEFT â€” Branding Panel
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   LEFT — Branding Panel
+   ═══════════════════════════════════════════ */
 .auth-brand-panel {
   background: #FFFFFF;
   display: flex;
@@ -110,9 +110,9 @@
   text-transform: uppercase;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   RIGHT â€” Form Panel
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   RIGHT — Form Panel
+   ═══════════════════════════════════════════ */
 .auth-form-panel {
   background: #FFFFFF;
   display: flex;
@@ -135,7 +135,7 @@
   margin-bottom: 40px;
 }
 
-/* â”€â”€ Form â”€â”€ */
+/* ── Form ── */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -355,7 +355,7 @@
   margin-top: 2px;
 }
 
-/* â”€â”€ Submit button â€” yellow outlined, rounded â”€â”€ */
+/* ── Submit button — yellow outlined, rounded ── */
 .auth-submit-btn {
   width: 100%;
   padding: 14px 32px;
@@ -383,7 +383,7 @@
   cursor: not-allowed;
 }
 
-/* â”€â”€ Forgot password link â”€â”€ */
+/* ── Forgot password link ── */
 .auth-forgot-link {
   display: block;
   margin-top: 24px;
@@ -400,7 +400,7 @@
   color: #FCBA04;
 }
 
-/* â”€â”€ Divider â€” "or" â”€â”€ */
+/* ── Divider — "or" ── */
 .auth-divider {
   display: flex;
   align-items: center;
@@ -420,7 +420,7 @@
   text-transform: lowercase;
 }
 
-/* â”€â”€ Google Sign-In button â”€â”€ */
+/* ── Google Sign-In button ── */
 .auth-google-btn {
   width: 100%;
   display: flex;
@@ -451,7 +451,7 @@
   object-fit: contain;
 }
 
-/* â”€â”€ Footer â€” account toggle â”€â”€ */
+/* ── Footer — account toggle ── */
 .auth-footer {
   margin-top: 20px;
   text-align: left;
@@ -480,9 +480,9 @@
   color: #FCBA04;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   DARK MODE â€” Auth pages
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   DARK MODE — Auth pages
+   ═══════════════════════════════════════════ */
 [data-theme="dark"] .auth-page {
   background: #0B0B0D;
 }
@@ -624,7 +624,7 @@
   color: #F0F0F0;
 }
 
-/* â”€â”€ Forgot Password â”€â”€ */
+/* ── Forgot Password ── */
 .forgot-description {
   font-size: 14px;
   line-height: 1.6;
@@ -703,9 +703,9 @@
   color: #5A5A5A;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   OTP â€” Split-Box Input (VerifyEmailPage)
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   OTP — Split-Box Input (VerifyEmailPage)
+   ═══════════════════════════════════════════ */
 .otp-instructions {
   font-size: 14px;
   color: #3A3A3A;
@@ -851,7 +851,7 @@
   color: #888888;
 }
 
-/* Responsive â€” compact boxes on small screens */
+/* Responsive — compact boxes on small screens */
 @media (max-width: 480px) {
   .otp-box {
     width: 42px;
@@ -864,9 +864,9 @@
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    RESPONSIVE
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ═══════════════════════════════════════════ */
 @media (max-width: 900px) {
   .auth-page {
     grid-template-columns: 1fr;

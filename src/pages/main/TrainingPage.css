@@ -1,9 +1,9 @@
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   TrainingPage â€” 1:1 redesign from Bigkas-mobile TrainingScriptedScreen
-   Design tokens: primary #FCBA04 Â· black #010101 Â· white #FFFFFF
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+﻿/* ══════════════════════════════════════════════════════════════════════
+   TrainingPage — 1:1 redesign from Bigkas-mobile TrainingScriptedScreen
+   Design tokens: primary #FCBA04 · black #010101 · white #FFFFFF
+   ══════════════════════════════════════════════════════════════════════ */
 
-/* â”€â”€ Page shell â€” fixed full-screen, sits above BottomNav (z-index 1000) â”€â”€ */
+/* ── Page shell — fixed full-screen, sits above BottomNav (z-index 1000) ── */
 .tp-page {
   position: fixed;
   inset: 0;
@@ -15,7 +15,7 @@
   overflow: hidden;
 }
 
-/* â”€â”€ Dark header bar â”€â”€ */
+/* ── Dark header bar ── */
 .tp-header {
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
 
 .tp-header-spacer { width: 38px; flex-shrink: 0; }
 
-/* â”€â”€ Main content wrapper â”€â”€ */
+/* ── Main content wrapper ── */
 .tp-content {
   flex: 1;
   display: flex;
@@ -78,13 +78,13 @@
   overflow: hidden;
 }
 
-/* Split layout: scripted mode â†’ two columns */
+/* Split layout: scripted mode †’ two columns */
 .tp-content--split {
   flex-direction: row;
   align-items: stretch;
 }
 
-/* â”€â”€ Left column (camera + waveform + controls) â”€â”€ */
+/* ── Left column (camera + waveform + controls) ── */
 .tp-left {
   display: flex;
   flex-direction: column;
@@ -139,7 +139,7 @@
   50% { opacity: 0; }
 }
 
-/* Camera â€” capped height so controls always fit */
+/* Camera — capped height so controls always fit */
 .tp-camera-wrap {
   border-radius: 16px;
   overflow: hidden;
@@ -186,7 +186,7 @@
   letter-spacing: 0.02em;
 }
 
-/* Waveform â€” 50 bars */
+/* Waveform — 50 bars */
 .tp-waveform {
   display: flex;
   align-items: center;
@@ -238,7 +238,7 @@
   font-weight: 500;
 }
 
-/* â”€â”€ Controls row â”€â”€ */
+/* ── Controls row ── */
 .tp-controls {
   display: flex;
   flex-direction: row;
@@ -340,7 +340,7 @@
   50%       { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
 }
 
-/* â”€â”€ Right column â€” Teleprompter â”€â”€ */
+/* ── Right column — Teleprompter ── */
 .tp-right {
   flex: 0 0 45%;
   display: flex;
@@ -429,7 +429,7 @@
   height: 4px;
 }
 
-/* â”€â”€ Countdown / Analysing overlay â”€â”€ */
+/* ── Countdown / Analysing overlay ── */
 .tp-overlay {
   position: fixed;
   inset: 0;
@@ -473,7 +473,7 @@
   color: #FFFFFF;
 }
 
-/* â”€â”€ Error banner â”€â”€ */
+/* ── Error banner ── */
 .tp-error-banner {
   display: flex;
   align-items: center;
@@ -503,7 +503,7 @@
 
 .tp-error-retry:hover { background: rgba(255,59,48,0.1); }
 
-/* â”€â”€ Empty state â”€â”€ */
+/* ── Empty state ── */
 .tp-empty {
   flex: 1;
   display: flex;
@@ -545,7 +545,7 @@
 
 .tp-go-back-btn:hover { opacity: 0.88; }
 
-/* â”€â”€ Settings modal â€” above BottomNav (z-index 1000) and tp-page (1100) â”€â”€ */
+/* ── Settings modal — above BottomNav (z-index 1000) and tp-page (1100) ── */
 .tp-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -676,7 +676,7 @@
 
 .tp-modal-done:hover { opacity: 0.85; }
 
-/* â”€â”€ Dark mode â”€â”€ */
+/* ── Dark mode ── */
 [data-theme="dark"] .tp-page { background: #0B0B0D; }
 [data-theme="dark"] .tp-camera-idle { background: #111; }
 
@@ -728,7 +728,7 @@
 [data-theme="dark"] .tp-empty-desc { color: rgba(240,240,240,0.5); }
 [data-theme="dark"] .tp-error-banner { background: rgba(255,59,48,0.1); border-color: rgba(255,59,48,0.25); color: #FF6B6B; }
 
-/* â”€â”€ Silence-intervention Hint Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Silence-intervention Hint Toast ─────────────────────────────────────── */
 .tp-hint-toast {
   position: fixed;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); /* above bottom nav */
@@ -788,5 +788,10 @@
 
 [data-theme="dark"] .tp-hint-dismiss:hover {
   color: #fff;
+}
+
+/* ── Hide floating theme toggle during training session ── */
+body:has(.tp-page) .theme-toggle-wrap {
+  display: none !important;
 }
 

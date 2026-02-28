@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Shared styles for all inner (authenticated) pages
  * Import this alongside any page-specific CSS
  */
 
-/* â”€â”€ Page wrapper â”€â”€ */
+/* ── Page wrapper ── */
 /* -- Page wrapper -- */
 .inner-page {
   /* Design tokens — match fh-page so fh-* components work on any inner page */
@@ -20,7 +20,7 @@
   padding: 32px 24px 64px;
 }
 
-/* â”€â”€ Page header â”€â”€ */
+/* ── Page header ── */
 .inner-page-header {
   display: flex;
   align-items: center;
@@ -55,7 +55,7 @@
   margin: 0;
 }
 
-/* Centered header â€” back button pinned left, title centered */
+/* Centered header — back button pinned left, title centered */
 .inner-page-header.centered-header {
   justify-content: center;
   position: relative;
@@ -71,7 +71,7 @@
   flex: 1;
 }
 
-/* â”€â”€ Section heading â”€â”€ */
+/* ── Section heading ── */
 .section-label {
   font-size: 13px;
   font-weight: 600;
@@ -81,7 +81,7 @@
   margin-bottom: 10px;
 }
 
-/* â”€â”€ Tabs â”€â”€ */
+/* ── Tabs ── */
 .tabs {
   display: flex;
   gap: 6px;
@@ -115,7 +115,7 @@
   background: rgba(0,0,0,0.06);
 }
 
-/* â”€â”€ Cards â”€â”€ */
+/* ── Cards ── */
 .page-card {
   background: #FFFFFF;
   border-radius: 16px;
@@ -124,7 +124,7 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-/* â”€â”€ Form elements â”€â”€ */
+/* ── Form elements ── */
 .form-row {
   display: flex;
   gap: 16px;
@@ -203,7 +203,7 @@
   margin-top: 2px;
 }
 
-/* â”€â”€ Buttons â”€â”€ */
+/* ── Buttons ── */
 .btn-primary {
   display: flex;
   align-items: center;
@@ -318,7 +318,7 @@
   flex: 1;
 }
 
-/* â”€â”€ Empty state â”€â”€ */
+/* ── Empty state ── */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -345,7 +345,7 @@
   margin: 0;
 }
 
-/* â”€â”€ Score badge â”€â”€ */
+/* ── Score badge ── */
 .score-badge {
   display: inline-flex;
   align-items: center;
@@ -363,7 +363,7 @@
 .score-badge.fair      { background: rgba(255,149,0,0.15);  color: #FF9500; }
 .score-badge.poor      { background: rgba(255,59,48,0.15);  color: #FF3B30; }
 
-/* â”€â”€ Chevron row â”€â”€ */
+/* ── Chevron row ── */
 .chevron-row {
   display: flex;
   align-items: center;
@@ -390,7 +390,7 @@
   color: #AAAAAA;
 }
 
-/* â”€â”€ Modal overlay â”€â”€ */
+/* ── Modal overlay ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -435,7 +435,7 @@
   line-height: 1.5;
 }
 
-/* â”€â”€ Loading / error states â”€â”€ */
+/* ── Loading / error states ── */
 .page-loading {
   display: flex;
   align-items: center;
@@ -466,7 +466,7 @@
   margin-bottom: 16px;
 }
 
-/* â”€â”€ Avatar â”€â”€ */
+/* ── Avatar ── */
 .avatar-wrap {
   position: relative;
   width: 100px;
@@ -512,7 +512,7 @@
   font-size: 13px;
 }
 
-/* â”€â”€ Responsive â”€â”€ */
+/* ── Responsive ── */
 @media (max-width: 600px) {
   .inner-page {
     padding: 20px 16px 48px;
@@ -528,9 +528,9 @@
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════
    Dark Mode
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ═══════════════════════════════════════ */
 
 /* Page wrapper */
 [data-theme="dark"] .inner-page {

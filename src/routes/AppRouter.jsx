@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../context/useAuthContext';
 import { ROUTES } from '../utils/constants';
 
@@ -50,6 +50,11 @@ import ThemeToggleBtn from '../components/common/ThemeToggleBtn';
  */
 function ProtectedRoute() {
   const { isAuthenticated, isInitializing, user } = useAuthContext();
+  const { pathname } = useLocation();
+
+  const hideThemeToggle =
+    pathname === ROUTES.PRACTICE ||
+    pathname.startsWith('/training');
 
   if (isInitializing) {
     return (
@@ -71,7 +76,7 @@ function ProtectedRoute() {
 
   return (
     <>
-      <ThemeToggleBtn />
+      {!hideThemeToggle && <ThemeToggleBtn />}
       <main className="main-content">
         <Outlet />
       </main>

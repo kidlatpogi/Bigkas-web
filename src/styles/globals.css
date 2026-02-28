@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Global styles for Bigkas Web
  */
 
@@ -62,15 +62,15 @@
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-xs:   0.75rem;    /* 12px â€” captions, labels */
-  --font-size-sm:   0.875rem;   /* 14px â€” secondary text */
-  --font-size-base: 1rem;       /* 16px â€” body (learnui.design minimum) */
-  --font-size-lg:   1.125rem;   /* 18px â€” large body */
-  --font-size-xl:   1.25rem;    /* 20px â€” h4 */
-  --font-size-2xl:  1.5rem;     /* 24px â€” h3 */
-  --font-size-3xl:  2rem;       /* 32px â€” h2 */
-  --font-size-4xl:  2.5rem;     /* 40px â€” h1 page titles */
-  --font-size-5xl:  3rem;       /* 48px â€” hero headings */
+  --font-size-xs:   0.75rem;    /* 12px — captions, labels */
+  --font-size-sm:   0.875rem;   /* 14px — secondary text */
+  --font-size-base: 1rem;       /* 16px — body (learnui.design minimum) */
+  --font-size-lg:   1.125rem;   /* 18px — large body */
+  --font-size-xl:   1.25rem;    /* 20px — h4 */
+  --font-size-2xl:  1.5rem;     /* 24px — h3 */
+  --font-size-3xl:  2rem;       /* 32px — h2 */
+  --font-size-4xl:  2.5rem;     /* 40px — h1 page titles */
+  --font-size-5xl:  3rem;       /* 48px — hero headings */
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -95,7 +95,15 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scrollbar-gutter: stable both-edges;
+  scroll-behavior: smooth;
+  background-color: var(--color-background);
+  /* scrollbar-gutter only on desktop — causes overflow on narrow mobile viewports */
+}
+
+@media (min-width: 769px) {
+  html {
+    scrollbar-gutter: stable both-edges;
+  }
 }
 
 body {
@@ -106,6 +114,10 @@ body {
   background-color: var(--color-background);
   min-height: 100vh;
   overflow-y: scroll;
+  /* Prevent horizontal scrolling on all devices */
+  overflow-x: hidden;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Focus styles */
@@ -132,6 +144,8 @@ button {
   background: none;
   font-family: inherit;
   font-size: inherit;
+  /* Minimum 44px touch target */
+  min-height: 44px;
 }
 
 /* Inputs reset */
@@ -140,6 +154,8 @@ textarea,
 select {
   font-family: inherit;
   font-size: inherit;
+  /* Minimum 44px touch target */
+  min-height: 44px;
 }
 
 /* Images */
@@ -155,23 +171,40 @@ ol {
   list-style: none;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Scrollbar styling — desktop only, hides on mobile to save space */
+@media (min-width: 769px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-background);
+/* Prevent "sticky hover" states on touch-only devices */
+@media (hover: none) {
+  a:hover,
+  button:hover {
+    opacity: 1;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+/* Prevent iOS input zoom — must be >= 16px */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 
 /* Dark mode link color */
@@ -187,14 +220,21 @@ ol {
   outline-color: #FCBA04;
 }
 
-/* Main content area â€” no top nav, content sits at the top */
+/* Main content area — no top nav, content sits at the top */
 .main-content {
   min-height: 100vh;
   /* Extra bottom padding so content clears the floating bottom nav */
   padding-bottom: 100px;
+  overflow-x: hidden;
 }
 
-/* Theme transition â€” smooth colour changes on all elements */
+@media (max-width: 480px) {
+  .main-content {
+    padding-bottom: 110px;
+  }
+}
+
+/* Theme transition — smooth colour changes on all elements */
 html,
 body,
 * {
@@ -220,7 +260,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* â”€â”€ Circular theme reveal animation â€” 1:1 from Portfolio repo â”€â”€ */
+/* ── Circular theme reveal animation — 1:1 from Portfolio repo ── */
 /* Source: kidlatpogi/Portfolio  src/CSS/App.css */
 .theme-anim {
   position: fixed;
