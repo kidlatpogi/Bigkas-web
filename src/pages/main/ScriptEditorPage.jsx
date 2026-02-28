@@ -20,6 +20,7 @@ function ScriptEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error,   setError]   = useState('');
   const [isLoading, setIsLoading] = useState(isEditing);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -113,13 +114,38 @@ function ScriptEditorPage() {
 
       {/* Actions */}
       <div className="btn-row">
-        <button className="btn-secondary" onClick={() => navigate(-1)} disabled={isSaving}>
+        <button className="btn-secondary" onClick={() => setShowCancelModal(true)} disabled={isSaving}>
           Cancel
         </button>
-        <button className="btn-primary" style={{ background: '#010101', color: '#FFFFFF' }} onClick={handleSave} disabled={isSaving}>
+        <button className="btn-primary btn-dark" onClick={handleSave} disabled={isSaving}>
           {isSaving ? 'Saving…' : 'Save'}
         </button>
       </div>
+
+      {/* Cancel confirmation modal */}
+      {showCancelModal && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowCancelModal(false); }}
+        >
+          <div className="modal-box">
+            <p className="modal-title">Discard changes?</p>
+            <p className="modal-desc">
+              Any unsaved changes will be lost. Are you sure you want to leave?
+            </p>
+            <div className="btn-row">
+              <button className="btn-secondary" onClick={() => setShowCancelModal(false)}>
+                Stay
+              </button>
+              <button className="btn-danger" onClick={() => navigate(-1)}>
+                Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

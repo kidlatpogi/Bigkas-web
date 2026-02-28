@@ -594,6 +594,28 @@
 
 [data-theme="dark"] .btn-primary:disabled { opacity: 0.3; }
 
+/* Dark-background variant of btn-primary (black on light, white on dark) */
+.btn-primary.btn-dark {
+  background: #010101;
+  color: #FFFFFF;
+}
+.btn-primary.btn-dark:hover {
+  background: #2A2A2A;
+}
+.btn-primary.btn-dark:focus-visible {
+  outline-color: rgba(255,255,255,0.45);
+}
+[data-theme="dark"] .btn-primary.btn-dark {
+  background: #F0F0F0;
+  color: #010101;
+}
+[data-theme="dark"] .btn-primary.btn-dark:hover {
+  background: #DADADA;
+}
+[data-theme="dark"] .btn-primary.btn-dark:focus-visible {
+  outline-color: rgba(1,1,1,0.3);
+}
+
 /* Chevron rows */
 [data-theme="dark"] .chevron-row { border-bottom-color: #2A2A2A; }
 [data-theme="dark"] .chevron-row-label  { color: #F0F0F0; }
