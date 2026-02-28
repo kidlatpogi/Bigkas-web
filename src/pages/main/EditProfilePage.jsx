@@ -120,7 +120,7 @@ function EditProfilePage() {
         setError(result.error || 'Failed to save changes.');
       } else {
         setSuccess(true);
-        setTimeout(() => goToDashboard(), 650);
+        setTimeout(() => goBack(), 650);
       }
     } catch {
       setError('An unexpected error occurred.');
