@@ -222,7 +222,7 @@ function GenerateScriptPage() {
   };
 
   return (
-    <div className="inner-page">
+    <div className="inner-page generate-page">
       {/* Header */}
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
         <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />

@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts } from '../../api/scriptsApi';
-import { SYSTEM_PREWRITTEN_SPEECHES } from '../../utils/practiceData';
 import BackButton from '../../components/common/BackButton';
+import FilterTabs from '../../components/common/FilterTabs';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './TrainingSetupPage.css';
@@ -11,12 +11,6 @@ import './TrainingSetupPage.css';
 const FOCUS_OPTIONS = [
   { value: 'scripted', label: 'Scripted Accuracy', desc: 'Strict adherence to text for pronunciation. AI will track every word you say.' },
   { value: 'free',     label: 'Free Speech',       desc: 'Impromptu speaking style. Focus on flow, tone, and pacing.' },
-];
-
-const FILTER_CHIPS = [
-  { value: 'all',        label: 'All' },
-  { value: 'myScripts',  label: 'Self-Authored' },
-  { value: 'generated',  label: 'Auto-Generated' },
 ];
 
 function TrainingSetupPage() {
@@ -28,7 +22,7 @@ function TrainingSetupPage() {
   const [selectedScript, setSelectedScript] = useState(null);
   const [focus, setFocus]                   = useState('scripted');
   const [isLoading, setIsLoading]           = useState(false);
-  const [scriptFilter, setScriptFilter]     = useState('all');
+  const [activeTab, setActiveTab]           = useState('self');  // 'self' | 'generated'
   const [freeTopic, setFreeTopic]           = useState('');
   const [showTopicModal, setShowTopicModal] = useState(false);
 
@@ -57,30 +51,30 @@ function TrainingSetupPage() {
 
   useEffect(() => { loadScripts(); }, [loadScripts]);
 
-  /* Combined + typed system speeches */
-  const systemScripts = useMemo(
-    () => SYSTEM_PREWRITTEN_SPEECHES.map(s => ({ ...s, type: 'prewritten' })),
-    []
-  );
-
-  const allAvailableScripts = useMemo(
-    () => [...systemScripts, ...selfScripts, ...userScripts],
-    [systemScripts, selfScripts, userScripts]
-  );
-
-  /* Apply filter chip */
+  /* Apply tab filter — Self-Authored tab shows only user's own scripts (no pre-written) */
   const filteredScripts = useMemo(() => {
-    if (scriptFilter === 'myScripts') return selfScripts;
-    if (scriptFilter === 'generated')  return userScripts;
-    return allAvailableScripts;
-  }, [scriptFilter, selfScripts, userScripts, allAvailableScripts]);
+    return activeTab === 'generated'
+      ? userScripts
+      : selfScripts;
+  }, [activeTab, userScripts, selfScripts]);
 
-  /* Keep selectedScript in sync when filter changes */
+  const noScripts = !isLoading && (
+    (activeTab === 'generated' && userScripts.length === 0) ||
+    (activeTab === 'self' && selfScripts.length === 0)
+  );
+
+  /* Keep selectedScript in sync when tab/filter changes */
   useEffect(() => {
     if (selectedScript && !filteredScripts.find(s => s.id === selectedScript.id)) {
       setSelectedScript(null);
     }
   }, [filteredScripts, selectedScript]);
+
+  /* Reset selection when switching tabs */
+  const handleTabChange = (val) => {
+    setActiveTab(val);
+    setSelectedScript(null);
+  };
 
   const handleStart = () => {
     if (focus === 'free') {
@@ -97,8 +91,7 @@ function TrainingSetupPage() {
     });
   };
 
-  const noGeneratedScripts = scriptFilter === 'generated' && userScripts.length === 0 && !isLoading;
-  const noMyScripts = scriptFilter === 'myScripts' && selfScripts.length === 0 && !isLoading;
+  const noGeneratedScripts = noScripts && activeTab === 'generated';
 
   return (
     <div className="inner-page training-setup-page">
@@ -107,10 +100,7 @@ function TrainingSetupPage() {
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
 
-      {/* ── Script selection ── */}
-      <p className="section-label">Select Script</p>
-
-      {/* Quick-action: generate new speech */}
+      {/* Quick-action: generate new speech (always visible) */}
       <button
         className="btn-primary training-generate-btn"
         onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
@@ -118,21 +108,23 @@ function TrainingSetupPage() {
         Generate Speech
       </button>
 
-      {/* Filter chips */}
-      <div className="ts-filter-chips">
-        {FILTER_CHIPS.map(chip => (
-          <button
-            key={chip.value}
-            className={`ts-chip${scriptFilter === chip.value ? ' active' : ''}`}
-            onClick={() => setScriptFilter(chip.value)}
-          >
-            {chip.label}
-          </button>
-        ))}
+      {/* ── Script selection ── */}
+      <p className="section-label" style={{ marginTop: 20 }}>Select Script</p>
+
+      {/* FilterTabs — Self-Authored vs AI Generated */}
+      <div style={{ marginBottom: '16px' }}>
+        <FilterTabs
+          tabs={[
+            { label: 'Self-Authored', value: 'self' },
+            { label: 'AI Generated',  value: 'generated' },
+          ]}
+          active={activeTab}
+          onChange={handleTabChange}
+        />
       </div>
 
-      {/* Dropdown */}
-      <div className="form-group" style={{ marginTop: 0 }}>
+      {/* Script dropdown */}
+      <div className="form-group" style={{ marginTop: 12 }}>
         {isLoading ? (
           <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
         ) : noGeneratedScripts ? (
@@ -143,16 +135,6 @@ function TrainingSetupPage() {
               onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
             >
               Generate a Speech
-            </button>
-          </div>
-        ) : noMyScripts ? (
-          <div className="ts-empty-state">
-            <p className="ts-empty-text">You haven’t written any scripts yet.</p>
-            <button
-              className="btn-primary training-generate-btn"
-              onClick={() => navigate(ROUTES.SCRIPT_EDITOR)}
-            >
-              Write a Script
             </button>
           </div>
         ) : (

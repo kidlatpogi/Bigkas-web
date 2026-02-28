@@ -133,9 +133,27 @@
   color: #9CA3AF;
 }
 
-/* Generate modal */
+/* Page-level background — matches Training Hub */
+.generate-page {
+  background: #F5F5F5;
+  min-height: 100vh;
+}
+[data-theme='dark'] .generate-page { background: #0B0B0D; }
+
+/* Reduce gap between modal heading and first form field */
+.generate-modal .modal-title {
+  margin-bottom: 6px;
+}
+
+/* form-group base has flex:1 — reset inside modal so only content area grows */
+.generate-modal .form-group {
+  flex: none;
+}
+
+/* Generate modal — override .modal-box max-width: 500px */
 .generate-modal {
   width: min(82vw, 1200px);
+  max-width: min(82vw, 1200px);
   height: 80vh;
   max-height: 90vh;
   overflow: hidden;

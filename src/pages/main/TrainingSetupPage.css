@@ -76,14 +76,16 @@
   background: rgba(52, 199, 89, 0.12);
   color: #28a745;
 }
+/* AI Generated — muted gray, matches Scripts page */
 .script-preview-badge.generated {
-  background: rgba(252, 186, 4, 0.12);
-  color: #B08000;
+  background: #E5E7EB;
+  color: #6B7280;
 }
+/* Self-Authored — primary yellow */
 .script-preview-badge.myScripts {
-  background: rgba(59, 130, 246, 0.12);
-  color: #2563EB;
-  border: 1px solid rgba(59, 130, 246, 0.18);
+  background: #FCBA04;
+  color: #010101;
+  border: none;
 }
 
 /* Dark mode additions */
@@ -93,12 +95,12 @@
 [data-theme="dark"] .ts-empty-state { background: #1A1A1A; border-color: #2E2E2E; }
 [data-theme="dark"] .ts-empty-text  { color: rgba(255,255,255,0.4); }
 [data-theme="dark"] .script-preview-badge.prewritten { background: rgba(48, 209, 88, 0.10); color: #30D158; }
-[data-theme="dark"] .script-preview-badge.generated  { background: rgba(252, 186, 4, 0.10); color: #FCBA04; }
-[data-theme="dark"] .script-preview-badge.myScripts   { background: rgba(96, 165, 250, 0.10); color: #60A5FA; border-color: rgba(96, 165, 250, 0.18); }
+[data-theme="dark"] .script-preview-badge.generated   { background: #374151; color: #9CA3AF; }
+[data-theme="dark"] .script-preview-badge.myScripts   { background: #FCBA04; color: #010101; }
 
-/* Center the Training Setup page */
+/* Center the Training Setup page — matches standard inner-page width */
 .training-setup-page {
-  max-width: 600px;
+  max-width: 860px;
 }
 
 .training-setup-header {
