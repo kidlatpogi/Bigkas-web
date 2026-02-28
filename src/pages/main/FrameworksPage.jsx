@@ -200,6 +200,7 @@ export default function FrameworksPage() {
   const [loading, setLoading]       = useState(true);
   const [query, setQuery]           = useState('');
   const [sortOrder, setSortOrder]   = useState('recent');
+  const [authorFilter, setAuthorFilter] = useState('all');
   const [page, setPage]             = useState(1);
 
   /* Clear location state so manual refresh does not re-open the modal */
@@ -267,6 +268,12 @@ export default function FrameworksPage() {
     return () => { cancelled = true; };
   }, [activeTab]);
 
+  /* ── Unique authors from loaded items ── */
+  const authorOptions = useMemo(() => {
+    const set = new Set(items.map((it) => it.author).filter(Boolean));
+    return ['all', ...[...set].sort()];
+  }, [items]);
+
   /* ── Filtered + sorted list (memoised) ── */
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -279,12 +286,14 @@ export default function FrameworksPage() {
         )
       : [...items];
 
+    if (authorFilter !== 'all') list = list.filter((it) => it.author === authorFilter);
+
     if (sortOrder === 'az') list.sort((a, b) => a.name.localeCompare(b.name));
     else if (sortOrder === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
     // 'recent' keeps JSON insertion order
 
     return list;
-  }, [items, query, sortOrder]);
+  }, [items, query, sortOrder, authorFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -296,6 +305,7 @@ export default function FrameworksPage() {
     setActiveTab(id);
     setQuery('');
     setSortOrder('recent');
+    setAuthorFilter('all');
     setPage(1);
   };
 
@@ -348,6 +358,30 @@ export default function FrameworksPage() {
             <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
+
+        {/* Author filter */}
+        {authorOptions.length > 1 && (
+          <div className="fh-sort-wrap">
+            <svg className="fh-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6"/>
+              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+            </svg>
+            <select
+              className="fh-sort"
+              value={authorFilter}
+              onChange={(e) => { setAuthorFilter(e.target.value); setPage(1); }}
+              aria-label="Filter by author"
+            >
+              <option value="all">All Authors</option>
+              {authorOptions.filter((a) => a !== 'all').map((a) => (
+                <option key={a} value={a}>{a}</option>
+              ))}
+            </select>
+            <svg className="fh-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        )}
       </div>
 
       {/* ── Category Tabs ── */}
