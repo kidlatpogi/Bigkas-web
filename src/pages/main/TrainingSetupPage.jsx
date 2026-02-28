@@ -176,17 +176,18 @@ function TrainingSetupPage() {
         <div className="modal-overlay" onClick={() => setShowTopicModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title">What will you speak about?</h2>
-            <p className="modal-desc">Enter a topic for your free speech session, or skip to speak freely.</p>
+            <p className="modal-desc">Enter a topic or write out what you plan to say. You can speak freely — this helps the AI follow along.</p>
             <div className="form-group">
-              <input
-                className="form-input"
-                placeholder="e.g., My weekend trip"
+              <textarea
+                className="form-textarea"
+                placeholder="e.g., I want to talk about my weekend trip to the mountains and what I learned from it..."
+                rows={5}
                 value={freeTopic}
                 onChange={(e) => setFreeTopic(e.target.value)}
               />
             </div>
             <div className="btn-row">
-              <button className="btn-secondary" onClick={handleFreeStart}>Skip</button>
+              <button className="btn-secondary" onClick={() => setShowTopicModal(false)}>Cancel</button>
               <button className="btn-primary" onClick={handleFreeStart}>Start</button>
             </div>
           </div>

@@ -26,8 +26,6 @@ function AllSessionsPage() {
     fetchSessions(1, true);
   }, [fetchSessions]);
 
-  useEffect(() => { setPage(1); }, [filter]);
-
   const filterSession = (s) => {
     const d = new Date(s.created_at);
     const now = new Date();
@@ -58,7 +56,7 @@ function AllSessionsPage() {
       <FilterTabs
         tabs={FILTER_TABS}
         active={filter}
-        onChange={setFilter}
+        onChange={(val) => { setFilter(val); setPage(1); }}
       />
 
       {isLoading && sessions.length === 0 && (

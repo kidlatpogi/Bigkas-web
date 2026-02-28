@@ -9,7 +9,7 @@ function EditProfilePage() {
   const navigate = useNavigate();
   const { user, updateProfile, uploadAvatar } = useAuthContext();
 
-  const goToDashboard = () => navigate(ROUTES.DASHBOARD);
+  const goBack = () => navigate(-1);
 
   const initialFirstName = user?.firstName || user?.name?.split(' ')[0] || '';
   const initialLastName = user?.lastName || user?.name?.split(' ').slice(1).join(' ') || '';
@@ -237,7 +237,7 @@ function EditProfilePage() {
           <button
             type="button"
             className="edit-cancel"
-            onClick={goToDashboard}
+            onClick={goBack}
             disabled={isSaving}
           >
             Cancel
