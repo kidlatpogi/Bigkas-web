@@ -298,6 +298,32 @@
   }
 }
 
+@media (max-width: 600px) {
+  /* First/Last name row: stack vertically */
+  .edit-profile-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* iOS zoom prevention */
+  .edit-input {
+    font-size: 16px;
+  }
+
+  /* Nav rows: ensure tap target */
+  .edit-nav-row {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  /* Action buttons already full-width and 50px — ensure on small screens */
+  .edit-save,
+  .edit-cancel {
+    min-height: 48px;
+    font-size: 16px;
+  }
+}
+
 [data-theme='dark'] .edit-profile-page {
   --edit-page-bg: #0B0B0D;
   --edit-surface: #1e1e1e;
