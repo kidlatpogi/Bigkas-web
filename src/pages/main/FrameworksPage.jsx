@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import './FrameworksPage.css';
 
 /* ─── Category definitions ──────────────────────────────────────────────────── */
@@ -185,13 +186,25 @@ function ItemModal({ item, onClose }) {
 
 /* ─── Main Page ──────────────────────────────────────────────────────────────── */
 export default function FrameworksPage() {
-  const [activeTab, setActiveTab]   = useState(CATEGORIES[0].id);
+  const location = useLocation();
+
+  /* Lazy-init: read deep-link lesson from navigation state on first render */
+  const [activeTab, setActiveTab] = useState(() => {
+    const catId = location.state?.lessonItem?._categoryId;
+    return (catId && CATEGORIES.find((c) => c.id === catId)) ? catId : CATEGORIES[0].id;
+  });
+  const [activeModal, setActiveModal] = useState(() => location.state?.lessonItem ?? null);
+
   const [items, setItems]           = useState([]);
   const [loading, setLoading]       = useState(true);
   const [query, setQuery]           = useState('');
   const [sortOrder, setSortOrder]   = useState('recent');
   const [page, setPage]             = useState(1);
-  const [activeModal, setActiveModal] = useState(null);
+
+  /* Clear location state so manual refresh does not re-open the modal */
+  useEffect(() => {
+    if (location.state?.lessonItem) window.history.replaceState({}, '', location.pathname);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ── Load items when tab changes ── */
   useEffect(() => {
