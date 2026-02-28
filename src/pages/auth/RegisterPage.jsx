@@ -14,7 +14,7 @@ import './AuthPages.css';
  */
 function RegisterPage() {
   const navigate = useNavigate();
-  const { register, loginWithGoogle, resendVerificationEmail, isLoading } = useAuthContext();
+  const { register, loginWithGoogle, isLoading } = useAuthContext();
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -24,7 +24,6 @@ function RegisterPage() {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -116,7 +115,7 @@ function RegisterPage() {
       }
 
       setErrors({ submit: mapSignupError(result.error) });
-    } catch (unexpectedError) {
+    } catch {
       setErrors({
         submit: 'An unexpected error occurred. Please try again or contact support if the issue persists.',
       });
@@ -133,81 +132,10 @@ function RegisterPage() {
     }
   };
 
-  const handleResendVerification = async () => {
-    const email = (formData.email || '').trim();
-    if (!email) {
-      setErrors((prev) => ({
-        ...prev,
-        submit: 'Enter your email first to resend verification.',
-      }));
-      return;
-    }
-
-    const result = await resendVerificationEmail(email);
-    if (result.success) {
-      setErrors((prev) => ({
-        ...prev,
-        submit: `Verification email resent to ${email}.`,
-      }));
-      return;
-    }
-
-    setErrors((prev) => ({
-      ...prev,
-      submit: result.error || 'Unable to resend verification email.',
-    }));
-  };
-
-  const handleGoToLogin = () => {
-    setShowSuccessModal(false);
-    navigate(ROUTES.LOGIN, {
-      state: {
-        verificationEmail: formData.email,
-        verificationRequired: true,
-        accountCreated: true,
-      },
-    });
-  };
-
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
 
-      {showSuccessModal && (
-        <div className="auth-modal-backdrop" role="dialog" aria-modal="true">
-          <div className="auth-modal">
-            <div className="forgot-success-icon" style={{ marginBottom: 16 }}>
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="23" stroke="#FBAF00" strokeWidth="2" />
-                <path d="M14 24l7 7 13-13" stroke="#FBAF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <h3 className="auth-modal-title">Account Created!</h3>
-            <p className="auth-modal-body">
-              Your account has been successfully created.
-              {formData.email && (
-                <>
-                  {' '}A verification email has been sent to
-                  <span className="auth-modal-highlight"> {formData.email}</span>.
-                  Please check your inbox and verify your email before logging in.
-                </>
-              )}
-            </p>
-            <p className="auth-modal-body" style={{ fontSize: 12, color: '#8C8C8C' }}>
-              Redirecting to login in a few seconds...
-            </p>
-            <div className="auth-modal-actions">
-              <button
-                type="button"
-                className="auth-submit-btn auth-submit-btn-primary"
-                onClick={handleGoToLogin}
-              >
-                Go to Login Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
         <BackButton onClick={() => navigate(ROUTES.HOME)} />
