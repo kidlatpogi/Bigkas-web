@@ -189,13 +189,13 @@ function GenerateScriptPage() {
     if (!user?.id) return;
     setIsSaving(true);
     try {
-      await createScript({
+      const { data: savedScript } = await createScript({
         userId: user.id,
         title:   editTitle.trim() || generated.title,
         content: editContent.trim(),
         type:    'auto-generated',
       });
-      navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated' } });
+      navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated', newScriptId: savedScript?.id } });
     } catch {
       setError('Failed to save script.');
     } finally {

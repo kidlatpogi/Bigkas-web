@@ -15,8 +15,8 @@ const FOCUS_OPTIONS = [
 
 const FILTER_CHIPS = [
   { value: 'all',        label: 'All' },
-  { value: 'myScripts',  label: 'My Scripts' },
-  { value: 'generated',  label: 'Generated Scripts' },
+  { value: 'myScripts',  label: 'Self-Authored' },
+  { value: 'generated',  label: 'Auto-Generated' },
 ];
 
 function TrainingSetupPage() {

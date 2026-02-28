@@ -135,14 +135,16 @@
 
 /* Generate modal */
 .generate-modal {
-  width: min(65vw, 980px);
+  width: min(78vw, 1140px);
+  min-height: 74vh;
   max-height: 90vh;
   overflow-y: auto;
 }
 
 @media (max-width: 900px) {
   .generate-modal {
-    width: 90vw;
+    width: 92vw;
+    min-height: 70vh;
   }
 }
 
