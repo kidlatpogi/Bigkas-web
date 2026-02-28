@@ -103,13 +103,14 @@ function RegisterPage() {
       });
 
       if (result.success) {
-        // Account created — redirect to login immediately
-        navigate(ROUTES.LOGIN, {
-          state: {
-            verificationEmail: formData.email,
-            verificationRequired: true,
-            accountCreated: true,
-          },
+        // Write email to localStorage so VerifyEmailPage can read it even after
+        // a hard refresh (navigation state is lost on reload).
+        window.localStorage.setItem('bigkas_pending_verification_email', formData.email);
+
+        // Redirect to OTP verification screen
+        navigate(ROUTES.VERIFY_EMAIL, {
+          state: { email: formData.email },
+          replace: true,
         });
         return;
       }

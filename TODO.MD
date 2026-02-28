@@ -18,11 +18,11 @@ application's security and user experience before moving to advanced ML features
 ## 🔑 Phase 2: Authentication Overhaul
 *Focus: Professionalizing the onboarding experience.*
 
-- [ ] **Email OTP Transition**
+- [DONE] **Email OTP Transition**
   - Switch Supabase Auth from "Magic Links" to "6-Digit OTP".
-- [ ] **Split-Box OTP Input Component**
+- [DONE] **Split-Box OTP Input Component**
   - Build a custom React component in `VerifyEmailPage.jsx` with 6 auto-focusing numeric fields.
-- [ ] **Spam Mitigation**
+- [DONE] **Spam Mitigation**
   - Implement a 60-second cooldown on the "Resend Code" button.
 
 ## 📖 Phase 3: Speech Frameworks

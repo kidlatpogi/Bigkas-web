@@ -58,6 +58,7 @@ function LoginPage() {
   const [resendLoading, setResendLoading] = useState(false);
   const [showUnverified, setShowUnverified] = useState(false);
   const [showAccountCreated, setShowAccountCreated] = useState(() => Boolean(location.state?.accountCreated));
+  const [showAccountVerified, setShowAccountVerified] = useState(() => Boolean(location.state?.accountVerified));
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [lockoutSeconds, setLockoutSeconds] = useState(() => getStoredLockoutSeconds());
@@ -69,6 +70,14 @@ function LoginPage() {
     window.history.replaceState({}, '');
     return () => clearTimeout(timer);
   }, [showAccountCreated]);
+
+  // Show the "Email verified" success banner from VerifyEmailPage, auto-clear after 5s
+  useEffect(() => {
+    if (!showAccountVerified) return;
+    const timer = setTimeout(() => setShowAccountVerified(false), 5000);
+    window.history.replaceState({}, '');
+    return () => clearTimeout(timer);
+  }, [showAccountVerified]);
 
   // Resend cooldown countdown
   useEffect(() => {
@@ -105,6 +114,9 @@ function LoginPage() {
     if (showAccountCreated) {
       setShowAccountCreated(false);
     }
+    if (showAccountVerified) {
+      setShowAccountVerified(false);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
@@ -136,6 +148,7 @@ function LoginPage() {
     // Clear all banners when attempting to log in
     setShowUnverified(false);
     setShowAccountCreated(false);
+    setShowAccountVerified(false);
     setResendSuccess(false);
     setErrors({});
 
@@ -240,6 +253,12 @@ function LoginPage() {
             {showAccountCreated && !showUnverified && !errors.submit && (
               <div className="auth-success-banner">
                 Account created successfully! Please check your email to verify your account before logging in.
+              </div>
+            )}
+
+            {showAccountVerified && !showUnverified && !errors.submit && (
+              <div className="auth-success-banner">
+                ✓ Email verified! You can now log in.
               </div>
             )}
 
