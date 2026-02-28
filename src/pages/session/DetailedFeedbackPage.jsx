@@ -64,7 +64,7 @@ function DetailedFeedbackPage() {
     return (
       <div className="inner-page">
         <div className="empty-state">
-          <span className="empty-icon">âš ï¸</span>
+          <span className="empty-icon">{/* warning */}&#9888;&#65039;</span>
           <p className="empty-title">Session not found</p>
           <button className="btn-primary" onClick={() => navigate(ROUTES.DASHBOARD)}>Go Home</button>
         </div>

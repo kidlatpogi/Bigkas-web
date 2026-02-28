@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
-import { getScripts } from '../../api/scriptsApi';
-import { ROUTES } from '../../utils/constants';
+import { getScripts, duplicateSystemScript } from '../../api/scriptsApi';
+import { ROUTES, buildRoute } from '../../utils/constants';
 import { SYSTEM_PREWRITTEN_SPEECHES, RANDOM_TOPICS } from '../../utils/practiceData';
 import BackButton from '../../components/common/BackButton';
 import './PracticePage.css';
@@ -42,6 +42,16 @@ function IconClose() {
   );
 }
 
+function IconCopy() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+    </svg>
+  );
+}
+
 /* â”€â”€â”€ Tab options (mirrors mobile PracticeScreen) â”€â”€â”€ */
 const TABS = [
   { value: 'prewritten',  label: 'Pre-written' },
@@ -73,6 +83,11 @@ export default function PracticePage() {
   /* Teleprompter preview modal */
   const [previewScript, setPreviewScript] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewIsSystem, setPreviewIsSystem] = useState(false);
+
+  /* Copy-to-My-Scripts state */
+  const [isCopying, setIsCopying] = useState(false);
+  const [copyToast, setCopyToast] = useState(''); // '' | 'success' | 'error'
 
   /* Randomiser */
   const [randomTopic, setRandomTopic] = useState(() => RANDOM_TOPICS[0]);
@@ -119,8 +134,9 @@ export default function PracticePage() {
   const totalPages = Math.max(1, Math.ceil(visibleScripts.length / PAGE_SIZE));
 
   /* Open teleprompter modal */
-  const handleScriptPress = (script) => {
+  const handleScriptPress = (script, isSystem = false) => {
     setPreviewScript(script);
+    setPreviewIsSystem(isSystem);
     setShowPreview(true);
   };
 
@@ -135,6 +151,27 @@ export default function PracticePage() {
         entryPoint: 'practice',
       },
     });
+  };
+
+  /* Copy system script into user library, then open script editor */
+  const handleCopyAndEdit = async () => {
+    if (!user?.id) return;
+    setIsCopying(true);
+    try {
+      const { data, error } = await duplicateSystemScript(user.id, previewScript);
+      if (error) throw error;
+      setCopyToast('success');
+      setTimeout(() => {
+        setCopyToast('');
+        setShowPreview(false);
+        navigate(buildRoute.scriptEditor(data.id));
+      }, 1200);
+    } catch {
+      setCopyToast('error');
+      setTimeout(() => setCopyToast(''), 3000);
+    } finally {
+      setIsCopying(false);
+    }
   };
 
   /* Start randomiser practice */
@@ -193,7 +230,7 @@ export default function PracticePage() {
                 <button
                   key={script.id}
                   className="practice-script-card"
-                  onClick={() => handleScriptPress(script)}
+                  onClick={() => handleScriptPress(script, true)}
                 >
                   <span className="practice-script-title">{script.title}</span>
                   <p className="practice-script-preview">
@@ -304,11 +341,32 @@ export default function PracticePage() {
               </p>
             </div>
 
+            {/* Copy-to-My-Scripts toast */}
+            {copyToast && (
+              <div className={`practice-copy-toast${copyToast === 'error' ? ' error' : ''}`}>
+                {copyToast === 'success'
+                  ? 'Successfully copied to My Scripts!'
+                  : 'Failed to copy script. Please try again.'}
+              </div>
+            )}
+
             {/* Actions */}
             <div className="practice-modal-actions">
               <button className="practice-btn-outline" onClick={() => setShowPreview(false)}>
                 Close
               </button>
+              {previewIsSystem && (
+                <button
+                  className="practice-btn-copy"
+                  onClick={handleCopyAndEdit}
+                  disabled={isCopying}
+                >
+                  {isCopying
+                    ? <span className="practice-copy-spinner" />
+                    : <IconCopy />}
+                  {isCopying ? 'Copying...' : 'Copy & Edit'}
+                </button>
+              )}
               <button className="practice-btn-primary" onClick={handleStartPractice}>
                 Start Practice
               </button>
