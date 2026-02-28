@@ -52,8 +52,9 @@ function SettingsPage() {
     if (window.confirm('Are you sure you want to log out?')) await logout();
   };
 
-  const displayName = user?.nickname || user?.name || 'My Profile';
-  const displayEmail = user?.email || '';
+  const displayName  = user?.nickname || user?.name || 'My Profile';
+  const displayEmail  = user?.email || '';
+  const avatarUrl     = user?.avatar_url || null;
 
   return (
     <div className="inner-page settings-page">
@@ -68,7 +69,10 @@ function SettingsPage() {
         {/* Profile row */}
         <button className="stg-row" onClick={() => navigate(ROUTES.PROFILE)}>
           <span className="stg-row-icon stg-icon-gold">
-            <IoPersonOutline size={20} />
+            {avatarUrl
+              ? <img src={avatarUrl} alt={displayName} className="stg-avatar" />
+              : <IoPersonOutline size={20} />
+            }
           </span>
           <div className="stg-row-body">
             <span className="stg-row-title">{displayName}</span>

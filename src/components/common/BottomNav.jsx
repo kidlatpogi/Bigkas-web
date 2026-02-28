@@ -10,8 +10,6 @@ import {
   IoSettingsOutline,
   IoStatsChart,
   IoStatsChartOutline,
-  IoPerson,
-  IoPersonOutline,
 } from 'react-icons/io5';
 import { ROUTES } from '../../utils/constants';
 import './BottomNav.css';
@@ -20,7 +18,6 @@ const ICONS = {
   Scripts:  { active: IoDocumentText,  inactive: IoDocumentTextOutline },
   Progress: { active: IoStatsChart,    inactive: IoStatsChartOutline   },
   Learn:    { active: IoBook,          inactive: IoBookOutline          },
-  Profile:  { active: IoPerson,        inactive: IoPersonOutline        },
   Settings: { active: IoSettings,      inactive: IoSettingsOutline      },
 };
 
@@ -29,7 +26,6 @@ const PILL_TABS = [
   { to: ROUTES.SCRIPTS,    label: 'Scripts'  },
   { to: ROUTES.PROGRESS,   label: 'Progress' },
   { to: ROUTES.FRAMEWORKS, label: 'Learn'    },
-  { to: ROUTES.PROFILE,    label: 'Profile'  },
   { to: ROUTES.SETTINGS,   label: 'Settings' },
 ];
 
