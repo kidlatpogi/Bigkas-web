@@ -145,6 +145,11 @@
   margin-bottom: 6px;
 }
 
+/* form-group base has flex:1 — reset inside modal so only content area grows */
+.generate-modal .form-group {
+  flex: none;
+}
+
 /* Generate modal — override .modal-box max-width: 500px */
 .generate-modal {
   width: min(82vw, 1200px);
