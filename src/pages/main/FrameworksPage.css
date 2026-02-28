@@ -511,23 +511,32 @@
 }
 
 .fh-modal-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 0 22px 22px;
-  padding: 10px 16px;
-  background: rgba(251, 175, 0, 0.08);
-  border: 1px solid rgba(251, 175, 0, 0.35);
-  border-radius: 9px;
-  color: #6B4500;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 22px 24px;
+  padding: 13px 20px;
+  background: #FBAF00;
+  border: none;
+  border-radius: 12px;
+  color: #010101;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   text-decoration: none;
-  width: fit-content;
-  transition: background 0.18s;
+  width: calc(100% - 44px);
+  transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+  box-shadow: 0 4px 14px rgba(251, 175, 0, 0.35);
 }
 
-.fh-modal-link:hover { background: rgba(251, 175, 0, 0.16); }
+.fh-modal-link:hover {
+  background: #ffc72e;
+  box-shadow: 0 6px 18px rgba(251, 175, 0, 0.45);
+  transform: translateY(-1px);
+}
+
+.fh-modal-link:active { transform: scale(0.98); }
 
 /* ── Dark mode ───────────────────────────────────────────────────── */
 [data-theme="dark"] .fh-page {
@@ -579,7 +588,8 @@
 [data-theme="dark"] .fh-modal-step-row { background: #2A2A2A; }
 [data-theme="dark"] .fh-modal-step-text { color: #F0F0F0; }
 [data-theme="dark"] .fh-modal-steps-label { color: rgba(240, 240, 240, 0.3); }
-[data-theme="dark"] .fh-modal-link { color: #FBAF00; }
+[data-theme="dark"] .fh-modal-link { background: #FBAF00; color: #010101; box-shadow: 0 4px 14px rgba(251, 175, 0, 0.25); }
+[data-theme="dark"] .fh-modal-link:hover { background: #ffc72e; }
 
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 640px) {

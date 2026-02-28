@@ -1,63 +1,129 @@
-/* ── SettingsPage.css ── */
+/* ══════════════════════════════════════════════
+   SettingsPage.css — redesigned
+   ══════════════════════════════════════════════ */
 
 .settings-page {
   max-width: 560px;
   margin: 0 auto;
 }
 
-/* ── Section title ── */
-.settings-section-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: #010101;
-  letter-spacing: 0.04em;
-  margin: 0 0 12px 2px;
-}
-
-/* ── Settings card ── */
-.settings-card {
-  background: #fff;
-  border-radius: 16px;
-  border: 1.5px solid #E8E8E8;
-  overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.settings-field {
-  padding: 16px 18px;
-}
-
-.settings-field-label {
-  display: block;
+/* ── Section label ─────────────────────────── */
+.stg-section-label {
   font-size: 11px;
-  font-weight: 700;
-  color: #888;
-  letter-spacing: 0.08em;
-  margin-bottom: 8px;
+  font-weight: 800;
+  color: #999;
+  letter-spacing: 0.1em;
+  margin: 24px 0 8px 4px;
 }
 
-.settings-divider {
+/* ── Card ──────────────────────────────────── */
+.stg-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1.5px solid #ebebeb;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ── Row ──────────────────────────────────── */
+.stg-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 15px 18px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.stg-row:hover { background: rgba(0, 0, 0, 0.03); }
+
+.stg-row--select {
+  cursor: default;
+  align-items: flex-start;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+.stg-row--select:hover { background: transparent; }
+
+/* ── Row icon circle ───────────────────────── */
+.stg-row-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #F5F5F5;
+  color: #555;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.stg-row-icon.stg-icon-gold {
+  background: rgba(251, 175, 0, 0.15);
+  color: #c98800;
+}
+
+/* ── Row text body ─────────────────────────── */
+.stg-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.stg-row-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #010101;
+  line-height: 1.3;
+}
+
+.stg-row-sub {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Chevron arrow ─────────────────────────── */
+.stg-chevron {
+  color: #bbb;
+  flex-shrink: 0;
+}
+
+/* ── Divider ───────────────────────────────── */
+.stg-divider {
   height: 1px;
   background: #F0F0F0;
-  margin: 0;
+  margin: 0 18px;
 }
 
-/* ── Select wrapper ── */
-.settings-select-wrap {
+/* ── Select inside row ─────────────────────── */
+.stg-select-wrap {
   position: relative;
   display: flex;
   align-items: center;
+  margin-top: 6px;
 }
 
-.settings-select {
+.stg-select {
   width: 100%;
-  padding: 12px 40px 12px 14px;
-  border: 1.5px solid #E0E0E0;
+  padding: 10px 36px 10px 12px;
+  border: 1.5px solid #E8E8E8;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
-  color: #010101;
+  color: #333;
   background: #F8F8F8;
   appearance: none;
   -webkit-appearance: none;
@@ -67,106 +133,84 @@
   transition: border-color 0.15s;
 }
 
-.settings-select:focus {
-  border-color: #FBAF00;
-}
+.stg-select:focus { border-color: #FBAF00; }
 
-.settings-select-wrap svg {
+.stg-select-arrow {
   position: absolute;
-  right: 12px;
-  color: #888;
+  right: 10px;
+  color: #bbb;
   pointer-events: none;
-  flex-shrink: 0;
+  transform: rotate(90deg);
 }
 
-/* ── Test Audio/Video button ── */
-.settings-btn-test {
+/* ── Log Out button ────────────────────────── */
+.stg-btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
   width: 100%;
-  padding: 15px;
-  background: #fff;
-  border: 1.5px solid #E0E0E0;
-  border-radius: 14px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #010101;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.12s, border-color 0.15s;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.settings-btn-test:hover {
-  background: #F7F7F7;
-  border-color: #CCCCCC;
-}
-
-/* ── Log out button ── */
-.settings-btn-logout {
-  width: 100%;
+  margin-top: 28px;
   padding: 16px;
   background: #E5243B;
   border: none;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 700;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   color: #fff;
   cursor: pointer;
   font-family: inherit;
   transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 4px 14px rgba(229, 36, 59, 0.3);
 }
 
-.settings-btn-logout:hover {
-  opacity: 0.9;
-}
+.stg-btn-logout:hover  { opacity: 0.88; }
+.stg-btn-logout:active { transform: scale(0.98); }
 
-.settings-btn-logout:active {
-  transform: scale(0.98);
-}
-
-/* ── Dark mode ── */
+/* ══════════════════════════════════════════════
+   Dark mode
+   ══════════════════════════════════════════════ */
 [data-theme="dark"] .settings-page { background: #0B0B0D; }
 
-[data-theme="dark"] .settings-section-title {
-  color: #F0F0F0;
-}
+[data-theme="dark"] .stg-section-label { color: #555; }
 
-[data-theme="dark"] .settings-card {
-  background: #242424;
-  border-color: #333;
+[data-theme="dark"] .stg-card {
+  background: #161618;
+  border-color: #2a2a2a;
   box-shadow: none;
 }
 
-[data-theme="dark"] .settings-field-label {
-  color: #666;
+[data-theme="dark"] .stg-row:hover { background: rgba(255, 255, 255, 0.04); }
+
+[data-theme="dark"] .stg-row-icon {
+  background: #242424;
+  color: #888;
 }
 
-[data-theme="dark"] .settings-divider {
-  background: #333;
+[data-theme="dark"] .stg-row-icon.stg-icon-gold {
+  background: rgba(251, 175, 0, 0.12);
+  color: #FBAF00;
 }
 
-[data-theme="dark"] .settings-select {
+[data-theme="dark"] .stg-row-title { color: #F0F0F0; }
+[data-theme="dark"] .stg-row-sub   { color: #555; }
+[data-theme="dark"] .stg-chevron   { color: #444; }
+
+[data-theme="dark"] .stg-divider { background: #242424; margin: 0 18px; }
+
+[data-theme="dark"] .stg-select {
   background: #1e1e1e;
   border-color: #333;
   color: #F0F0F0;
 }
 
-[data-theme="dark"] .settings-select:focus {
-  border-color: #FBAF00;
-}
+[data-theme="dark"] .stg-select:focus { border-color: #FBAF00; }
+[data-theme="dark"] .stg-select-arrow { color: #555; }
 
-[data-theme="dark"] .settings-btn-test {
-  background: #242424;
-  border-color: #444;
-  color: #F0F0F0;
-}
-
-[data-theme="dark"] .settings-btn-test:hover {
-  background: #2e2e2e;
-}
-
-[data-theme="dark"] .settings-btn-logout {
+[data-theme="dark"] .stg-btn-logout {
   background: #C41E33;
+  box-shadow: 0 4px 14px rgba(196, 30, 51, 0.25);
 }
+
 

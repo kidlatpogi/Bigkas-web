@@ -94,7 +94,8 @@
 
 .bottom-nav-item.active {
   color: #010101;
-  background: rgba(251, 175, 0, 0.14);
+  background: #FBAF00;
+  box-shadow: 0 2px 10px rgba(251, 175, 0, 0.40);
 }
 
 /* ── Hover tooltips ────────────────────────────────────── */

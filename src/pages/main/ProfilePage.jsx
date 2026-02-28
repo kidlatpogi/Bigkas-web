@@ -151,6 +151,7 @@ function ProfilePage() {
     setFormData(initialData);
     setErrors({});
     setAvatarModalOpen(false);
+    navigate(ROUTES.DASHBOARD);
   };
 
   const initials = formData.firstName
