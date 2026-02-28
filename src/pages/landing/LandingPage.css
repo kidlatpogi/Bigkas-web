@@ -85,7 +85,7 @@
 }
 
 .section-heading {
-  font-size: 40px;
+  font-size: clamp(24px, 4.5vw, 40px);
   font-weight: 700;
   line-height: 1.15;
   color: var(--text-primary);
@@ -252,6 +252,10 @@ html {
   cursor: pointer;
   transition: all 0.2s;
   font-family: var(--font);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-nav-outline:hover {
@@ -270,6 +274,10 @@ html {
   cursor: pointer;
   transition: all 0.2s;
   font-family: var(--font);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-nav-solid:hover {
@@ -281,7 +289,7 @@ html {
   font-size: 13px;
 }
 
-/* Hamburger */
+/* Hamburger — 44px tap target */
 .nav-hamburger {
   display: none;
   flex-direction: column;
@@ -290,6 +298,11 @@ html {
   border: none;
   cursor: pointer;
   padding: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
 }
 
 .nav-hamburger span {
@@ -373,7 +386,7 @@ html {
 }
 
 .hero-heading {
-  font-size: 48px;
+  font-size: clamp(26px, 5vw, 48px);
   font-weight: 700;
   line-height: 1.1;
   color: var(--text-primary);
@@ -408,6 +421,10 @@ html {
   cursor: pointer;
   transition: all 0.25s;
   font-family: var(--font);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary:hover {
@@ -1167,7 +1184,7 @@ html {
 }
 
 .cta-heading {
-  font-size: 40px;
+  font-size: clamp(24px, 4.5vw, 40px);
   font-weight: 700;
   line-height: 1.15;
   color: var(--text-inverse);
@@ -1199,6 +1216,10 @@ html {
   cursor: pointer;
   transition: all 0.25s;
   font-family: var(--font);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-cta-main:hover {
@@ -1560,12 +1581,23 @@ html {
     max-width: 300px;
   }
 
-  .hero-heading {
-    font-size: 36px;
+  /* font-size handled by clamp() in base rules */
+
+  .hero-actions {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .section-heading {
-    font-size: 32px;
+  .section-body {
+    text-align: left;
+  }
+
+  .section-body.center {
+    text-align: center;
+  }
+
+  .cta-sub {
+    text-align: center;
   }
 
   .solution-pillars {
@@ -1576,22 +1608,43 @@ html {
     grid-template-columns: 1fr;
   }
 
-  .cta-card {
-    padding: 40px 24px;
+  .feature-card {
+    padding: 0; /* visual + body already have own padding */
   }
 
-  .cta-heading {
-    font-size: 32px;
+  .cta-card {
+    padding: 40px 24px;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-heading {
-    font-size: 28px;
+  /* font-size handled by clamp() in base rules */
+
+  .section-wrap {
+    padding: 0 20px;
   }
 
-  .section-heading {
-    font-size: 26px;
+  /* Full-width primary CTA buttons for thumb-friendly tapping */
+  .btn-primary {
+    width: 100%;
+  }
+
+  .btn-cta-main {
+    width: 100%;
+    padding: 16px 24px;
+  }
+
+  /* Stack hero action buttons vertically */
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .btn-ghost {
+    text-align: center;
+    padding: 14px 20px;
   }
 
   .hero-stats {
@@ -1609,7 +1662,25 @@ html {
     font-size: 36px;
   }
 
-  .cta-heading {
-    font-size: 26px;
+  .cta-card {
+    padding: 32px 20px;
+  }
+
+  .growth-card {
+    padding: 24px 16px;
+  }
+
+  .bridge-text {
+    padding: 20px 16px;
+  }
+
+  .problem-stats-card {
+    padding: 24px 20px;
+  }
+
+  /* Prevent decorative elements from causing overflow */
+  .hero-dashboard {
+    max-width: 100%;
+    overflow: hidden;
   }
 }
