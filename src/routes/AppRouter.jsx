@@ -52,7 +52,9 @@ function ProtectedRoute() {
   const { isAuthenticated, isInitializing, user } = useAuthContext();
   const { pathname } = useLocation();
 
-  const hideThemeToggle = [ROUTES.PRACTICE, ROUTES.TRAINING_SETUP, ROUTES.TRAINING].includes(pathname);
+  const hideThemeToggle =
+    pathname === ROUTES.PRACTICE ||
+    pathname.startsWith('/training');
 
   if (isInitializing) {
     return (

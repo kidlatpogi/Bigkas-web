@@ -790,3 +790,8 @@
   color: #fff;
 }
 
+/* ── Hide floating theme toggle during training session ── */
+body:has(.tp-page) .theme-toggle-wrap {
+  display: none !important;
+}
+

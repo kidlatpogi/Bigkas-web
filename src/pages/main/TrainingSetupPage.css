@@ -248,3 +248,8 @@
 [data-theme="dark"] .focus-desc {
   color: rgba(255,255,255,0.5);
 }
+
+/* ── Hide floating theme toggle on training setup page ── */
+body:has(.training-setup-page) .theme-toggle-wrap {
+  display: none !important;
+}

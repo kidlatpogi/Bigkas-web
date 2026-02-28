@@ -536,3 +536,8 @@
 [data-theme="dark"] .practice-btn-copy:hover:not(:disabled) { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.5); color: #F0F0F0; }
 [data-theme="dark"] .practice-copy-toast { background: rgba(48, 209, 88, 0.12); color: #30D158; border-color: rgba(48, 209, 88, 0.3); }
 [data-theme="dark"] .practice-copy-toast.error { background: rgba(255, 69, 58, 0.12); color: #FF453A; border-color: rgba(255, 69, 58, 0.25); }
+
+/* ── Hide floating theme toggle on practice setup page ── */
+body:has(.practice-page) .theme-toggle-wrap {
+  display: none !important;
+}
