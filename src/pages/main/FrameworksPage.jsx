@@ -1,19 +1,59 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import BackButton from '../../components/common/BackButton';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import './FrameworksPage.css';
 
-/* ─── Lazy-load the framework data ─────────────────────────────────────────── */
-let frameworkCache = null;
-async function loadFrameworks() {
-  if (frameworkCache) return frameworkCache;
-  const mod = await import('../../assets/framework.json');
-  const raw = mod.default;
-  frameworkCache = Array.isArray(raw) ? raw : Object.values(raw);
-  return frameworkCache;
+/* ─── Category definitions ──────────────────────────────────────────────────── */
+const CATEGORIES = [
+  {
+    id: 'frameworks',
+    label: 'Frameworks',
+    file: () => import('../../assets/data/frameworks.json'),
+  },
+  {
+    id: 'tips_and_tricks',
+    label: 'Tips & Tricks',
+    file: () => import('../../assets/data/tips_and_tricks.json'),
+  },
+  {
+    id: 'communication_cheats',
+    label: 'Comm. Cheats',
+    file: () => import('../../assets/data/communication_cheats.json'),
+  },
+  {
+    id: 'communication_skills',
+    label: 'Skills',
+    file: () => import('../../assets/data/communication_skills.json'),
+  },
+];
+
+const PAGE_SIZE = 6;
+
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Recently Added' },
+  { value: 'az',     label: 'A → Z' },
+  { value: 'za',     label: 'Z → A' },
+];
+
+/* Per-category lazy cache */
+const dataCache = {};
+
+/* ─── SVG Icons ─────────────────────────────────────────────────────────────── */
+function IconSearch() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
 }
 
-/* ─── Icons ─────────────────────────────────────────────────────────────────── */
+function IconPlay() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  );
+}
+
 function IconClose() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -23,17 +63,9 @@ function IconClose() {
   );
 }
 
-function IconPlay() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-
 function IconExternal() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
       <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
@@ -41,44 +73,48 @@ function IconExternal() {
   );
 }
 
-/* ─── Framework Card ────────────────────────────────────────────────────────── */
-function FrameworkCard({ framework, onWatch }) {
+/* ─── Item Card ──────────────────────────────────────────────────────────────── */
+function ItemCard({ item, onLearnMore }) {
+  const previewSteps = item.steps?.slice(0, 3) ?? [];
+
   return (
-    <div className="fw-card">
-      <div className="fw-card-header">
-        <span className="fw-card-id">{framework.id}</span>
-      </div>
-      <h3 className="fw-card-name">{framework.name}</h3>
-      <p className="fw-card-summary">{framework.summary}</p>
-      <p className="fw-card-usage">
-        <span className="fw-usage-label">BEST FOR: </span>
-        {framework.usage_scenario}
-      </p>
-      <div className="fw-steps">
-        {framework.steps.map((step, i) => (
-          <div key={i} className="fw-step-pill">
-            <span className="fw-step-num">{i + 1}</span>
-            <span className="fw-step-text">{step}</span>
-          </div>
-        ))}
-      </div>
+    <div className="fh-card">
+      {item.author && (
+        <span className="fh-card-author">{item.author}</span>
+      )}
+      <h3 className="fh-card-name">{item.name}</h3>
+      <p className="fh-card-summary">{item.summary}</p>
+
+      {previewSteps.length > 0 && (
+        <div className="fh-card-steps">
+          {previewSteps.map((step, i) => (
+            <span key={i} className="fh-step-pill">
+              <span className="fh-step-num">{i + 1}</span>
+              {step}
+            </span>
+          ))}
+          {(item.steps?.length ?? 0) > 3 && (
+            <span className="fh-step-more">+{item.steps.length - 3} more</span>
+          )}
+        </div>
+      )}
+
       <button
-        className="fw-watch-btn"
-        onClick={() => onWatch(framework)}
-        aria-label={`Watch and learn the ${framework.name}`}
+        className="fh-card-btn"
+        onClick={() => onLearnMore(item)}
+        aria-label={`Learn more about ${item.name}`}
       >
         <IconPlay />
-        Watch &amp; Learn
+        Learn More
       </button>
     </div>
   );
 }
 
-/* ─── Video Modal ───────────────────────────────────────────────────────────── */
-function FrameworkModal({ framework, onClose }) {
-  const hasVideo = Boolean(framework.youtubeId);
+/* ─── Learn More Modal ───────────────────────────────────────────────────────── */
+function ItemModal({ item, onClose }) {
+  const hasVideo = Boolean(item.youtubeId);
 
-  /* Trap focus / close on Escape */
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handleKey);
@@ -87,60 +123,55 @@ function FrameworkModal({ framework, onClose }) {
 
   return (
     <div
-      className="fw-modal-backdrop"
+      className="fh-modal-backdrop"
       role="dialog"
       aria-modal="true"
-      aria-label={`Learn ${framework.name}`}
+      aria-label={`Learn ${item.name}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="fw-modal">
-        {/* Header */}
-        <div className="fw-modal-header">
-          <div>
-            <span className="fw-modal-id">{framework.id}</span>
-            <h2 className="fw-modal-title">{framework.name}</h2>
+      <div className="fh-modal">
+        <div className="fh-modal-header">
+          <div className="fh-modal-title-block">
+            {item.author && <span className="fh-modal-author">{item.author}</span>}
+            <h2 className="fh-modal-title">{item.name}</h2>
           </div>
-          <button className="fw-modal-close" onClick={onClose} aria-label="Close modal">
+          <button className="fh-modal-close" onClick={onClose} aria-label="Close">
             <IconClose />
           </button>
         </div>
 
-        {/* Video embed */}
         {hasVideo ? (
-          <div className="fw-video-wrapper">
+          <div className="fh-video-wrapper">
             <iframe
-              className="fw-video"
-              src={`https://www.youtube.com/embed/${framework.youtubeId}?rel=0&modestbranding=1`}
-              title={`${framework.name} video`}
+              className="fh-video"
+              src={`https://www.youtube.com/embed/${item.youtubeId}?rel=0&modestbranding=1`}
+              title={`${item.name} video`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
           </div>
         ) : (
-          <div className="fw-video-placeholder">
-            <span className="fw-video-placeholder-text">No video available for this framework yet.</span>
+          <div className="fh-video-placeholder">No video available yet.</div>
+        )}
+
+        <p className="fh-modal-summary">{item.summary}</p>
+
+        {item.steps?.length > 0 && (
+          <div className="fh-modal-steps">
+            <p className="fh-modal-steps-label">STEPS</p>
+            {item.steps.map((step, i) => (
+              <div key={i} className="fh-modal-step-row">
+                <span className="fh-modal-step-num">{i + 1}</span>
+                <span className="fh-modal-step-text">{step}</span>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Description */}
-        <p className="fw-modal-summary">{framework.summary}</p>
-
-        {/* Steps */}
-        <div className="fw-modal-steps">
-          <p className="fw-modal-steps-label">THE FRAMEWORK STEPS</p>
-          {framework.steps.map((step, i) => (
-            <div key={i} className="fw-modal-step-row">
-              <span className="fw-modal-step-num">{i + 1}</span>
-              <span className="fw-modal-step-text">{step}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Study link */}
-        {framework.studyLink && framework.studyLink !== '...' && (
+        {item.studyLink && (
           <a
-            className="fw-modal-study-link"
-            href={framework.studyLink}
+            className="fh-modal-link"
+            href={item.studyLink}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -152,51 +183,176 @@ function FrameworkModal({ framework, onClose }) {
   );
 }
 
-/* ─── Main Page ─────────────────────────────────────────────────────────────── */
+/* ─── Main Page ──────────────────────────────────────────────────────────────── */
 export default function FrameworksPage() {
-  const navigate = useNavigate();
-  const [frameworks, setFrameworks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab]   = useState(CATEGORIES[0].id);
+  const [items, setItems]           = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [query, setQuery]           = useState('');
+  const [sortOrder, setSortOrder]   = useState('recent');
+  const [page, setPage]             = useState(1);
   const [activeModal, setActiveModal] = useState(null);
 
+  /* ── Load items when tab changes ── */
   useEffect(() => {
-    loadFrameworks().then((data) => {
-      setFrameworks(data);
-      setIsLoading(false);
-    });
-  }, []);
+    let cancelled = false;
+    const cat = CATEGORIES.find((c) => c.id === activeTab);
 
-  const handleWatch = useCallback((fw) => setActiveModal(fw), []);
-  const handleClose = useCallback(() => setActiveModal(null), []);
+    // Resolve from cache (immediate) or dynamic import (async) — same async chain
+    const load = dataCache[activeTab]
+      ? Promise.resolve(dataCache[activeTab])
+      : cat.file().then((mod) => {
+          const raw = mod.default ?? mod;
+          const data = Array.isArray(raw) ? raw : Object.values(raw);
+          dataCache[activeTab] = data;
+          return data;
+        });
+
+    // Show spinner and clear stale items only for non-cached loads (deferred = async setState)
+    if (!dataCache[activeTab]) {
+      Promise.resolve().then(() => { if (!cancelled) { setLoading(true); setItems([]); } });
+    }
+
+    load
+      .then((data) => { if (!cancelled) { setItems(data); setLoading(false); } })
+      .catch(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [activeTab]);
+
+  /* ── Filtered + sorted list (memoised) ── */
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = q
+      ? items.filter(
+          (it) =>
+            it.name?.toLowerCase().includes(q) ||
+            it.author?.toLowerCase().includes(q) ||
+            it.summary?.toLowerCase().includes(q),
+        )
+      : [...items];
+
+    if (sortOrder === 'az') list.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sortOrder === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
+    // 'recent' keeps JSON insertion order
+
+    return list;
+  }, [items, query, sortOrder]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const openModal  = useCallback((item) => setActiveModal(item), []);
+  const closeModal = useCallback(() => setActiveModal(null), []);
+
+  const switchTab = (id) => {
+    setActiveTab(id);
+    setQuery('');
+    setSortOrder('recent');
+    setPage(1);
+  };
 
   return (
-    <div className="fw-page">
-      {/* Header */}
-      <div className="fw-header">
-        <BackButton onClick={() => navigate(-1)} />
-        <div className="fw-header-text">
-          <h1 className="fw-page-title">Training Hub</h1>
-          <p className="fw-page-sub">Master proven speech frameworks</p>
-        </div>
+    <div className="fh-page">
+
+      {/* ── Page Header ── */}
+      <div className="fh-header">
+        <h1 className="fh-title">Training Hub</h1>
+        <p className="fh-subtitle">Frameworks, tips, and skills to level up your speaking</p>
       </div>
 
-      {/* Framework grid */}
-      {isLoading ? (
-        <div className="fw-loading" aria-label="Loading frameworks">
-          <div className="fw-spinner" />
+      {/* ── Search + Sort row ── */}
+      <div className="fh-controls">
+        <div className="fh-search-wrap">
+          <span className="fh-search-icon"><IconSearch /></span>
+          <input
+            className="fh-search"
+            type="search"
+            placeholder="Search by name or author…"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+            aria-label="Search items"
+          />
+          {query && (
+            <button
+              className="fh-search-clear"
+              onClick={() => { setQuery(''); setPage(1); }}
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        <select
+          className="fh-sort"
+          value={sortOrder}
+          onChange={(e) => { setSortOrder(e.target.value); setPage(1); }}
+          aria-label="Sort order"
+        >
+          {SORT_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* ── Category Tabs ── */}
+      <div className="fh-tabs" role="tablist" aria-label="Content categories">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            role="tab"
+            aria-selected={activeTab === cat.id}
+            className={`fh-tab${activeTab === cat.id ? ' fh-tab--active' : ''}`}
+            onClick={() => switchTab(cat.id)}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Content ── */}
+      {loading ? (
+        <div className="fh-loading" aria-live="polite">
+          <div className="fh-spinner" aria-label="Loading" />
+        </div>
+      ) : pageItems.length === 0 ? (
+        <div className="fh-empty" aria-live="polite">
+          {query ? `No results for "${query}"` : 'Nothing here yet.'}
         </div>
       ) : (
-        <div className="fw-grid">
-          {frameworks.map((fw) => (
-            <FrameworkCard key={fw.id} framework={fw} onWatch={handleWatch} />
+        <div className="fh-grid">
+          {pageItems.map((item) => (
+            <ItemCard key={item.id} item={item} onLearnMore={openModal} />
           ))}
         </div>
       )}
 
-      {/* Video modal */}
-      {activeModal && (
-        <FrameworkModal framework={activeModal} onClose={handleClose} />
+      {/* ── Pagination ── */}
+      {totalPages > 1 && !loading && (
+        <div className="fh-pagination" role="navigation" aria-label="Pagination">
+          <button
+            className="fh-page-btn"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ‹ Prev
+          </button>
+          <span className="fh-page-info">
+            {page} <span className="fh-page-sep">/</span> {totalPages}
+          </span>
+          <button
+            className="fh-page-btn"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next ›
+          </button>
+        </div>
       )}
+
+      {/* ── Modal ── */}
+      {activeModal && <ItemModal item={activeModal} onClose={closeModal} />}
     </div>
   );
 }

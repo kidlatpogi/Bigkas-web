@@ -1,31 +1,40 @@
+/* ═══════════════════════════════════════════════════════
+   BottomNav — floating pill + FAB center Home button
+   Layout: History · Scripts · [FAB Home] · Training · Settings
+   ═══════════════════════════════════════════════════════ */
+
 .bottom-nav {
   position: fixed;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+
   display: flex;
-  align-items: center;
+  align-items: flex-end;   /* anchor items to bottom so FAB can rise */
   justify-content: center;
   gap: 0;
+
   height: 64px;
-  padding: 0 8px;
+  padding: 0 8px 8px;      /* extra bottom padding keeps items above pill edge */
   background: #FFFFFF;
-  border-radius: 32px;
+  border-radius: 36px;
   box-shadow:
-    0 8px 32px rgba(1, 1, 1, 0.13),
-    0 2px 8px rgba(1, 1, 1, 0.06);
+    0 8px 32px rgba(1, 1, 1, 0.14),
+    0 2px 8px rgba(1, 1, 1, 0.07);
   min-width: 280px;
+  overflow: visible;       /* allow FAB to poke above the pill */
 }
 
+/* ── Regular tab items ─────────────────────────────────── */
 .bottom-nav-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 48px;
-  border-radius: 24px;
-  color: rgba(1, 1, 1, 0.4);
+  width: 52px;
+  height: 44px;
+  border-radius: 22px;
+  color: rgba(1, 1, 1, 0.38);
   text-decoration: none;
   transition: color 0.2s, transform 0.15s;
   flex-shrink: 0;
@@ -39,26 +48,57 @@
   color: #010101;
 }
 
-/* Center Home tab — slightly larger touch target */
+/* ── Center FAB wrapper ────────────────────────────────── */
 .bottom-nav-center {
-  width: 60px;
-  color: rgba(1, 1, 1, 0.4);
+  width: 56px;
+  /* raise the whole link-element so the FAB circle sits above the bar */
+  margin-bottom: auto;   /* pushes item to the top of the flex container */
+  margin-top: -20px;     /* extra lift above the pill */
+  color: transparent;    /* icon colour handled by the .bottom-nav-fab span */
 }
 
-.bottom-nav-center.active {
+/* The gold/dark circle behind the home icon */
+.bottom-nav-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #010101;
+  color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 4px 16px rgba(1, 1, 1, 0.30),
+    0 1px 4px  rgba(1, 1, 1, 0.15);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.bottom-nav-center:hover .bottom-nav-fab {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(1, 1, 1, 0.35),
+    0 2px 6px  rgba(1, 1, 1, 0.18);
+}
+
+/* Active state — golden FAB */
+.bottom-nav-center.active .bottom-nav-fab {
+  background: #FBAF00;
   color: #010101;
+  box-shadow:
+    0 4px 16px rgba(251, 175, 0, 0.55),
+    0 1px 4px  rgba(251, 175, 0, 0.30);
 }
 
-/* Dark mode */
+/* ── Dark mode ─────────────────────────────────────────── */
 [data-theme="dark"] .bottom-nav {
   background: #1E1E1E;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 2px 8px rgba(0, 0, 0, 0.3);
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px  rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="dark"] .bottom-nav-item {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.32);
 }
 
 [data-theme="dark"] .bottom-nav-item:hover {
@@ -69,10 +109,19 @@
   color: #F0F0F0;
 }
 
-[data-theme="dark"] .bottom-nav-center {
-  color: rgba(255, 255, 255, 0.35);
+[data-theme="dark"] .bottom-nav-fab {
+  background: #2E2E2E;
+  color: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 1px 4px  rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="dark"] .bottom-nav-center.active {
-  color: #F0F0F0;
+[data-theme="dark"] .bottom-nav-center.active .bottom-nav-fab {
+  background: #FBAF00;
+  color: #010101;
+  box-shadow:
+    0 4px 16px rgba(251, 175, 0, 0.45),
+    0 1px 6px  rgba(251, 175, 0, 0.25);
 }
+

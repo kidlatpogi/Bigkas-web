@@ -113,7 +113,7 @@ function TrainingPage() {
 
   /* ── Lazy-load frameworks for silence hints ── */
   useEffect(() => {
-    import('../../assets/framework.json')
+    import('../../assets/data/frameworks.json')
       .then((m) => { frameworksRef.current = m.default ?? m; })
       .catch(() => {});
   }, []);

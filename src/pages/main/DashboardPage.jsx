@@ -202,7 +202,7 @@ export default function DashboardPage() {
 
   /* ── Lazily load frameworks and pick a daily featured one ── */
   useEffect(() => {
-    import('../../assets/framework.json')
+    import('../../assets/data/frameworks.json')
       .then((mod) => {
         const raw = mod.default;
         const data = Array.isArray(raw) ? raw : Object.values(raw);
