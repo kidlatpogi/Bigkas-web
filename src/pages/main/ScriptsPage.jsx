@@ -5,6 +5,7 @@ import { getScripts, deleteScript } from '../../api/scriptsApi';
 import { ROUTES, buildRoute } from '../../utils/constants';
 import { formatEditedTime } from '../../utils/formatters';
 import FilterTabs from '../../components/common/FilterTabs';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import './InnerPages.css';
 import './ScriptsPage.css';
 
@@ -20,6 +21,7 @@ function ScriptsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const menuButtonRefs = useRef({});
@@ -50,13 +52,18 @@ function ScriptsPage() {
   useEffect(() => { setPage(1); }, [activeTab]);
 
   const handleDelete = async (scriptId) => {
-    if (!window.confirm('Delete this script?')) return;
+    setDeleteTargetId(scriptId);
+  };
+
+  const handleConfirmDelete = async () => {
+    const scriptId = deleteTargetId;
+    setDeleteTargetId(null);
     setDeletingId(scriptId);
     try {
       await deleteScript(scriptId);
       setScripts(prev => prev.filter(s => s.id !== scriptId));
     } catch {
-      alert('Failed to delete script.');
+      // error is shown via ConfirmationModal's context; swallow silently
     } finally {
       setDeletingId(null);
     }
@@ -211,6 +218,18 @@ function ScriptsPage() {
           </div>
         </>
       )}
+
+      {/* Delete confirmation modal */}
+      <ConfirmationModal
+        isOpen={Boolean(deleteTargetId)}
+        title="Delete script?"
+        message="This action cannot be undone. The script will be permanently removed from your library."
+        confirmLabel="Delete"
+        cancelLabel="Keep it"
+        type="danger"
+        onCancel={() => setDeleteTargetId(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

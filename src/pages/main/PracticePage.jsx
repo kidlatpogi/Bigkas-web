@@ -164,7 +164,7 @@ export default function PracticePage() {
       setTimeout(() => {
         setCopyToast('');
         setShowPreview(false);
-        navigate(buildRoute.scriptEditor(data.id));
+        navigate(buildRoute.scriptEditor(data.id), { state: { isTempCopy: true } });
       }, 1200);
     } catch {
       setCopyToast('error');

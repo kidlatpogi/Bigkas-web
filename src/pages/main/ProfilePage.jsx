@@ -23,6 +23,7 @@ function ProfilePage() {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [isSaving,        setIsSaving]        = useState(false);
   const [errors,          setErrors]          = useState({});
+  const [saveError,       setSaveError]       = useState('');
   const [initialData,     setInitialData]     = useState({
     firstName: '',
     lastName: '',
@@ -134,7 +135,7 @@ function ProfilePage() {
       setInitialData({ ...formData, avatarUri: formData.avatarUri || null });
       navigate(-1);
     } catch {
-      alert('Failed to save changes. Please try again.');
+      setSaveError('Failed to save changes. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -249,6 +250,7 @@ function ProfilePage() {
         </div>
 
         {/* Action buttons */}
+        {saveError && <p className="profile-error-msg" style={{ marginBottom: 12, textAlign: 'center' }}>{saveError}</p>}
         <button
           className="profile-btn-save"
           type="button"

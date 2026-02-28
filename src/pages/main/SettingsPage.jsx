@@ -14,6 +14,7 @@ import { useAuthContext } from '../../context/useAuthContext';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './SettingsPage.css';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 
 function SettingsPage() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ function SettingsPage() {
   const [cameras, setCameras]         = useState([]);
   const [mic, setMic] = useState(() => localStorage.getItem('pref_mic') || '');
   const [cam, setCam] = useState(() => localStorage.getItem('pref_cam') || '');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     const enumerate = async () => {
@@ -48,9 +50,7 @@ function SettingsPage() {
   const handleMicChange = (e) => { setMic(e.target.value); localStorage.setItem('pref_mic', e.target.value); };
   const handleCamChange = (e) => { setCam(e.target.value); localStorage.setItem('pref_cam', e.target.value); };
 
-  const handleLogout = async () => {
-    if (window.confirm('Are you sure you want to log out?')) await logout();
-  };
+  const handleLogout = () => { setShowLogoutModal(true); };
 
   const displayName  = user?.nickname || user?.name || 'My Profile';
   const displayEmail  = user?.email || '';
@@ -175,6 +175,17 @@ function SettingsPage() {
         <IoLogOutOutline size={20} />
         Log Out
       </button>
+
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        title="Log out?"
+        message="Are you sure you want to log out of Bigkas?"
+        confirmLabel="Log Out"
+        cancelLabel="Stay"
+        type="danger"
+        onCancel={() => setShowLogoutModal(false)}
+        onConfirm={async () => { setShowLogoutModal(false); await logout(); }}
+      />
     </div>
   );
 }

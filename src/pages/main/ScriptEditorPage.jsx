@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
-import { getScript, createScript, updateScript } from '../../api/scriptsApi';
+import { getScript, createScript, updateScript, deleteScript } from '../../api/scriptsApi';
 import BackButton from '../../components/common/BackButton';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 
@@ -11,7 +12,9 @@ const MAX_CHARS = 2000;
 function ScriptEditorPage() {
   const navigate = useNavigate();
   const { scriptId } = useParams();
+  const { state: locationState } = useLocation();
   const { user } = useAuthContext();
+  const isTempCopy = locationState?.isTempCopy || false;
 
   const isEditing = Boolean(scriptId);
 
@@ -69,6 +72,13 @@ function ScriptEditorPage() {
     }
   };
 
+  const handleDiscard = async () => {
+    if (isTempCopy && scriptId) {
+      try { await deleteScript(scriptId); } catch { /* discard anyway */ }
+    }
+    navigate(-1);
+  };
+
   if (isLoading) {
     return (
       <div className="inner-page">
@@ -81,7 +91,7 @@ function ScriptEditorPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
-        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => setShowCancelModal(true)} />
         <h1 className="inner-page-title">{isEditing ? 'Edit Script' : 'New Script'}</h1>
       </div>
 
@@ -122,30 +132,18 @@ function ScriptEditorPage() {
         </button>
       </div>
 
-      {/* Cancel confirmation modal */}
-      {showCancelModal && (
-        <div
-          className="modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          onClick={(e) => { if (e.target === e.currentTarget) setShowCancelModal(false); }}
-        >
-          <div className="modal-box">
-            <p className="modal-title">Discard changes?</p>
-            <p className="modal-desc">
-              Any unsaved changes will be lost. Are you sure you want to leave?
-            </p>
-            <div className="btn-row">
-              <button className="btn-secondary" onClick={() => setShowCancelModal(false)}>
-                Stay
-              </button>
-              <button className="btn-danger" onClick={() => navigate(-1)}>
-                Discard
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={showCancelModal}
+        title="Discard changes?"
+        message={isTempCopy
+          ? 'This will permanently delete the copied script. Are you sure?'
+          : 'Any unsaved changes will be lost. Are you sure you want to leave?'}
+        confirmLabel="Discard"
+        cancelLabel="Stay"
+        type="danger"
+        onCancel={() => setShowCancelModal(false)}
+        onConfirm={handleDiscard}
+      />
     </div>
   );
 }
