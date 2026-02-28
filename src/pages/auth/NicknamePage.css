@@ -141,3 +141,25 @@
   border-color: #FCBA04;
   box-shadow: 0 0 0 3px rgba(252, 186, 4, 0.12);
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 480px) {
+  .nickname-page {
+    align-items: flex-start;
+    padding: 40px 24px 48px;
+  }
+
+  .nickname-container {
+    max-width: 100%;
+  }
+
+  /* 16px prevents iOS Safari auto-zoom */
+  .nickname-input {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .nickname-btn {
+    min-height: 48px;
+  }
+}
