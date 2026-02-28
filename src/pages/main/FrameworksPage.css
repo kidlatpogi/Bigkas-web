@@ -19,7 +19,7 @@
   width: min(1120px, calc(100vw - 32px));
   max-width: 1120px;
   margin: 0 auto;
-  padding: 28px 0 160px;
+  padding: 28px 0 200px;
   font-family: var(--font);
 }
 
@@ -319,7 +319,7 @@
 /* â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-pagination {
   position: fixed;
-  bottom: 96px;
+  bottom: 142px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;

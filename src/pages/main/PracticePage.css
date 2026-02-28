@@ -6,7 +6,7 @@
 .practice-page {
   min-height: calc(100vh - 80px);
   background: var(--bg, #F5F5F5);
-  padding: 48px 24px 120px;
+  padding: 48px 24px 340px;
   display: flex;
   justify-content: center;
 }
@@ -274,11 +274,16 @@
 
 .practice-btn-outline:hover { border-color: #010101; }
 
-/* Cancel â€” unified style */
+/* Cancel — fixed above nav */
 .practice-cancel-link {
-  width: 100%;
+  position: fixed;
+  bottom: 142px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: min(592px, calc(100% - 48px));
   height: 52px;
-  background: transparent;
+  background: #F5F5F5;
   border: 1.5px solid #D5D5D5;
   border-radius: 14px;
   color: #888;
@@ -287,11 +292,53 @@
   cursor: pointer;
   font-family: inherit;
   text-align: center;
-  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: border-color 0.18s, color 0.18s;
+}
+
+/* Pagination — fixed 20px above cancel */
+.practice-paged-nav {
+  position: fixed;
+  bottom: 214px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #F5F5F5;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+  border: 1.5px solid #EBEBEB;
+  white-space: nowrap;
+}
+.practice-paged-btn {
+  padding: 8px 20px;
+  background: #FFFFFF;
+  border: 1.5px solid #E9E9E9;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #010101;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  font-family: inherit;
+}
+.practice-paged-btn:hover:not(:disabled) {
+  border-color: #FCBA04;
+  background: rgba(252, 186, 4, 0.06);
+}
+.practice-paged-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.practice-paged-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: #010101;
+  min-width: 56px;
+  text-align: center;
 }
 
 .practice-cancel-link:hover {
@@ -409,13 +456,17 @@
 [data-theme="dark"] .practice-rand-body   { color: rgba(255,255,255,0.5); }
 [data-theme="dark"] .practice-btn-outline { color: #F0F0F0; border-color: #3A3A3A; }
 [data-theme="dark"] .practice-btn-outline:hover { border-color: #F0F0F0; }
-[data-theme="dark"] .practice-cancel-link { border-color: #3A3A3A; color: #555; }
+[data-theme="dark"] .practice-cancel-link { background: #0B0B0D; border-color: #3A3A3A; color: #555; }
 [data-theme="dark"] .practice-cancel-link:hover { border-color: #666; color: #888; }
+[data-theme="dark"] .practice-paged-nav { background: #0B0B0D; border-color: #2A2A2A; }
+[data-theme="dark"] .practice-paged-btn { background: #1E1E1E; color: #F0F0F0; border-color: #2A2A2A; }
+[data-theme="dark"] .practice-paged-btn:hover:not(:disabled) { border-color: #FCBA04; background: rgba(252, 186, 4, 0.06); }
+[data-theme="dark"] .practice-paged-info { color: #F0F0F0; }
 [data-theme="dark"] .practice-modal       { background: #1E1E1E; }
 [data-theme="dark"] .practice-modal-script-title { color: #F0F0F0; }
 [data-theme="dark"] .practice-modal-scroll { background: #121212; }
 [data-theme="dark"] .practice-modal-text  { color: #E0E0E0; }
 [data-theme="dark"] .practice-modal-close { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-section-label { color: rgba(255,255,255,0.4); }
-[data-theme="dark"] .practice-cancel-link  { color: rgba(255,255,255,0.45); border-color: #3A3A3A; }
-[data-theme="dark"] .practice-cancel-link:hover { border-color: #F0F0F0; color: #F0F0F0; background: rgba(255,255,255,0.04); }
+[data-theme="dark"] .practice-cancel-link  { background: #0B0B0D; color: rgba(255,255,255,0.45); border-color: #3A3A3A; }
+[data-theme="dark"] .practice-cancel-link:hover { border-color: #F0F0F0; color: #F0F0F0; background: rgba(255,255,255,0.05); }

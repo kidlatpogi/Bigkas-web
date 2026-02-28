@@ -65,6 +65,11 @@ export default function PracticePage() {
   const [scripts, setScripts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const PAGE_SIZE = 6;
+  const [page, setPage] = useState(1);
+
+  useEffect(() => { setPage(1); }, [selectedTab]);
+
   /* Teleprompter preview modal */
   const [previewScript, setPreviewScript] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -99,14 +104,19 @@ export default function PracticePage() {
   /* Visible scripts per tab */
   const visibleScripts = useMemo(() => {
     if (selectedTab === 'prewritten') {
-      const userScripts = scripts.filter((s) => s.type === 'self-authored');
-      return [...SYSTEM_PREWRITTEN_SPEECHES, ...userScripts];
+      return [...SYSTEM_PREWRITTEN_SPEECHES];
     }
     if (selectedTab === 'generate') {
       return scripts.filter((s) => s.type === 'auto-generated');
     }
     return [];
   }, [scripts, selectedTab]);
+
+  const pagedScripts = useMemo(
+    () => visibleScripts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [visibleScripts, page]
+  );
+  const totalPages = Math.max(1, Math.ceil(visibleScripts.length / PAGE_SIZE));
 
   /* Open teleprompter modal */
   const handleScriptPress = (script) => {
@@ -179,7 +189,7 @@ export default function PracticePage() {
                 <p>No scripts yet. Write one from the Scripts tab or generate one!</p>
               </div>
             ) : (
-              visibleScripts.map((script) => (
+              pagedScripts.map((script) => (
                 <button
                   key={script.id}
                   className="practice-script-card"
@@ -232,7 +242,7 @@ export default function PracticePage() {
             {visibleScripts.length > 0 && (
               <p className="practice-section-label">Your Generated Scripts</p>
             )}
-            {visibleScripts.map((script) => (
+            {pagedScripts.map((script) => (
               <button
                 key={script.id}
                 className="practice-script-card"
@@ -245,6 +255,15 @@ export default function PracticePage() {
                 </p>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {selectedTab !== 'randomizer' && totalPages > 1 && (
+          <div className="practice-paged-nav">
+            <button className="practice-paged-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>&#8249; Prev</button>
+            <span className="practice-paged-info">{page} / {totalPages}</span>
+            <button className="practice-paged-btn" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next &#8250;</button>
           </div>
         )}
 
