@@ -54,7 +54,7 @@ function ForgotPasswordPage() {
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
-      {/* ── Left branding panel ── */}
+      {/* â”€â”€ Left branding panel â”€â”€ */}
       <div className="auth-brand-panel">
         <BackButton onClick={() => navigate(ROUTES.LOGIN)} />
 
@@ -80,7 +80,7 @@ function ForgotPasswordPage() {
         </div>
       </div>
 
-      {/* ── Right form panel ── */}
+      {/* â”€â”€ Right form panel â”€â”€ */}
       <div className="auth-form-panel">
         <div className="auth-form-container">
           <h2 className="auth-form-title">FORGOT PASSWORD</h2>
@@ -89,8 +89,8 @@ function ForgotPasswordPage() {
             <div className="forgot-success">
               <div className="forgot-success-icon">
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                  <circle cx="24" cy="24" r="23" stroke="#FBAF00" strokeWidth="2" />
-                  <path d="M14 24l7 7 13-13" stroke="#FBAF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="24" cy="24" r="23" stroke="#FCBA04" strokeWidth="2" />
+                  <path d="M14 24l7 7 13-13" stroke="#FCBA04" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h3 className="forgot-success-title">CHECK YOUR EMAIL</h3>

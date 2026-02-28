@@ -7,10 +7,10 @@ import { SYSTEM_PREWRITTEN_SPEECHES, RANDOM_TOPICS } from '../../utils/practiceD
 import BackButton from '../../components/common/BackButton';
 import './PracticePage.css';
 
-/* ─── Icons ─── */
+/* â”€â”€â”€ Icons â”€â”€â”€ */
 function IconShuffle() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FBAF00"
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FCBA04"
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="16 3 21 3 21 8"/>
       <line x1="4" y1="20" x2="21" y2="3"/>
@@ -42,7 +42,7 @@ function IconClose() {
   );
 }
 
-/* ─── Tab options (mirrors mobile PracticeScreen) ─── */
+/* â”€â”€â”€ Tab options (mirrors mobile PracticeScreen) â”€â”€â”€ */
 const TABS = [
   { value: 'prewritten',  label: 'Pre-written' },
   { value: 'randomizer',  label: 'Randomizer' },
@@ -50,12 +50,12 @@ const TABS = [
 ];
 
 /**
- * PracticePage — web adaptation of PracticeScreen.jsx (Bigkas-mobile).
+ * PracticePage â€” web adaptation of PracticeScreen.jsx (Bigkas-mobile).
  *
  * Tabs:
- *  Pre-written — system speeches + user self-authored scripts
- *  Randomizer  — random topic card + shuffle button
- *  Generate    — navigate to /scripts/generate; shows auto-generated scripts below
+ *  Pre-written â€” system speeches + user self-authored scripts
+ *  Randomizer  â€” random topic card + shuffle button
+ *  Generate    â€” navigate to /scripts/generate; shows auto-generated scripts below
  */
 export default function PracticePage() {
   const navigate = useNavigate();
@@ -168,7 +168,7 @@ export default function PracticePage() {
           ))}
         </div>
 
-        {/* ── Pre-written tab ── */}
+        {/* â”€â”€ Pre-written tab â”€â”€ */}
         {selectedTab === 'prewritten' && (
           <div className="practice-list">
             {isLoading ? (
@@ -188,7 +188,7 @@ export default function PracticePage() {
                   <span className="practice-script-title">{script.title}</span>
                   <p className="practice-script-preview">
                     {(script.content || script.body || '').slice(0, 120)}
-                    {(script.content || script.body || '').length > 120 ? '…' : ''}
+                    {(script.content || script.body || '').length > 120 ? 'â€¦' : ''}
                   </p>
                 </button>
               ))
@@ -196,7 +196,7 @@ export default function PracticePage() {
           </div>
         )}
 
-        {/* ── Randomiser tab ── */}
+        {/* â”€â”€ Randomiser tab â”€â”€ */}
         {selectedTab === 'randomizer' && (
           <div className="practice-rand-wrap">
             <div className="practice-rand-card">
@@ -219,11 +219,11 @@ export default function PracticePage() {
           </div>
         )}
 
-        {/* ── Generate tab ── */}
+        {/* â”€â”€ Generate tab â”€â”€ */}
         {selectedTab === 'generate' && (
           <div className="practice-list">
             <button
-              className="practice-btn-primary practice-generate-btn"
+              className="btn-primary training-generate-btn"
               onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
             >
               Generate Speech
@@ -241,7 +241,7 @@ export default function PracticePage() {
                 <span className="practice-script-title">{script.title}</span>
                 <p className="practice-script-preview">
                   {(script.content || '').slice(0, 120)}
-                  {(script.content || '').length > 120 ? '…' : ''}
+                  {(script.content || '').length > 120 ? 'â€¦' : ''}
                 </p>
               </button>
             ))}
@@ -254,7 +254,7 @@ export default function PracticePage() {
         </button>
       </div>
 
-      {/* ── Teleprompter Preview Modal ── */}
+      {/* â”€â”€ Teleprompter Preview Modal â”€â”€ */}
       {showPreview && (
         <div
           className="practice-modal-overlay"

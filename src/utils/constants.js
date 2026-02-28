@@ -56,7 +56,7 @@ export const WORDS_PER_MINUTE = 150;
 // Score tiers
 export const SCORE_TIER = {
   excellent: { min: 85, label: 'Excellent', color: '#34C759' },
-  good: { min: 65, label: 'Good', color: '#FBAF00' },
+  good: { min: 65, label: 'Good', color: '#FCBA04' },
   fair: { min: 45, label: 'Fair', color: '#FF9500' },
   poor: { min: 0, label: 'Needs Work', color: '#FF3B30' },
 };

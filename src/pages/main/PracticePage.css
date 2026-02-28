@@ -1,7 +1,7 @@
-/* ══════════════════════════════════════════════════════
-   PracticePage — web port of PracticeScreen (mobile)
-   Tokens: primary #FBAF00 · black #010101 · bg #F5F5F5
-   ══════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   PracticePage â€” web port of PracticeScreen (mobile)
+   Tokens: primary #FCBA04 Â· black #010101 Â· bg #F5F5F5
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .practice-page {
   min-height: calc(100vh - 80px);
@@ -37,7 +37,7 @@
 
 .practice-back:hover { background: rgba(1, 1, 1, 0.1); }
 
-/* Header — centered title, back button pinned left */
+/* Header â€” centered title, back button pinned left */
 .practice-header {
   display: flex;
   align-items: center;
@@ -91,8 +91,8 @@
 }
 
 .practice-tab-btn.active {
-  background: #FBAF00;
-  border-color: #FBAF00;
+  background: #FCBA04;
+  border-color: #FCBA04;
   color: #010101;
   font-weight: 700;
 }
@@ -158,8 +158,8 @@
 .practice-spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(251, 175, 0, 0.2);
-  border-top-color: #FBAF00;
+  border: 3px solid rgba(252, 186, 4, 0.2);
+  border-top-color: #FCBA04;
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
   align-self: center;
@@ -186,7 +186,7 @@
   border-radius: 999px;
   letter-spacing: 0.02em;
   margin-bottom: 20px;
-  box-shadow: 0 4px 14px rgba(251, 175, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(252, 186, 4, 0.35);
 }
 
 /* Randomiser */
@@ -198,8 +198,8 @@
 }
 
 .practice-rand-card {
-  background: rgba(251, 175, 0, 0.06);
-  border: 2px solid #FBAF00;
+  background: rgba(252, 186, 4, 0.06);
+  border: 2px solid #FCBA04;
   border-radius: 14px;
   padding: 24px;
   display: flex;
@@ -243,7 +243,7 @@
   flex: 1;
   padding: 0 20px;
   height: 48px;
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   font-size: 15px;
   font-weight: 700;
@@ -274,7 +274,7 @@
 
 .practice-btn-outline:hover { border-color: #010101; }
 
-/* Cancel — unified style */
+/* Cancel â€” unified style */
 .practice-cancel-link {
   width: 100%;
   height: 52px;
@@ -300,7 +300,7 @@
   background: transparent;
 }
 
-/* ── Teleprompter Preview Modal ── */
+/* â”€â”€ Teleprompter Preview Modal â”€â”€ */
 .practice-modal-overlay {
   position: fixed;
   inset: 0;
@@ -308,7 +308,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  z-index: 500;
+  z-index: 1200;
   padding: 0;
   animation: fadeOverlay 0.2s ease;
 }
@@ -319,7 +319,7 @@
   background: #FFFFFF;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  padding: 20px 20px 28px;
+  padding: 20px 20px 40px;
   width: 100%;
   max-width: 600px;
   max-height: 85vh;
@@ -393,14 +393,14 @@
   gap: 10px;
 }
 
-/* ── Dark mode ── */
+/* â”€â”€ Dark mode â”€â”€ */
 [data-theme="dark"] .practice-page        { --bg: #0B0B0D; }
 [data-theme="dark"] .practice-back        { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-back:hover  { background: rgba(255,255,255,0.13); }
 [data-theme="dark"] .practice-title       { color: #F0F0F0; }
 [data-theme="dark"] .practice-sub         { color: rgba(255,255,255,0.55); }
 [data-theme="dark"] .practice-tab-btn     { background: #1E1E1E; border-color: #3A3A3A; color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .practice-tab-btn.active { background: #FBAF00; border-color: #FBAF00; color: #010101; }
+[data-theme="dark"] .practice-tab-btn.active { background: #FCBA04; border-color: #FCBA04; color: #010101; }
 [data-theme="dark"] .practice-script-card { background: #1E1E1E; }
 [data-theme="dark"] .practice-script-title { color: #F0F0F0; }
 [data-theme="dark"] .practice-script-preview { color: rgba(255,255,255,0.5); }

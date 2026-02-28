@@ -1,18 +1,18 @@
 /*
-   Bigkas Landing — CSS
+   Bigkas Landing â€” CSS
    Design tokens from Bigkas-mobile repository:
-   Primary: #FBAF00  ·  Secondary: #010101  ·  Background: #F5F5F5
-   Border: #E2E2E2   ·  Surface: #FFFFFF
+   Primary: #FCBA04  Â·  Secondary: #010101  Â·  Background: #F5F5F5
+   Border: #E2E2E2   Â·  Surface: #FFFFFF
    Font: Inter 400/500/600/700
    Spacing: xs:4  sm:8  md:16  lg:24  xl:32  xxl:48  xxxl:64
    Border Radius: sm:4  md:8  lg:12  xl:16  full:9999
 */
 
 .landing {
-  --primary: #FBAF00;
+  --primary: #FCBA04;
   --primary-dark: #D59300;
   --primary-light: #FFC340;
-  --primary-glow: rgba(251, 175, 0, 0.15);
+  --primary-glow: rgba(252, 186, 4, 0.15);
   --secondary: #010101;
   --secondary-light: #2A2A2A;
   --white: #FFFFFF;
@@ -48,7 +48,7 @@
   overflow-x: hidden;
 }
 
-/* ── Utility classes ── */
+/* â”€â”€ Utility classes â”€â”€ */
 .accent-text {
   color: var(--primary);
 }
@@ -63,7 +63,7 @@
   margin-right: auto;
 }
 
-/* ── Section shell ── */
+/* â”€â”€ Section shell â”€â”€ */
 .section-wrap {
   max-width: 1120px;
   margin: 0 auto;
@@ -109,7 +109,7 @@
   text-align: center;
 }
 
-/* ── Nav-link and footer buttons styled as links ── */
+/* â”€â”€ Nav-link and footer buttons styled as links â”€â”€ */
 .nav-link-btn,
 .footer-link-btn {
   background: none;
@@ -136,7 +136,7 @@
   color: var(--primary);
 }
 
-/* ── Scroll-snap for section-to-section navigation ── */
+/* â”€â”€ Scroll-snap for section-to-section navigation â”€â”€ */
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
@@ -154,7 +154,7 @@ html {
   scroll-snap-stop: always;
 }
 
-/* ── Scroll-triggered animation base ── */
+/* â”€â”€ Scroll-triggered animation base â”€â”€ */
 .problem-section,
 .solution-section,
 .features-section,
@@ -176,9 +176,9 @@ html {
   transform: translateY(0);
 }
 
-/* ═══════════════════════════════════════════
-   NAV — sticky, white with border
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   NAV â€” sticky, white with border
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .landing-nav {
   position: fixed;
   top: 0;
@@ -321,9 +321,9 @@ html {
   color: var(--primary);
 }
 
-/* ═══════════════════════════════════════════
-   HERO — 100vh · Black card bg (matches mobile)
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   HERO â€” 100vh Â· Black card bg (matches mobile)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .hero-section {
   min-height: 100vh;
   display: flex;
@@ -337,7 +337,7 @@ html {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(251, 175, 0, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(252, 186, 4, 0.06) 0%, transparent 70%),
     radial-gradient(ellipse 40% 40% at 80% 30%, rgba(1, 1, 1, 0.03) 0%, transparent 60%),
     var(--bg);
   z-index: 0;
@@ -413,7 +413,7 @@ html {
 .btn-primary:hover {
   background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(251, 175, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(252, 186, 4, 0.3);
 }
 
 .btn-ghost {
@@ -519,7 +519,7 @@ html {
   color: var(--text-muted);
 }
 
-/* Dashboard mockup — Black card like mobile hero */
+/* Dashboard mockup â€” Black card like mobile hero */
 .hero-dashboard {
   display: flex;
   justify-content: center;
@@ -683,9 +683,9 @@ html {
   letter-spacing: 1.5px;
 }
 
-/* ═══════════════════════════════════════════
-   PROBLEM SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   PROBLEM SECTION â€” 100vh
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .problem-section {
   min-height: 100vh;
   display: flex;
@@ -739,9 +739,9 @@ html {
   background: var(--border);
 }
 
-/* ═══════════════════════════════════════════
-   SOLUTION SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SOLUTION SECTION â€” 100vh
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .solution-section {
   min-height: 100vh;
   display: flex;
@@ -790,9 +790,9 @@ html {
   text-align: justify;
 }
 
-/* ═══════════════════════════════════════════
-   FEATURES SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   FEATURES SECTION â€” 100vh
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .features-section {
   min-height: 100vh;
   display: flex;
@@ -957,9 +957,9 @@ html {
   background: var(--border);
 }
 
-/* ═══════════════════════════════════════════
-   TRUST SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TRUST SECTION â€” 100vh
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .trust-section {
   min-height: 100vh;
   display: flex;
@@ -1050,9 +1050,9 @@ html {
   color: var(--text-primary);
 }
 
-/* ═══════════════════════════════════════════
-   GROWTH SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   GROWTH SECTION â€” 100vh
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .growth-section {
   min-height: 100vh;
   display: flex;
@@ -1132,9 +1132,9 @@ html {
   color: var(--primary);
 }
 
-/* ═══════════════════════════════════════════
-   CTA SECTION — 100vh · Black card (mobile hero style)
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CTA SECTION â€” 100vh Â· Black card (mobile hero style)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .cta-section {
   min-height: 100vh;
   display: flex;
@@ -1204,7 +1204,7 @@ html {
 .btn-cta-main:hover {
   background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(251, 175, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(252, 186, 4, 0.35);
 }
 
 .cta-note {
@@ -1214,9 +1214,9 @@ html {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    FOOTER
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .landing-footer {
   background: var(--white);
   border-top: 1px solid var(--border);
@@ -1286,9 +1286,9 @@ html {
   align-items: center;
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    KEYFRAME ANIMATIONS
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -1347,9 +1347,9 @@ html {
   }
 }
 
-/* ═══════════════════════════════════════════
-   DARK MODE — Landing overrides
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   DARK MODE â€” Landing overrides
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 [data-theme="dark"] .landing {
   --bg: #0B0B0D;
   --surface: #1E1E1E;
@@ -1380,7 +1380,7 @@ html {
 
 [data-theme="dark"] .hero-bg {
   background:
-    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(251, 175, 0, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(252, 186, 4, 0.04) 0%, transparent 70%),
     radial-gradient(ellipse 40% 40% at 80% 30%, rgba(240, 240, 240, 0.02) 0%, transparent 60%),
     var(--bg);
 }
@@ -1440,12 +1440,12 @@ html {
 }
 
 [data-theme="dark"] .trust-badge {
-  background: rgba(251, 175, 0, 0.08);
+  background: rgba(252, 186, 4, 0.08);
 }
 
-/* ═══════════════════════════════════════════
-   RESPONSIVE — 1024 / 768 / 480
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   RESPONSIVE â€” 1024 / 768 / 480
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media (max-width: 1024px) {
   .hero-inner {
     grid-template-columns: 1fr;

@@ -1,13 +1,13 @@
-/* ══════════════════════════════════════════════
-   SettingsPage.css — redesigned
-   ══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SettingsPage.css â€” redesigned
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .settings-page {
   max-width: 560px;
   margin: 0 auto;
 }
 
-/* ── Section label ─────────────────────────── */
+/* â”€â”€ Section label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-section-label {
   font-size: 11px;
   font-weight: 800;
@@ -16,7 +16,7 @@
   margin: 24px 0 8px 4px;
 }
 
-/* ── Card ──────────────────────────────────── */
+/* â”€â”€ Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-card {
   background: #ffffff;
   border-radius: 18px;
@@ -25,7 +25,7 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* ── Row ──────────────────────────────────── */
+/* â”€â”€ Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-row {
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@
 }
 .stg-row--select:hover { background: transparent; }
 
-/* ── Row icon circle ───────────────────────── */
+/* â”€â”€ Row icon circle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-row-icon {
   display: flex;
   align-items: center;
@@ -68,7 +68,7 @@
 }
 
 .stg-row-icon.stg-icon-gold {
-  background: rgba(251, 175, 0, 0.15);
+  background: rgba(252, 186, 4, 0.15);
   color: #c98800;
 }
 
@@ -81,7 +81,7 @@
   display: block;
 }
 
-/* ── Row text body ─────────────────────────── */
+/* â”€â”€ Row text body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-row-body {
   flex: 1;
   min-width: 0;
@@ -105,20 +105,20 @@
   text-overflow: ellipsis;
 }
 
-/* ── Chevron arrow ─────────────────────────── */
+/* â”€â”€ Chevron arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-chevron {
   color: #bbb;
   flex-shrink: 0;
 }
 
-/* ── Divider ───────────────────────────────── */
+/* â”€â”€ Divider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-divider {
   height: 1px;
   background: #F0F0F0;
   margin: 0 18px;
 }
 
-/* ── Select inside row ─────────────────────── */
+/* â”€â”€ Select inside row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-select-wrap {
   position: relative;
   display: flex;
@@ -143,7 +143,7 @@
   transition: border-color 0.15s;
 }
 
-.stg-select:focus { border-color: #FBAF00; }
+.stg-select:focus { border-color: #FCBA04; }
 
 .stg-select-arrow {
   position: absolute;
@@ -153,7 +153,7 @@
   transform: rotate(90deg);
 }
 
-/* ── Log Out button ────────────────────────── */
+/* â”€â”€ Log Out button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .stg-btn-logout {
   display: flex;
   align-items: center;
@@ -178,9 +178,9 @@
 .stg-btn-logout:hover  { opacity: 0.88; }
 .stg-btn-logout:active { transform: scale(0.98); }
 
-/* ══════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Dark mode
-   ══════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 [data-theme="dark"] .settings-page { background: #0B0B0D; }
 
 [data-theme="dark"] .stg-section-label { color: #555; }
@@ -199,8 +199,8 @@
 }
 
 [data-theme="dark"] .stg-row-icon.stg-icon-gold {
-  background: rgba(251, 175, 0, 0.12);
-  color: #FBAF00;
+  background: rgba(252, 186, 4, 0.12);
+  color: #FCBA04;
 }
 
 [data-theme="dark"] .stg-row-title { color: #F0F0F0; }
@@ -215,7 +215,7 @@
   color: #F0F0F0;
 }
 
-[data-theme="dark"] .stg-select:focus { border-color: #FBAF00; }
+[data-theme="dark"] .stg-select:focus { border-color: #FCBA04; }
 [data-theme="dark"] .stg-select-arrow { color: #555; }
 
 [data-theme="dark"] .stg-btn-logout {

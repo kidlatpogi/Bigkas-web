@@ -1,6 +1,6 @@
 /**
- * NicknamePage — matches mobile NicknameScreen design
- * Design tokens: Primary #FBAF00 · Black #010101 · BG #F5F5F5
+ * NicknamePage â€” matches mobile NicknameScreen design
+ * Design tokens: Primary #FCBA04 Â· Black #010101 Â· BG #F5F5F5
  */
 
 .nickname-page {
@@ -18,7 +18,7 @@
   max-width: 420px;
 }
 
-/* ── Brand logo ── */
+/* â”€â”€ Brand logo â”€â”€ */
 .nickname-logo-wrap {
   display: flex;
   align-items: center;
@@ -39,7 +39,7 @@
   letter-spacing: 0.5px;
 }
 
-/* ── Heading ── */
+/* â”€â”€ Heading â”€â”€ */
 .nickname-title {
   font-size: 32px;
   font-weight: 700;
@@ -48,7 +48,7 @@
   margin: 0 0 12px;
 }
 
-/* ── Subtitle ── */
+/* â”€â”€ Subtitle â”€â”€ */
 .nickname-subtitle {
   font-size: 15px;
   font-weight: 500;
@@ -57,7 +57,7 @@
   margin: 0 0 32px;
 }
 
-/* ── Input ── */
+/* â”€â”€ Input â”€â”€ */
 .nickname-field-wrap {
   margin-bottom: 20px;
 }
@@ -102,11 +102,11 @@
   margin-top: 6px;
 }
 
-/* ── Continue button ── */
+/* â”€â”€ Continue button â”€â”€ */
 .nickname-btn {
   width: 100%;
   padding: 16px;
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   font-size: 15px;
   font-weight: 700;
@@ -138,6 +138,6 @@
   color: #FFFFFF;
 }
 [data-theme="dark"] .nickname-input:focus {
-  border-color: #FBAF00;
-  box-shadow: 0 0 0 3px rgba(251, 175, 0, 0.12);
+  border-color: #FCBA04;
+  box-shadow: 0 0 0 3px rgba(252, 186, 4, 0.12);
 }

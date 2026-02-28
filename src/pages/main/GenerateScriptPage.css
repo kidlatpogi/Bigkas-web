@@ -45,8 +45,8 @@
 }
 
 .chip.active {
-  background: #FBAF00;
-  border-color: #FBAF00;
+  background: #FCBA04;
+  border-color: #FCBA04;
   color: #010101;
   font-weight: 700;
 }
@@ -63,7 +63,7 @@
 
 .form-slider {
   width: 100%;
-  accent-color: #FBAF00;
+  accent-color: #FCBA04;
 }
 
 .slider-labels {

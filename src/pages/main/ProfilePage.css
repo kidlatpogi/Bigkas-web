@@ -1,4 +1,4 @@
-/* ── ProfilePage.css ── */
+/* â”€â”€ ProfilePage.css â”€â”€ */
 
 .profile-page {
   --profile-input-bg: #ffffff;
@@ -319,7 +319,7 @@
   --profile-input-placeholder: rgba(255, 255, 255, 0.3);
   --profile-input-disabled-bg: #222222;
   --profile-input-disabled-text: rgba(255, 255, 255, 0.35);
-  --profile-input-focus: #FBAF00;
+  --profile-input-focus: #FCBA04;
 }
 
 [data-theme="dark"] .profile-input:focus {

@@ -1,10 +1,10 @@
-/* ═══════════════════════════════════════════════════════════
-   DashboardPage — futuristic, symmetrical, theme-aware
-   Colors: #FBAF00 (gold)  ·  #010101 (black)
-   ═══════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   DashboardPage â€” futuristic, symmetrical, theme-aware
+   Colors: #FCBA04 (gold)  Â·  #010101 (black)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .dashboard-page-new {
-  --primary:       #FBAF00;
+  --primary:       #FCBA04;
   --black:         #010101;
   --bg:            #F5F5F5;
   --surface:       #FFFFFF;
@@ -76,7 +76,7 @@
 
 .dash-profile-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 0 3px rgba(251, 175, 0, 0.25);
+  box-shadow: 0 0 0 3px rgba(252, 186, 4, 0.25);
 }
 
 .dash-profile-avatar {
@@ -128,8 +128,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(251, 175, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(251, 175, 0, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(252, 186, 4, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(252, 186, 4, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
 }
@@ -141,7 +141,7 @@
   right: -60px;
   width: 220px;
   height: 220px;
-  background: radial-gradient(circle, rgba(251, 175, 0, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(252, 186, 4, 0.18) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -169,8 +169,8 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background: rgba(251, 175, 0, 0.14);
-  border: 1px solid rgba(251, 175, 0, 0.30);
+  background: rgba(252, 186, 4, 0.14);
+  border: 1px solid rgba(252, 186, 4, 0.30);
   padding: 6px 12px;
   border-radius: 999px;
   color: var(--primary);
@@ -238,19 +238,19 @@
 .dash-btn-training {
   background: var(--primary);
   color: #010101;
-  box-shadow: 0 4px 16px rgba(251, 175, 0, 0.40);
+  box-shadow: 0 4px 16px rgba(252, 186, 4, 0.40);
 }
 
 .dash-btn-training:hover {
   opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(251, 175, 0, 0.55);
+  box-shadow: 0 6px 20px rgba(252, 186, 4, 0.55);
 }
 
 .dash-hero-or { display: none; }
 
 /* ------------------------------------------------------------
-   Stats row � 3 individual cards
+   Stats row ï¿½ 3 individual cards
    ------------------------------------------------------------ */
 .dash-stats-card {
   display: grid;
@@ -332,7 +332,7 @@
   left: -40px;
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(251, 175, 0, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(252, 186, 4, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -381,17 +381,17 @@
   position: relative;
   z-index: 1;
   transition: opacity 0.18s, transform 0.18s, box-shadow 0.18s;
-  box-shadow: 0 4px 14px rgba(251, 175, 0, 0.40);
+  box-shadow: 0 4px 14px rgba(252, 186, 4, 0.40);
 }
 
 .dash-quicklearn-btn:hover {
   opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(251, 175, 0, 0.55);
+  box-shadow: 0 6px 18px rgba(252, 186, 4, 0.55);
 }
 
 /* ------------------------------------------------------------
-   Info row � Motivation + Tip of the Day
+   Info row ï¿½ Motivation + Tip of the Day
    ------------------------------------------------------------ */
 .dash-info-row {
   display: grid;
@@ -498,8 +498,8 @@
 
 [data-theme="dark"] .dash-hero-card::before {
   background-image:
-    linear-gradient(rgba(251, 175, 0, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(251, 175, 0, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(252, 186, 4, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(252, 186, 4, 0.06) 1px, transparent 1px);
 }
 
 [data-theme="dark"] .dash-btn-practice {

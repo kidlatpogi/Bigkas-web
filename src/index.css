@@ -1,4 +1,4 @@
-/* Bigkas — Base reset (Vite defaults replaced) */
+/* Bigkas â€” Base reset (Vite defaults replaced) */
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
@@ -36,7 +36,7 @@ ul, ol {
   list-style: none;
 }
 
-/* ── Loading Screen ── */
+/* â”€â”€ Loading Screen â”€â”€ */
 .loading-screen {
   display: flex;
   flex-direction: column;
@@ -57,8 +57,8 @@ ul, ol {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3.5px solid rgba(251, 175, 0, 0.25);
-  border-top-color: #FBAF00;
+  border: 3.5px solid rgba(252, 186, 4, 0.25);
+  border-top-color: #FCBA04;
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
 }

@@ -19,9 +19,14 @@ function AllSessionsPage() {
   const { sessions, fetchSessions, loadMoreSessions, isLoading, hasMore } = useSessionContext();
   const [filter, setFilter] = useState('All');
 
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
     fetchSessions(1, true);
   }, [fetchSessions]);
+
+  useEffect(() => { setPage(1); }, [filter]);
 
   const filterSession = (s) => {
     const d = new Date(s.created_at);
@@ -68,7 +73,7 @@ function AllSessionsPage() {
       )}
 
       <div className="sessions-list">
-        {filtered.map((s) => {
+        {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((s) => {
           const score = s.confidence_score ?? 0;
           const tier = getScoreTier(score);
           return (
@@ -97,16 +102,11 @@ function AllSessionsPage() {
         })}
       </div>
 
-      {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <button
-            className="btn-secondary"
-            onClick={loadMoreSessions}
-            disabled={isLoading}
-            style={{ width: 'auto', padding: '10px 28px' }}
-          >
-            {isLoading ? 'Loading…' : 'Load More'}
-          </button>
+      {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+        <div className="paged-nav">
+          <button className="paged-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>&#8249; Prev</button>
+          <span className="paged-info">{page} / {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+          <button className="paged-btn" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}>Next &#8250;</button>
         </div>
       )}
     </div>

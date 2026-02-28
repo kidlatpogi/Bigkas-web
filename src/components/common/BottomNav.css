@@ -1,9 +1,9 @@
-/* ═══════════════════════════════════════════════════════
-   BottomNav — theme-aware bar  |  ○ Home  +  [pill tabs]
-   Layout: [circle Home] · [Scripts · Progress · Learn · Profile · Settings]
-   ═══════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   BottomNav â€” theme-aware bar  |  â—‹ Home  +  [pill tabs]
+   Layout: [circle Home] Â· [Scripts Â· Progress Â· Learn Â· Profile Â· Settings]
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── Outer wrapper ─────────────────────────────────────── */
+/* â”€â”€ Outer wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .bottom-nav {
   position: fixed;
   bottom: 20px;
@@ -25,7 +25,7 @@
   transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
-/* ── Home circle ───────────────────────────────────────── */
+/* â”€â”€ Home circle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .bottom-nav-home {
   position: relative;
   display: flex;
@@ -48,11 +48,11 @@
 }
 
 .bottom-nav-home.active {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   box-shadow:
-    0 4px 16px rgba(251, 175, 0, 0.45),
-    0 1px 6px  rgba(251, 175, 0, 0.25);
+    0 4px 16px rgba(252, 186, 4, 0.45),
+    0 1px 6px  rgba(252, 186, 4, 0.25);
 }
 
 .bottom-nav-home.active:hover {
@@ -60,7 +60,7 @@
   transform: translateY(-1px);
 }
 
-/* ── Right pill (other tabs) ───────────────────────────── */
+/* â”€â”€ Right pill (other tabs) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .bottom-nav-pill {
   display: flex;
   align-items: center;
@@ -72,7 +72,7 @@
   transition: background 0.25s;
 }
 
-/* ── Individual pill tab items ─────────────────────────── */
+/* â”€â”€ Individual pill tab items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .bottom-nav-item {
   position: relative;
   display: flex;
@@ -94,11 +94,11 @@
 
 .bottom-nav-item.active {
   color: #010101;
-  background: #FBAF00;
-  box-shadow: 0 2px 10px rgba(251, 175, 0, 0.40);
+  background: #FCBA04;
+  box-shadow: 0 2px 10px rgba(252, 186, 4, 0.40);
 }
 
-/* ── Hover tooltips ────────────────────────────────────── */
+/* â”€â”€ Hover tooltips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 [data-tooltip] {
   position: relative;
 }
@@ -144,7 +144,7 @@
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
-/* ── Dark mode ─────────────────────────────────────────── */
+/* â”€â”€ Dark mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 [data-theme="dark"] .bottom-nav {
   background: #111111;
   border-color: rgba(255, 255, 255, 0.06);
@@ -164,7 +164,7 @@
 }
 
 [data-theme="dark"] .bottom-nav-home.active {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 
@@ -182,8 +182,8 @@
 }
 
 [data-theme="dark"] .bottom-nav-item.active {
-  color: #FBAF00;
-  background: rgba(251, 175, 0, 0.12);
+  color: #FCBA04;
+  background: rgba(252, 186, 4, 0.12);
 }
 
 [data-theme="dark"] [data-tooltip]::after {

@@ -1,9 +1,9 @@
 /**
- * Navbar — Bigkas Web
- * White background, sticky top, responsive hamburger for mobile ≤ 768 px
+ * Navbar â€” Bigkas Web
+ * White background, sticky top, responsive hamburger for mobile â‰¤ 768 px
  */
 
-/* ── Base ── */
+/* â”€â”€ Base â”€â”€ */
 .navbar {
   background: #FFFFFF;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -25,7 +25,7 @@
   justify-content: space-between;
 }
 
-/* ── Brand ── */
+/* â”€â”€ Brand â”€â”€ */
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -48,7 +48,7 @@
   letter-spacing: -0.3px;
 }
 
-/* ── Desktop nav links ── */
+/* â”€â”€ Desktop nav links â”€â”€ */
 .navbar-links {
   display: flex;
   align-items: center;
@@ -77,14 +77,14 @@
   font-weight: 700;
 }
 
-/* ── Right area (theme btn + hamburger) ── */
+/* â”€â”€ Right area (theme btn + hamburger) â”€â”€ */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-/* ── Theme toggle ── */
+/* â”€â”€ Theme toggle â”€â”€ */
 .navbar-theme-btn {
   display: inline-flex;
   align-items: center;
@@ -101,12 +101,12 @@
 }
 
 .navbar-theme-btn:hover {
-  background: rgba(251, 175, 0, 0.15);
-  color: #FBAF00;
+  background: rgba(252, 186, 4, 0.15);
+  color: #FCBA04;
   transform: scale(1.08);
 }
 
-/* ── Hamburger button (hidden on desktop) ── */
+/* â”€â”€ Hamburger button (hidden on desktop) â”€â”€ */
 .navbar-hamburger {
   display: none;
   flex-direction: column;
@@ -131,12 +131,12 @@
   transform-origin: center;
 }
 
-/* Animate to × when open */
+/* Animate to Ã— when open */
 .navbar-hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .navbar-hamburger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .navbar-hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ── Mobile drawer ── */
+/* â”€â”€ Mobile drawer â”€â”€ */
 .navbar-drawer {
   display: none;
   flex-direction: column;
@@ -172,8 +172,8 @@
 }
 
 .drawer-link-active {
-  color: #FBAF00;
-  background: rgba(251, 175, 0, 0.08);
+  color: #FCBA04;
+  background: rgba(252, 186, 4, 0.08);
   font-weight: 700;
 }
 
@@ -194,7 +194,7 @@
 
 .drawer-logout:hover { background: rgba(255, 59, 48, 0.12); }
 
-/* ── Backdrop overlay ── */
+/* â”€â”€ Backdrop overlay â”€â”€ */
 .navbar-backdrop {
   position: fixed;
   inset: 0;
@@ -208,7 +208,7 @@
   to   { opacity: 1; }
 }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0 20px;
@@ -217,7 +217,7 @@
   .navbar-hamburger { display: flex; }
 }
 
-/* ── Dark mode ── */
+/* â”€â”€ Dark mode â”€â”€ */
 [data-theme="dark"] .navbar {
   background: #1E1E1E;
   border-bottom-color: rgba(255,255,255,0.08);
@@ -231,9 +231,9 @@
 [data-theme="dark"] .navbar-drawer { background: #1E1E1E; border-top-color: rgba(255,255,255,0.08); }
 [data-theme="dark"] .drawer-link   { color: rgba(240,240,240,0.55); }
 [data-theme="dark"] .drawer-link:hover  { color: #F0F0F0; background: rgba(255,255,255,0.06); }
-[data-theme="dark"] .drawer-link-active { color: #FBAF00; background: rgba(251,175,0,0.12); }
+[data-theme="dark"] .drawer-link-active { color: #FCBA04; background: rgba(251,175,0,0.12); }
 [data-theme="dark"] .navbar-theme-btn   { background: rgba(255,255,255,0.1); color: #F0F0F0; }
-[data-theme="dark"] .navbar-theme-btn:hover { background: rgba(251,175,0,0.2); color: #FBAF00; }
+[data-theme="dark"] .navbar-theme-btn:hover { background: rgba(251,175,0,0.2); color: #FCBA04; }
 
 .navbar-container {
   max-width: 1440px;
@@ -245,7 +245,7 @@
   justify-content: space-between;
 }
 
-/* ── Brand ── */
+/* â”€â”€ Brand â”€â”€ */
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -257,7 +257,7 @@
   width: 28px;
   height: 28px;
   object-fit: contain;
-  /* no filter — keep original gold/yellow colour of logo */
+  /* no filter â€” keep original gold/yellow colour of logo */
 }
 
 .brand-text {
@@ -268,7 +268,7 @@
   letter-spacing: 0;
 }
 
-/* ── Nav links ── */
+/* â”€â”€ Nav links â”€â”€ */
 .navbar-links {
   display: flex;
   align-items: center;
@@ -292,7 +292,7 @@
 }
 
 .nav-link-active {
-  color: #FBAF00;
+  color: #FCBA04;
   font-weight: 700;
   position: relative;
 }
@@ -306,10 +306,10 @@
   right: 14px;
   height: 2px;
   border-radius: 2px;
-  background: #FBAF00;
+  background: #FCBA04;
 }
 
-/* Mobile — hide links, show only brand */
+/* Mobile â€” hide links, show only brand */
 @media (max-width: 640px) {
   .navbar-links {
     display: none;

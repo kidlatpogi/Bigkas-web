@@ -3,7 +3,7 @@
  * Builds on InnerPages.css
  */
 
-/* ── Score circle ── */
+/* â”€â”€ Score circle â”€â”€ */
 .score-circle {
   width: 130px;
   height: 130px;
@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 8px;
-  border: 6px solid #FBAF00;
+  border: 6px solid #FCBA04;
 }
 
 .score-circle-num {
@@ -29,7 +29,7 @@
   color: #888;
 }
 
-/* ── Result summary ── */
+/* â”€â”€ Result summary â”€â”€ */
 .result-summary {
   font-size: 15px;
   color: #555;
@@ -38,7 +38,7 @@
   margin: 8px 0 24px;
 }
 
-/* ── Metric card ── */
+/* â”€â”€ Metric card â”€â”€ */
 .metric-card-top {
   display: flex;
   align-items: center;
@@ -72,7 +72,7 @@
   margin: 0;
 }
 
-/* ── Session detail cards ── */
+/* â”€â”€ Session detail cards â”€â”€ */
 .detail-section-title {
   font-size: 13px;
   font-weight: 600;
@@ -113,7 +113,7 @@
   color: #010101;
 }
 
-/* ── Flow chart ── */
+/* â”€â”€ Flow chart â”€â”€ */
 .flow-chart {
   display: flex;
   align-items: flex-end;
@@ -152,12 +152,12 @@
 }
 
 .legend-dot.green  { background: #34C759; }
-.legend-dot.yellow { background: #FBAF00; }
+.legend-dot.yellow { background: #FCBA04; }
 .legend-dot.red    { background: #FF3B30; }
 
-/* ── Timestamped feedback ── */
+/* â”€â”€ Timestamped feedback â”€â”€ */
 .feedback-item {
-  border-left: 4px solid #FBAF00;
+  border-left: 4px solid #FCBA04;
   padding: 10px 14px;
   margin-bottom: 10px;
   background: #FAFAFA;
@@ -179,7 +179,7 @@
   line-height: 1.5;
 }
 
-/* ── Pitch / waveform bars (result page) ── */
+/* â”€â”€ Pitch / waveform bars (result page) â”€â”€ */
 .pitch-bars {
   display: flex;
   align-items: flex-end;
@@ -191,10 +191,10 @@
 .pitch-bar {
   flex: 1;
   border-radius: 3px 3px 0 0;
-  background: #FBAF00;
+  background: #FCBA04;
 }
 
-/* ── Feedback link chevron ── */
+/* â”€â”€ Feedback link chevron â”€â”€ */
 .view-feedback-row {
   display: flex;
   align-items: center;

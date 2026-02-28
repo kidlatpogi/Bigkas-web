@@ -3,14 +3,14 @@
  * Import this alongside any page-specific CSS
  */
 
-/* ── Page wrapper ── */
+/* â”€â”€ Page wrapper â”€â”€ */
 .inner-page {
   max-width: 860px;
   margin: 0 auto;
   padding: 32px 24px 64px;
 }
 
-/* ── Page header ── */
+/* â”€â”€ Page header â”€â”€ */
 .inner-page-header {
   display: flex;
   align-items: center;
@@ -45,7 +45,7 @@
   margin: 0;
 }
 
-/* Centered header — back button pinned left, title centered */
+/* Centered header â€” back button pinned left, title centered */
 .inner-page-header.centered-header {
   justify-content: center;
   position: relative;
@@ -61,7 +61,7 @@
   flex: 1;
 }
 
-/* ── Section heading ── */
+/* â”€â”€ Section heading â”€â”€ */
 .section-label {
   font-size: 13px;
   font-weight: 600;
@@ -71,7 +71,7 @@
   margin-bottom: 10px;
 }
 
-/* ── Tabs ── */
+/* â”€â”€ Tabs â”€â”€ */
 .tabs {
   display: flex;
   gap: 6px;
@@ -96,7 +96,7 @@
 }
 
 .tab-btn.active {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   font-weight: 700;
 }
@@ -105,7 +105,7 @@
   background: rgba(0,0,0,0.06);
 }
 
-/* ── Cards ── */
+/* â”€â”€ Cards â”€â”€ */
 .page-card {
   background: #FFFFFF;
   border-radius: 16px;
@@ -114,7 +114,7 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-/* ── Form elements ── */
+/* â”€â”€ Form elements â”€â”€ */
 .form-row {
   display: flex;
   gap: 16px;
@@ -153,7 +153,7 @@
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
-  border-color: #FBAF00;
+  border-color: #FCBA04;
   background: #FFFFFF;
 }
 
@@ -177,14 +177,14 @@
   margin-top: 2px;
 }
 
-/* ── Buttons ── */
+/* â”€â”€ Buttons â”€â”€ */
 .btn-primary {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 13px 24px;
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   border: none;
   border-radius: 12px;
@@ -292,7 +292,7 @@
   flex: 1;
 }
 
-/* ── Empty state ── */
+/* â”€â”€ Empty state â”€â”€ */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -319,7 +319,7 @@
   margin: 0;
 }
 
-/* ── Score badge ── */
+/* â”€â”€ Score badge â”€â”€ */
 .score-badge {
   display: inline-flex;
   align-items: center;
@@ -337,7 +337,7 @@
 .score-badge.fair      { background: rgba(255,149,0,0.15);  color: #FF9500; }
 .score-badge.poor      { background: rgba(255,59,48,0.15);  color: #FF3B30; }
 
-/* ── Chevron row ── */
+/* â”€â”€ Chevron row â”€â”€ */
 .chevron-row {
   display: flex;
   align-items: center;
@@ -364,7 +364,7 @@
   color: #AAAAAA;
 }
 
-/* ── Modal overlay ── */
+/* â”€â”€ Modal overlay â”€â”€ */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -409,7 +409,7 @@
   line-height: 1.5;
 }
 
-/* ── Loading / error states ── */
+/* â”€â”€ Loading / error states â”€â”€ */
 .page-loading {
   display: flex;
   align-items: center;
@@ -440,7 +440,7 @@
   margin-bottom: 16px;
 }
 
-/* ── Avatar ── */
+/* â”€â”€ Avatar â”€â”€ */
 .avatar-wrap {
   position: relative;
   width: 100px;
@@ -460,7 +460,7 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: #FBAF00;
+  background: #FCBA04;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -486,7 +486,7 @@
   font-size: 13px;
 }
 
-/* ── Responsive ── */
+/* â”€â”€ Responsive â”€â”€ */
 @media (max-width: 600px) {
   .inner-page {
     padding: 20px 16px 48px;
@@ -502,9 +502,9 @@
   }
 }
 
-/* ═══════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Dark Mode
-   ═══════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Page wrapper */
 [data-theme="dark"] .inner-page { background: #0B0B0D; }
@@ -526,7 +526,7 @@
 /* Tabs */
 [data-theme="dark"] .tabs     { background: #2A2A2A; }
 [data-theme="dark"] .tab-btn  { color: rgba(255,255,255,0.5); }
-[data-theme="dark"] .tab-btn.active { background: #FBAF00; color: #010101; }
+[data-theme="dark"] .tab-btn.active { background: #FCBA04; color: #010101; }
 [data-theme="dark"] .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.08); }
 
 /* Form */
@@ -541,7 +541,7 @@
 [data-theme="dark"] .form-input:focus,
 [data-theme="dark"] .form-textarea:focus,
 [data-theme="dark"] .form-select:focus {
-  border-color: #FBAF00;
+  border-color: #FCBA04;
   background: #2E2E2E;
 }
 [data-theme="dark"] .form-input:disabled,
@@ -592,3 +592,51 @@
 [data-theme="dark"] .account-section-title.danger { color: #FF6B6B; }
 [data-theme="dark"] .account-section-desc  { color: rgba(255,255,255,0.5); }
 [data-theme="dark"] .danger-zone { border-color: rgba(255,107,107,0.25); }
+
+/* ── Shared pagination (matches Training Hub style) ── */
+.paged-nav {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #F5F5F5;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+  border: 1.5px solid #EBEBEB;
+  white-space: nowrap;
+}
+.paged-btn {
+  padding: 8px 20px;
+  background: #FFFFFF;
+  border: 1.5px solid #E9E9E9;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #010101;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  font-family: inherit;
+}
+.paged-btn:hover:not(:disabled) {
+  border-color: #FCBA04;
+  background: rgba(252, 186, 4, 0.06);
+}
+.paged-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.paged-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: #010101;
+  min-width: 56px;
+  text-align: center;
+}
+
+[data-theme="dark"] .paged-nav { background: #0B0B0D; border-color: #2A2A2A; }
+[data-theme="dark"] .paged-btn { background: #1E1E1E; color: #F0F0F0; border-color: #2A2A2A; }
+[data-theme="dark"] .paged-btn:hover:not(:disabled) { border-color: #FCBA04; background: rgba(252, 186, 4, 0.06); }
+[data-theme="dark"] .paged-info { color: #F0F0F0; }

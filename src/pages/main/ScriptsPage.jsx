@@ -24,6 +24,9 @@ function ScriptsPage() {
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const menuButtonRefs = useRef({});
 
+  const PAGE_SIZE = 8;
+  const [page, setPage] = useState(1);
+
   const loadScripts = useCallback(async () => {
     if (!user?.id) return;
     setIsLoading(true);
@@ -43,6 +46,8 @@ function ScriptsPage() {
   useEffect(() => {
     loadScripts();
   }, [loadScripts]);
+
+  useEffect(() => { setPage(1); }, [activeTab]);
 
   const handleDelete = async (scriptId) => {
     if (!window.confirm('Delete this script?')) return;
@@ -122,7 +127,7 @@ function ScriptsPage() {
       )}
 
       <div className="scripts-list">
-        {scripts.map((script) => (
+        {scripts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((script) => (
           <div key={script.id} className="script-card" onClick={() => navigate(buildRoute.scriptEditor(script.id))}>
             {/* Top row: type badge + menu */}
             <div className="script-card-top">
@@ -153,6 +158,14 @@ function ScriptsPage() {
           </div>
         ))}
       </div>
+
+      {Math.ceil(scripts.length / PAGE_SIZE) > 1 && (
+        <div className="paged-nav">
+          <button className="paged-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>&#8249; Prev</button>
+          <span className="paged-info">{page} / {Math.ceil(scripts.length / PAGE_SIZE)}</span>
+          <button className="paged-btn" disabled={page >= Math.ceil(scripts.length / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}>Next &#8250;</button>
+        </div>
+      )}
 
       {/* ── Script options modal (ellipsis menu) ── */}
       {menuOpenId && (

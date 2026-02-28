@@ -1,7 +1,7 @@
 .btn-link {
   background: none;
   border: none;
-  color: #FBAF00;
+  color: #FCBA04;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -44,7 +44,7 @@
 
 .script-preview-card {
   margin-bottom: 16px;
-  border-left: 4px solid #FBAF00;
+  border-left: 4px solid #FCBA04;
   padding-left: 16px;
 }
 
@@ -84,8 +84,8 @@
 }
 
 .focus-option.selected {
-  border-color: #FBAF00;
-  background: rgba(251, 175, 0, 0.05);
+  border-color: #FCBA04;
+  background: rgba(252, 186, 4, 0.05);
 }
 
 /* Custom radio circle */
@@ -102,8 +102,8 @@
 }
 
 .focus-option.selected .focus-radio-circle {
-  border-color: #FBAF00;
-  background: #FBAF00;
+  border-color: #FCBA04;
+  background: #FCBA04;
 }
 
 .focus-radio-dot {
@@ -141,7 +141,7 @@
 }
 
 [data-theme="dark"] .focus-option.selected {
-  border-color: #FBAF00;
+  border-color: #FCBA04;
   background: rgba(251,175,0,0.08);
 }
 

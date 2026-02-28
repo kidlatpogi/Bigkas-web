@@ -1,11 +1,11 @@
-/* ══════════════════════════════════════════════════════════════════
-   FrameworksPage — Training Hub  (redesign)
-   Tokens: --primary #FBAF00 · --black #010101 · --bg #F5F5F5
-   ══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   FrameworksPage â€” Training Hub  (redesign)
+   Tokens: --primary #FCBA04 Â· --black #010101 Â· --bg #F5F5F5
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── Page shell ──────────────────────────────────────────────────── */
+/* â”€â”€ Page shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-page {
-  --primary: #FBAF00;
+  --primary: #FCBA04;
   --black: #010101;
   --bg: #F5F5F5;
   --surface: #FFFFFF;
@@ -19,11 +19,11 @@
   width: min(1120px, calc(100vw - 32px));
   max-width: 1120px;
   margin: 0 auto;
-  padding: 28px 0 108px;
+  padding: 28px 0 160px;
   font-family: var(--font);
 }
 
-/* ── Header ──────────────────────────────────────────────────────── */
+/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-header {
   margin-bottom: 24px;
 }
@@ -36,7 +36,7 @@
   margin: 0 0 4px;
 }
 
-/* ── Controls row (search + sort) ────────────────────────────────── */
+/* â”€â”€ Controls row (search + sort) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-controls {
   display: flex;
   align-items: center;
@@ -81,7 +81,7 @@
   border-color: var(--primary);
 }
 
-/* Removes browser default clear ✕ for search inputs */
+/* Removes browser default clear âœ• for search inputs */
 .fh-search::-webkit-search-cancel-button { display: none; }
 
 .fh-search-clear {
@@ -144,7 +144,7 @@
 
 .fh-sort:focus { border-color: var(--primary); }
 
-/* ── Category Tabs ───────────────────────────────────────────────── */
+/* â”€â”€ Category Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-tabs {
   display: flex;
   gap: 6px;
@@ -183,7 +183,7 @@
   font-weight: 700;
 }
 
-/* ── Loading / Empty ─────────────────────────────────────────────── */
+/* â”€â”€ Loading / Empty â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-loading {
   display: flex;
   justify-content: center;
@@ -193,7 +193,7 @@
 .fh-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(251, 175, 0, 0.2);
+  border: 3px solid rgba(252, 186, 4, 0.2);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: fh-spin 0.8s linear infinite;
@@ -210,14 +210,15 @@
   color: var(--text-muted);
 }
 
-/* ── Card Grid ───────────────────────────────────────────────────── */
+/* â”€â”€ Card Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: 1fr;
   gap: 18px;
 }
 
-/* ── Card ────────────────────────────────────────────────────────── */
+/* â”€â”€ Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-card {
   background: var(--surface);
   border: 1.5px solid var(--border);
@@ -226,6 +227,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  height: 100%;
+  min-height: 220px;
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
@@ -258,7 +261,7 @@
   flex: 1;
 }
 
-/* ── Step pills on card ──────────────────────────────────────────── */
+/* â”€â”€ Step pills on card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-card-steps {
   display: flex;
   flex-wrap: wrap;
@@ -291,7 +294,7 @@
   padding: 5px 8px;
 }
 
-/* ── Card CTA button ─────────────────────────────────────────────── */
+/* â”€â”€ Card CTA button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-card-btn {
   display: inline-flex;
   align-items: center;
@@ -313,13 +316,23 @@
 
 .fh-card-btn:hover { opacity: 0.82; }
 
-/* ── Pagination ──────────────────────────────────────────────────── */
+/* â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-pagination {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 32px;
+  gap: 12px;
+  background: var(--bg);
+  padding: 7px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+  border: 1.5px solid var(--border);
+  white-space: nowrap;
 }
 
 .fh-page-btn {
@@ -337,7 +350,7 @@
 
 .fh-page-btn:hover:not(:disabled) {
   border-color: var(--primary);
-  background: rgba(251, 175, 0, 0.06);
+  background: rgba(252, 186, 4, 0.06);
 }
 
 .fh-page-btn:disabled {
@@ -349,7 +362,7 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--black);
-  min-width: 64px;
+  min-width: 56px;
   text-align: center;
 }
 
@@ -358,7 +371,7 @@
   margin: 0 2px;
 }
 
-/* ── Modal backdrop ──────────────────────────────────────────────── */
+/* â”€â”€ Modal backdrop â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -371,7 +384,7 @@
   overflow-y: auto;
 }
 
-/* ── Modal box ───────────────────────────────────────────────────── */
+/* â”€â”€ Modal box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-modal {
   width: 100%;
   max-width: 640px;
@@ -435,7 +448,7 @@
   border-color: #CACACA;
 }
 
-/* ── 16:9 YouTube embed ──────────────────────────────────────────── */
+/* â”€â”€ 16:9 YouTube embed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-video-wrapper {
   position: relative;
   width: 100%;
@@ -462,7 +475,7 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* ── Modal body ──────────────────────────────────────────────────── */
+/* â”€â”€ Modal body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fh-modal-summary {
   padding: 18px 22px 0;
   font-size: 14px;
@@ -517,7 +530,7 @@
   gap: 8px;
   margin: 0 22px 24px;
   padding: 13px 20px;
-  background: #FBAF00;
+  background: #FCBA04;
   border: none;
   border-radius: 12px;
   color: #010101;
@@ -527,18 +540,18 @@
   text-decoration: none;
   width: calc(100% - 44px);
   transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
-  box-shadow: 0 4px 14px rgba(251, 175, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(252, 186, 4, 0.35);
 }
 
 .fh-modal-link:hover {
   background: #ffc72e;
-  box-shadow: 0 6px 18px rgba(251, 175, 0, 0.45);
+  box-shadow: 0 6px 18px rgba(252, 186, 4, 0.45);
   transform: translateY(-1px);
 }
 
 .fh-modal-link:active { transform: scale(0.98); }
 
-/* ── Dark mode ───────────────────────────────────────────────────── */
+/* â”€â”€ Dark mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 [data-theme="dark"] .fh-page {
   --bg: #0B0B0D;
   --surface: #1E1E1E;
@@ -588,10 +601,10 @@
 [data-theme="dark"] .fh-modal-step-row { background: #2A2A2A; }
 [data-theme="dark"] .fh-modal-step-text { color: #F0F0F0; }
 [data-theme="dark"] .fh-modal-steps-label { color: rgba(240, 240, 240, 0.3); }
-[data-theme="dark"] .fh-modal-link { background: #FBAF00; color: #010101; box-shadow: 0 4px 14px rgba(251, 175, 0, 0.25); }
+[data-theme="dark"] .fh-modal-link { background: #FCBA04; color: #010101; box-shadow: 0 4px 14px rgba(252, 186, 4, 0.25); }
 [data-theme="dark"] .fh-modal-link:hover { background: #ffc72e; }
 
-/* ── Responsive ──────────────────────────────────────────────────── */
+/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 640px) {
   .fh-grid {
     grid-template-columns: 1fr;
