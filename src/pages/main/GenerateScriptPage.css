@@ -233,3 +233,29 @@
 [data-theme='dark'] .token-summary__divider {
   color: rgba(240, 240, 240, 0.45);
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 600px) {
+  /* Chips: comfortable tap target */
+  .chip {
+    padding: 9px 16px;
+    font-size: 13px;
+    min-height: 40px;
+  }
+
+  /* Chip group: allow wrapping across multiple rows */
+  .chip-group {
+    gap: 6px;
+  }
+
+  /* Ensure textarea font size prevents iOS zoom */
+  .form-textarea {
+    font-size: 16px;
+  }
+
+  /* Token summary: stack items vertically on very small screens */
+  .token-summary__values {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}

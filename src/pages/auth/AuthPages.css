@@ -851,7 +851,7 @@
   color: #888888;
 }
 
-/* Responsive — compact boxes on small screens */
+/* Responsive -- compact OTP boxes on small screens */
 @media (max-width: 480px) {
   .otp-box {
     width: 42px;
@@ -864,9 +864,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ===========================================
    RESPONSIVE
-   ═══════════════════════════════════════════ */
+   =========================================== */
 @media (max-width: 900px) {
   .auth-page {
     grid-template-columns: 1fr;
@@ -877,22 +877,70 @@
   }
 
   .auth-form-panel {
-    padding: 32px 24px;
+    padding: 40px 32px;
   }
 }
 
 @media (max-width: 480px) {
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 24px;
+  /* -- Native-app feel: flat background, no floating card -- */
+  .auth-page {
+    background: #FFFFFF;
+  }
+
+  [data-theme="dark"] .auth-page {
+    background: #0B0B0D;
   }
 
   .auth-form-panel {
-    padding: 24px 16px;
+    padding: 32px 24px 48px;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .auth-form-container {
+    max-width: 100%;
   }
 
   .auth-form-title {
     font-size: 20px;
     margin-bottom: 28px;
+  }
+
+  /* -- First / Last name row stacks vertically -- */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* -- 16px prevents iOS Safari auto-zoom; 48px = comfortable thumb target -- */
+  .form-input {
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  /* -- Buttons: full-width + explicit min-height -- */
+  .auth-submit-btn {
+    min-height: 48px;
+    padding: 13px 32px;
+  }
+
+  .auth-google-btn {
+    min-height: 48px;
+  }
+
+  /* -- Forgot / footer links: generous tap targets -- */
+  .auth-forgot-link {
+    display: inline-block;
+    padding: 10px 0;
+    margin-top: 16px;
+  }
+
+  .auth-link {
+    display: inline-block;
+    padding: 8px 0;
+  }
+
+  .auth-footer {
+    margin-top: 24px;
   }
 }

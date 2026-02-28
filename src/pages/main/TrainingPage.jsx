@@ -361,6 +361,7 @@ function TrainingPage() {
   }
 
   const title     = focus === 'scripted' ? (script?.title || 'Training') : 'Free Speech';
+  const modeLabel  = focus === 'scripted' ? 'Scripted Mode' : 'Free Speech Mode';
 
   return (
     <div className="tp-page">

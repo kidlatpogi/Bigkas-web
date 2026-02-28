@@ -223,4 +223,31 @@
   box-shadow: 0 4px 14px rgba(196, 30, 51, 0.25);
 }
 
+/* ── Mobile responsive ── */
+@media (max-width: 600px) {
+  /* Rows: bigger tap targets */
+  .stg-row {
+    min-height: 52px;
+    padding: 14px 16px;
+  }
+
+  /* Select: iOS zoom prevention (must be >= 16px) */
+  .stg-select {
+    font-size: 16px;
+    min-height: 44px;
+    padding: 10px 36px 10px 12px;
+  }
+
+  /* Section label: breathing room */
+  .stg-section-label {
+    margin-top: 20px;
+  }
+
+  /* Log out button: full width and comfortable height */
+  .stg-btn-logout {
+    min-height: 52px;
+    font-size: 16px;
+  }
+}
+
 

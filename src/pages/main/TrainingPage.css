@@ -790,6 +790,81 @@
   color: #fff;
 }
 
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  /* Collapse split layout: camera on top, teleprompter below */
+  .tp-content--split {
+    flex-direction: column;
+  }
+
+  .tp-content--split .tp-left {
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid #EBEBEB;
+    padding-bottom: 10px;
+  }
+
+  /* Camera: shorter on mobile so teleprompter has room */
+  .tp-camera-wrap {
+    max-height: 28vh;
+  }
+
+  /* Teleprompter pane: take remaining space */
+  .tp-right {
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Teleprompter text: fluid size, legible at arm's length */
+  .tp-teleprompter {
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
+    line-height: 1.9;
+  }
+
+  /* Waveform: full width */
+  .tp-waveform {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tp-header {
+    padding: 10px 12px;
+    min-height: 48px;
+  }
+
+  .tp-camera-wrap {
+    max-height: 24vh;
+  }
+
+  /* Record button: already 80×80, ensure spacing */
+  .tp-controls {
+    padding: 8px 0 10px;
+    gap: 12px;
+  }
+
+  /* Large record btn: stay 80×80 but boost ring */
+  .tp-record-btn {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Secondary ctrl btns: min tap target */
+  .tp-ctrl-btn {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Countdown: scale down on small screens */
+  .tp-countdown-num {
+    font-size: 80px;
+  }
+}
+
+[data-theme="dark"] .tp-content--split .tp-left {
+  border-bottom-color: #2A2A2A;
+}
+
 /* ── Hide floating theme toggle during training session ── */
 body:has(.tp-page) .theme-toggle-wrap {
   display: none !important;

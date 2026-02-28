@@ -29,6 +29,7 @@
 /* Dashboard Page */
 .dashboard-page {
   padding: var(--spacing-lg);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 .dashboard-grid {
@@ -204,6 +205,7 @@
 /* History Page */
 .history-page {
   padding: var(--spacing-lg);
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 .history-content {
@@ -487,4 +489,81 @@
 
 [data-theme='dark'] .settings-value {
   color: rgba(240,240,240,0.62);
+}
+
+/* ─────────────────────────────────────────────
+   Phase 4 — Mobile responsive
+   ───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Session cards: stack actions below info */
+  .session-card {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .session-info {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .session-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .session-meta {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  /* Tap targets */
+  .session-link {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+    padding: 0 var(--spacing-sm);
+  }
+
+  .score-badge {
+    min-height: 36px;
+    min-width: 52px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .section-title {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Dashboard grid: single column */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Cards stretch full width */
+  .dashboard-card {
+    width: 100%;
+  }
+
+  /* Session card: full-width score badge */
+  .session-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .score-badge {
+    align-self: flex-start;
+  }
+  
+  /* Primary actions full-width */
+  .empty-action-link {
+    display: block;
+    text-align: center;
+  }
 }

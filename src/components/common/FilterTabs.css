@@ -9,6 +9,26 @@
   flex-wrap: wrap;
 }
 
+/* ── Mobile: horizontal scroll instead of wrapping ── */
+@media (max-width: 600px) {
+  .filter-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-tab-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
 .filter-tab-btn {
   padding: 8px 20px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

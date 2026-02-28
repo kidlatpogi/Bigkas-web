@@ -306,7 +306,7 @@ export function AuthProvider({ children }) {
       setPendingEmailVerification(false);
       setPendingEmail(null);
       return { success: true, user: buildUser(sessionData.session) };
-    } catch (networkError) {
+    } catch {
       return await fallbackToDirectSupabaseLogin();
     }
   }, [buildUser]);

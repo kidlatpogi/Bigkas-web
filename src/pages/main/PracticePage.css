@@ -541,3 +541,61 @@
 body:has(.practice-page) .theme-toggle-wrap {
   display: none !important;
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 600px) {
+  .practice-page {
+    padding: 32px 16px 300px;
+  }
+
+  /* Tabs: horizontal scroll instead of wrapping */
+  .practice-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .practice-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .practice-tab-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* Script cards: full-width comfortable tap target */
+  .practice-script-card {
+    padding: 14px;
+  }
+
+  .practice-script-title {
+    font-size: 15px;
+  }
+
+  /* Modal: stack action buttons vertically */
+  .practice-modal-actions {
+    flex-direction: column;
+  }
+
+  .practice-btn-copy {
+    min-height: 48px;
+  }
+
+  .practice-btn-primary,
+  .practice-btn-outline {
+    min-height: 48px;
+  }
+
+  /* Cancel & paged nav: adjust for smaller screens */
+  .practice-cancel-link {
+    bottom: 128px;
+    width: calc(100% - 32px);
+  }
+
+  .practice-paged-nav {
+    bottom: 200px;
+  }
+}

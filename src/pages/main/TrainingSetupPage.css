@@ -253,3 +253,36 @@
 body:has(.training-setup-page) .theme-toggle-wrap {
   display: none !important;
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 600px) {
+  /* Filter chips: bigger tap target */
+  .ts-chip {
+    height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+
+  /* ts-filter-chips: allow horizontal scroll on very narrow screens */
+  .ts-filter-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .ts-filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Focus option cards: comfortable padding */
+  .focus-option {
+    padding: 16px 14px;
+  }
+
+  /* Full-width generate button already 100%, ensure min-height */
+  .training-generate-btn {
+    min-height: 52px;
+  }
+}
