@@ -54,7 +54,7 @@ function ForgotPasswordPage() {
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
-      {/* ”€”€ Left branding panel ”€”€ */}
+      {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
         <BackButton onClick={() => navigate(ROUTES.LOGIN)} />
 
@@ -80,7 +80,7 @@ function ForgotPasswordPage() {
         </div>
       </div>
 
-      {/* ”€”€ Right form panel ”€”€ */}
+      {/* ── Right form panel ── */}
       <div className="auth-form-panel">
         <div className="auth-form-container">
           <h2 className="auth-form-title">FORGOT PASSWORD</h2>

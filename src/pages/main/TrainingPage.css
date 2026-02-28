@@ -1,9 +1,9 @@
 ﻿/* ══════════════════════════════════════════════════════════════════════
-   TrainingPage "” 1:1 redesign from Bigkas-mobile TrainingScriptedScreen
+   TrainingPage — 1:1 redesign from Bigkas-mobile TrainingScriptedScreen
    Design tokens: primary #FCBA04 · black #010101 · white #FFFFFF
    ══════════════════════════════════════════════════════════════════════ */
 
-/* ”€”€ Page shell "” fixed full-screen, sits above BottomNav (z-index 1000) ”€”€ */
+/* ── Page shell — fixed full-screen, sits above BottomNav (z-index 1000) ── */
 .tp-page {
   position: fixed;
   inset: 0;
@@ -15,7 +15,7 @@
   overflow: hidden;
 }
 
-/* ”€”€ Dark header bar ”€”€ */
+/* ── Dark header bar ── */
 .tp-header {
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
 
 .tp-header-spacer { width: 38px; flex-shrink: 0; }
 
-/* ”€”€ Main content wrapper ”€”€ */
+/* ── Main content wrapper ── */
 .tp-content {
   flex: 1;
   display: flex;
@@ -84,7 +84,7 @@
   align-items: stretch;
 }
 
-/* ”€”€ Left column (camera + waveform + controls) ”€”€ */
+/* ── Left column (camera + waveform + controls) ── */
 .tp-left {
   display: flex;
   flex-direction: column;
@@ -139,7 +139,7 @@
   50% { opacity: 0; }
 }
 
-/* Camera "” capped height so controls always fit */
+/* Camera — capped height so controls always fit */
 .tp-camera-wrap {
   border-radius: 16px;
   overflow: hidden;
@@ -186,7 +186,7 @@
   letter-spacing: 0.02em;
 }
 
-/* Waveform "” 50 bars */
+/* Waveform — 50 bars */
 .tp-waveform {
   display: flex;
   align-items: center;
@@ -238,7 +238,7 @@
   font-weight: 500;
 }
 
-/* ”€”€ Controls row ”€”€ */
+/* ── Controls row ── */
 .tp-controls {
   display: flex;
   flex-direction: row;
@@ -340,7 +340,7 @@
   50%       { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
 }
 
-/* ”€”€ Right column "” Teleprompter ”€”€ */
+/* ── Right column — Teleprompter ── */
 .tp-right {
   flex: 0 0 45%;
   display: flex;
@@ -429,7 +429,7 @@
   height: 4px;
 }
 
-/* ”€”€ Countdown / Analysing overlay ”€”€ */
+/* ── Countdown / Analysing overlay ── */
 .tp-overlay {
   position: fixed;
   inset: 0;
@@ -473,7 +473,7 @@
   color: #FFFFFF;
 }
 
-/* ”€”€ Error banner ”€”€ */
+/* ── Error banner ── */
 .tp-error-banner {
   display: flex;
   align-items: center;
@@ -503,7 +503,7 @@
 
 .tp-error-retry:hover { background: rgba(255,59,48,0.1); }
 
-/* ”€”€ Empty state ”€”€ */
+/* ── Empty state ── */
 .tp-empty {
   flex: 1;
   display: flex;
@@ -545,7 +545,7 @@
 
 .tp-go-back-btn:hover { opacity: 0.88; }
 
-/* ”€”€ Settings modal "” above BottomNav (z-index 1000) and tp-page (1100) ”€”€ */
+/* ── Settings modal — above BottomNav (z-index 1000) and tp-page (1100) ── */
 .tp-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -676,7 +676,7 @@
 
 .tp-modal-done:hover { opacity: 0.85; }
 
-/* ”€”€ Dark mode ”€”€ */
+/* ── Dark mode ── */
 [data-theme="dark"] .tp-page { background: #0B0B0D; }
 [data-theme="dark"] .tp-camera-idle { background: #111; }
 
@@ -728,7 +728,7 @@
 [data-theme="dark"] .tp-empty-desc { color: rgba(240,240,240,0.5); }
 [data-theme="dark"] .tp-error-banner { background: rgba(255,59,48,0.1); border-color: rgba(255,59,48,0.25); color: #FF6B6B; }
 
-/* ”€”€ Silence-intervention Hint Toast ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Silence-intervention Hint Toast ─────────────────────────────────────── */
 .tp-hint-toast {
   position: fixed;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); /* above bottom nav */

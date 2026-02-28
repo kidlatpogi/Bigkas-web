@@ -3,7 +3,7 @@
  * Builds on InnerPages.css
  */
 
-/* ”€”€ Score circle ”€”€ */
+/* ── Score circle ── */
 .score-circle {
   width: 130px;
   height: 130px;
@@ -29,7 +29,7 @@
   color: #888;
 }
 
-/* ”€”€ Result summary ”€”€ */
+/* ── Result summary ── */
 .result-summary {
   font-size: 15px;
   color: #555;
@@ -38,7 +38,7 @@
   margin: 8px 0 24px;
 }
 
-/* ”€”€ Metric card ”€”€ */
+/* ── Metric card ── */
 .metric-card-top {
   display: flex;
   align-items: center;
@@ -72,7 +72,7 @@
   margin: 0;
 }
 
-/* ”€”€ Session detail cards ”€”€ */
+/* ── Session detail cards ── */
 .detail-section-title {
   font-size: 13px;
   font-weight: 600;
@@ -113,7 +113,7 @@
   color: #010101;
 }
 
-/* ”€”€ Flow chart ”€”€ */
+/* ── Flow chart ── */
 .flow-chart {
   display: flex;
   align-items: flex-end;
@@ -155,7 +155,7 @@
 .legend-dot.yellow { background: #FCBA04; }
 .legend-dot.red    { background: #FF3B30; }
 
-/* ”€”€ Timestamped feedback ”€”€ */
+/* ── Timestamped feedback ── */
 .feedback-item {
   border-left: 4px solid #FCBA04;
   padding: 10px 14px;
@@ -179,7 +179,7 @@
   line-height: 1.5;
 }
 
-/* ”€”€ Pitch / waveform bars (result page) ”€”€ */
+/* ── Pitch / waveform bars (result page) ── */
 .pitch-bars {
   display: flex;
   align-items: flex-end;
@@ -194,7 +194,7 @@
   background: #FCBA04;
 }
 
-/* ”€”€ Feedback link chevron ”€”€ */
+/* ── Feedback link chevron ── */
 .view-feedback-row {
   display: flex;
   align-items: center;

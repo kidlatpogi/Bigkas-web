@@ -1,9 +1,9 @@
 ﻿/* ═══════════════════════════════════════════════════════
-   BottomNav "” theme-aware bar  |  —‹ Home  +  [pill tabs]
+   BottomNav — theme-aware bar  |  —‹ Home  +  [pill tabs]
    Layout: [circle Home] · [Scripts · Progress · Learn · Profile · Settings]
    ═══════════════════════════════════════════════════════ */
 
-/* ”€”€ Outer wrapper ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Outer wrapper ─────────────────────────────────────── */
 .bottom-nav {
   position: fixed;
   bottom: 20px;
@@ -25,7 +25,7 @@
   transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
-/* ”€”€ Home circle ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Home circle ───────────────────────────────────────── */
 .bottom-nav-home {
   position: relative;
   display: flex;
@@ -60,7 +60,7 @@
   transform: translateY(-1px);
 }
 
-/* ”€”€ Right pill (other tabs) ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Right pill (other tabs) ───────────────────────────── */
 .bottom-nav-pill {
   display: flex;
   align-items: center;
@@ -72,7 +72,7 @@
   transition: background 0.25s;
 }
 
-/* ”€”€ Individual pill tab items ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Individual pill tab items ─────────────────────────── */
 .bottom-nav-item {
   position: relative;
   display: flex;
@@ -98,7 +98,7 @@
   box-shadow: 0 2px 10px rgba(252, 186, 4, 0.40);
 }
 
-/* ”€”€ Hover tooltips ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Hover tooltips ────────────────────────────────────── */
 [data-tooltip] {
   position: relative;
 }
@@ -144,7 +144,7 @@
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
-/* ”€”€ Dark mode ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
+/* ── Dark mode ─────────────────────────────────────────── */
 [data-theme="dark"] .bottom-nav {
   background: #111111;
   border-color: rgba(255, 255, 255, 0.06);

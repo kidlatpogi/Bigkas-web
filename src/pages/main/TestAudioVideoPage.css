@@ -1,4 +1,4 @@
-﻿/* ”€”€ TestAudioVideoPage.css ”€”€ */
+﻿/* ── TestAudioVideoPage.css ── */
 
 .av-page {
   max-width: 520px;
@@ -7,7 +7,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ”€”€ Header ”€”€ */
+/* ── Header ── */
 .av-header {
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@
   margin: 0;
 }
 
-/* ”€”€ Section ”€”€ */
+/* ── Section ── */
 .av-section {
   margin-bottom: 24px;
 }
@@ -35,7 +35,7 @@
   margin: 0 0 10px;
 }
 
-/* ”€”€ Camera ”€”€ */
+/* ── Camera ── */
 .av-camera-wrap {
   width: 100%;
   height: 230px;
@@ -88,7 +88,7 @@
   background: rgba(0, 0, 0, 0.75);
 }
 
-/* ”€”€ Status row ”€”€ */
+/* ── Status row ── */
 .av-status-row {
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@
   color: #666;
 }
 
-/* ”€”€ Mic card ”€”€ */
+/* ── Mic card ── */
 .av-mic-card {
   background: #fff;
   border-radius: 14px;
@@ -115,7 +115,7 @@
   padding: 20px 16px;
 }
 
-/* ”€”€ Level bars (AudioLevelIndicator) ”€”€ */
+/* ── Level bars (AudioLevelIndicator) ── */
 .av-visualizer {
   display: flex;
   justify-content: center;
@@ -146,7 +146,7 @@
   background: rgba(252, 186, 4, 0.5);
 }
 
-/* ”€”€ Mic button ”€”€ */
+/* ── Mic button ── */
 .av-mic-btn {
   width: 100%;
   padding: 14px;
@@ -185,7 +185,7 @@
   opacity: 1;
 }
 
-/* ”€”€ Done button ”€”€ */
+/* ── Done button ── */
 .av-done-wrap {
   margin-top: 8px;
 }
@@ -208,7 +208,7 @@
   background: #E8E8E8;
 }
 
-/* ”€”€ Dark mode ”€”€ */
+/* ── Dark mode ── */
 [data-theme="dark"] .av-page { background: #0B0B0D; }
 
 [data-theme="dark"] .av-title {

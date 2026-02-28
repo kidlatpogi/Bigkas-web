@@ -1,5 +1,5 @@
 ﻿/**
- * FilterTabs "” reusable horizontal pill/tab filter bar.
+ * FilterTabs — reusable horizontal pill/tab filter bar.
  * Design tokens: Primary #FCBA04  ·  Black #010101  ·  BG #F5F5F5
  */
 
@@ -19,7 +19,7 @@
   cursor: pointer;
   transition: background 0.16s, color 0.16s, border-color 0.16s;
 
-  /* default "” inactive */
+  /* default — inactive */
   background: #FFFFFF;
   color: rgba(1, 1, 1, 0.55);
   border-color: rgba(1, 1, 1, 0.12);

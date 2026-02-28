@@ -108,7 +108,7 @@
   }
 }
 
-/* ”€”€ Ellipsis / 3-dot menu button ”€”€ */
+/* ── Ellipsis / 3-dot menu button ── */
 .script-menu-btn {
   background: transparent;
   border: none;
@@ -129,7 +129,7 @@
   color: #010101;
 }
 
-/* ”€”€ Overlay ”€”€ */
+/* ── Overlay ── */
 .script-menu-overlay {
   position: fixed;
   inset: 0;
@@ -143,7 +143,7 @@
   to   { opacity: 1; }
 }
 
-/* ”€”€ Menu box ”€”€ */
+/* ── Menu box ── */
 .script-menu-box {
   background: #FFFFFF;
   border-radius: 20px;
@@ -161,7 +161,7 @@
   to   { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-/* ”€”€ Menu items ”€”€ */
+/* ── Menu items ── */
 .script-menu-item {
   display: flex;
   align-items: center;
@@ -196,7 +196,7 @@
   cursor: not-allowed;
 }
 
-/* ”€”€ Dark mode ”€”€ */
+/* ── Dark mode ── */
 [data-theme="dark"] .script-card {
   background: #1E1E1E;
   box-shadow: 0 1px 8px rgba(0,0,0,0.3);

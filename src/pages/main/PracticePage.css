@@ -1,5 +1,5 @@
 ﻿/* ══════════════════════════════════════════════════════
-   PracticePage "” web port of PracticeScreen (mobile)
+   PracticePage — web port of PracticeScreen (mobile)
    Tokens: primary #FCBA04 · black #010101 · bg #F5F5F5
    ══════════════════════════════════════════════════════ */
 
@@ -37,7 +37,7 @@
 
 .practice-back:hover { background: rgba(1, 1, 1, 0.1); }
 
-/* Header "” centered title, back button pinned left */
+/* Header — centered title, back button pinned left */
 .practice-header {
   display: flex;
   align-items: center;
@@ -347,7 +347,7 @@
   background: transparent;
 }
 
-/* ”€”€ Teleprompter Preview Modal ”€”€ */
+/* ── Teleprompter Preview Modal ── */
 .practice-modal-overlay {
   position: fixed;
   inset: 0;
@@ -502,7 +502,7 @@
   border-color: rgba(255, 59, 48, 0.25);
 }
 
-/* ”€”€ Dark mode ”€”€ */
+/* ── Dark mode ── */
 [data-theme="dark"] .practice-page        { --bg: #0B0B0D; }
 [data-theme="dark"] .practice-back        { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-back:hover  { background: rgba(255,255,255,0.13); }

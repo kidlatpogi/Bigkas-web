@@ -7,7 +7,7 @@ import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './LandingPage.css';
 
 /* ═══════════════════════════════════════════════════════
-   SVG COMPONENTS "” matching Bigkas-mobile design tokens
+   SVG COMPONENTS — matching Bigkas-mobile design tokens
    Colors: primary #FCBA04 · secondary #010101 · bg #F5F5F5
    ═══════════════════════════════════════════════════════ */
 
@@ -63,7 +63,7 @@ function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
   );
 }
 
-/* Waveform visualization "” Vocal Stability card */
+/* Waveform visualization — Vocal Stability card */
 function WaveformViz() {
   const bars = [0.3, 0.5, 0.8, 0.6, 0.9, 0.4, 0.7, 0.85, 0.5, 0.65, 0.9, 0.35, 0.7, 0.55, 0.8, 0.4, 0.6, 0.75, 0.5, 0.85];
   return (
@@ -82,7 +82,7 @@ function WaveformViz() {
   );
 }
 
-/* Heatmap visualization "” Visual Engagement card */
+/* Heatmap visualization — Visual Engagement card */
 const HEATMAP_DOTS = Array.from({ length: 24 }, (_, i) => {
   const seed = ((i * 7 + 13) * 17) % 100;
   return {
@@ -118,7 +118,7 @@ function HeatmapViz() {
   );
 }
 
-/* Filler word counter "” Fluency Tracking card */
+/* Filler word counter — Fluency Tracking card */
 function FluencyViz() {
   return (
     <div className="fluency-viz">
@@ -140,7 +140,7 @@ function FluencyViz() {
   );
 }
 
-/* Mini growth chart "” progression section */
+/* Mini growth chart — progression section */
 function GrowthChart() {
   const data = [42, 48, 55, 52, 63, 68, 72, 78, 85];
   const max = 100;
@@ -185,7 +185,7 @@ function FeatureCard({ icon, title, description, children, delay = 0 }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   STAT PILL "” Hero stats
+   STAT PILL — Hero stats
    ═══════════════════════════════════════════════════════ */
 function StatPill({ value, label }) {
   return (
@@ -199,7 +199,7 @@ function StatPill({ value, label }) {
 /* ═══════════════════════════════════════════════════════
    LANDING PAGE
    ═══════════════════════════════════════════════════════ */
-/* Smooth-scroll helper "” scrolls to a section ref accounting for fixed nav height */
+/* Smooth-scroll helper — scrolls to a section ref accounting for fixed nav height */
 function scrollToSection(ref) {
   if (!ref?.current) return;
   const navHeight = 60;
@@ -312,7 +312,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ══════ HERO "” 100vh ══════ */}
+      {/* ══════ HERO — 100vh ══════ */}
       <section className="hero-section">
         <div className="hero-bg" />
         <div className="hero-inner">
@@ -324,12 +324,12 @@ export default function LandingPage() {
             </h1>
             <p className="hero-sub">
               Fail in private, shine in public. Bigkas gives you a safe,
-              judgment-free space to practice speaking "” powered by acoustic
+              judgment-free space to practice speaking — powered by acoustic
               biomarkers and computer vision calibrated for Filipino learners.
             </p>
             <div className="hero-actions">
               <button className="btn-primary" onClick={() => navigate(ROUTES.REGISTER)}>
-                Start Practicing "” It&apos;s Free
+                Start Practicing — It&apos;s Free
               </button>
               <a href="#features" className="btn-ghost" onClick={(e) => { e.preventDefault(); scrollToSection(featuresRef); }}>See How It Works</a>
             </div>
@@ -353,7 +353,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Dashboard Mockup "” mirrors mobile DashboardScreen */}
+          {/* Dashboard Mockup — mirrors mobile DashboardScreen */}
           <div className="hero-dashboard">
             <div className="dashboard-card">
               <div className="dashboard-header">
@@ -396,18 +396,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ THE PROBLEM "” 100vh ══════ */}
+      {/* ══════ THE PROBLEM — 100vh ══════ */}
       <section id="problem" className="problem-section" ref={problemRef}>
         <div className="section-wrap">
           <div className="problem-grid">
             <div className="problem-text">
               <span className="section-overline">The Problem</span>
               <h2 className="section-heading">
-                Stage Fright Is the #1 Fear "”<br />
+                Stage Fright Is the #1 Fear —<br />
                 <span className="accent-text">Even Above Death.</span>
               </h2>
               <p className="section-body">
-                In Filipino classrooms, glossophobia "” the fear of public speaking "”
+                In Filipino classrooms, glossophobia — the fear of public speaking —
                 is a silent epidemic. Students freeze during oral recitations. Young
                 professionals struggle transitioning from text-based digital
                 communication to face-to-face workplace presentations.
@@ -440,18 +440,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ THE SOLUTION "” 100vh ══════ */}
+      {/* ══════ THE SOLUTION — 100vh ══════ */}
       <section id="solution" className="solution-section" ref={solutionRef}>
         <div className="section-wrap">
           <span className="section-overline center">The Solution</span>
           <h2 className="section-heading center">
-            Your Private AI Speaking Coach "”<br />
+            Your Private AI Speaking Coach —<br />
             <span className="accent-text">No Stage Required.</span>
           </h2>
           <p className="section-body center max-w-prose">
             Bigkas combines <strong>acoustic analysis</strong> and <strong>computer
               vision</strong> into a multi-modal diagnostic tool that fits in your
-            pocket. It doesn&apos;t just record "” it <em>understands</em> your voice,
+            pocket. It doesn&apos;t just record — it <em>understands</em> your voice,
             your face, and your flow.
           </p>
 
@@ -490,7 +490,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ FEATURES "” 100vh ══════ */}
+      {/* ══════ FEATURES — 100vh ══════ */}
       <section id="features" className="features-section" ref={featuresRef}>
         <div className="section-wrap">
           <span className="section-overline center">Diagnostic Features</span>
@@ -553,20 +553,20 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ TRUST / SCIENCE "” 100vh ══════ */}
+      {/* ══════ TRUST / SCIENCE — 100vh ══════ */}
       <section id="trust" className="trust-section" ref={trustRef}>
         <div className="section-wrap">
           <div className="trust-grid">
             <div className="trust-text">
               <span className="section-overline">Scientific Credibility</span>
               <h2 className="section-heading">
-                Not Just a Recorder "”<br />
+                Not Just a Recorder —<br />
                 <span className="accent-text">A Diagnostic Instrument.</span>
               </h2>
               <p className="section-body">
                 Bigkas leverages peer-reviewed acoustic biomarkers used in clinical
-                speech pathology. Jitter and Shimmer analysis "” the same metrics
-                used to diagnose voice disorders "” are repurposed here to measure
+                speech pathology. Jitter and Shimmer analysis — the same metrics
+                used to diagnose voice disorders — are repurposed here to measure
                 speaking confidence and vocal control.
               </p>
               <div className="trust-badge">
@@ -607,18 +607,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ GROWTH / PROGRESSION "” 100vh ══════ */}
+      {/* ══════ GROWTH / PROGRESSION — 100vh ══════ */}
       <section id="growth" className="growth-section" ref={growthRef}>
         <div className="section-wrap">
           <span className="section-overline center">Progression Tracking</span>
           <h2 className="section-heading center">
-            Watch Yourself Improve "”<br />
+            Watch Yourself Improve —<br />
             <span className="accent-text">Session After Session.</span>
           </h2>
           <p className="section-body center max-w-prose">
             Every practice session is scored and logged. See your Speaking
             Confidence Score climb over time through a personalized growth chart.
-            It&apos;s not about being perfect "” it&apos;s about getting 1% better every day.
+            It&apos;s not about being perfect — it&apos;s about getting 1% better every day.
           </p>
 
           <div className="growth-card">
@@ -637,14 +637,14 @@ export default function LandingPage() {
           <div className="bridge-text">
             <p>
               <strong>The Bridge:</strong> Whether you&apos;re a student preparing for oral exams
-              or a young professional moving from text-based habits to face-to-face presentations "”
+              or a young professional moving from text-based habits to face-to-face presentations —
               Bigkas is your bridge to confident, articulate communication.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ══════ CTA "” 100vh ══════ */}
+      {/* ══════ CTA — 100vh ══════ */}
       <section className="cta-section" ref={ctaRef}>
         <div className="cta-inner">
           <div className="cta-card">
