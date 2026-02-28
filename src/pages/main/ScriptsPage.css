@@ -56,7 +56,7 @@
 }
 
 .script-badge.self {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 
@@ -108,7 +108,7 @@
   }
 }
 
-/* ── Ellipsis / 3-dot menu button ── */
+/* â”€â”€ Ellipsis / 3-dot menu button â”€â”€ */
 .script-menu-btn {
   background: transparent;
   border: none;
@@ -129,7 +129,7 @@
   color: #010101;
 }
 
-/* ── Overlay ── */
+/* â”€â”€ Overlay â”€â”€ */
 .script-menu-overlay {
   position: fixed;
   inset: 0;
@@ -143,7 +143,7 @@
   to   { opacity: 1; }
 }
 
-/* ── Menu box ── */
+/* â”€â”€ Menu box â”€â”€ */
 .script-menu-box {
   background: #FFFFFF;
   border-radius: 20px;
@@ -161,7 +161,7 @@
   to   { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-/* ── Menu items ── */
+/* â”€â”€ Menu items â”€â”€ */
 .script-menu-item {
   display: flex;
   align-items: center;
@@ -196,12 +196,12 @@
   cursor: not-allowed;
 }
 
-/* ── Dark mode ── */
+/* â”€â”€ Dark mode â”€â”€ */
 [data-theme="dark"] .script-card {
   background: #1E1E1E;
   box-shadow: 0 1px 8px rgba(0,0,0,0.3);
 }
-[data-theme="dark"] .script-badge.self { background: #FBAF00; color: #010101; }
+[data-theme="dark"] .script-badge.self { background: #FCBA04; color: #010101; }
 [data-theme="dark"] .script-badge.generated { background: #374151; color: #9CA3AF; }
 [data-theme="dark"] .script-title  { color: #F0F0F0; }
 [data-theme="dark"] .script-preview { color: #999; }
@@ -213,3 +213,15 @@
 [data-theme="dark"] .script-menu-item:hover { background: #2A2A2A; }
 [data-theme="dark"] .script-menu-item.danger { color: #FF6B6B; }
 [data-theme="dark"] .script-menu-item.danger:hover { background: rgba(255,107,107,0.1); }
+
+/* ── New-script glow highlight ── */
+@keyframes scriptGlow {
+  0%   { box-shadow: 0 1px 4px rgba(0,0,0,0.06); outline: 2px solid transparent; outline-offset: 2px; }
+  30%  { box-shadow: 0 0 20px 6px rgba(252,186,4,0.50), 0 2px 8px rgba(0,0,0,0.08); outline: 2px solid #FCBA04; outline-offset: 2px; }
+  70%  { box-shadow: 0 0 14px 4px rgba(252,186,4,0.38), 0 2px 8px rgba(0,0,0,0.06); outline: 2px solid rgba(252,186,4,0.7); outline-offset: 2px; }
+  100% { box-shadow: 0 1px 4px rgba(0,0,0,0.06); outline: 2px solid transparent; outline-offset: 2px; }
+}
+
+.script-card--glow {
+  animation: scriptGlow 1.25s ease-in-out 4;
+}

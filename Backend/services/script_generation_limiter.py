@@ -66,11 +66,18 @@ class ScriptGenerationLimiter:
         generation_tokens = int(profile.get("generation_tokens") or 10)
         regeneration_tokens = int(profile.get("regeneration_tokens") or 10)
 
-        # Daily reset
+        # Daily reset — resets at 12:01 AM Philippine Time (UTC+8)
         token_reset_at = profile.get("token_reset_at")
         if token_reset_at:
             reset_dt = datetime.fromisoformat(token_reset_at.replace("Z", "+00:00"))
-            if reset_dt.date() != now.date():
+            # Compute next 12:01 AM PHT after the last reset
+            from datetime import timedelta, timezone as tz
+            PHT = timezone(timedelta(hours=8))
+            now_pht = now.astimezone(PHT)
+            reset_pht = reset_dt.astimezone(PHT)
+            # Reset boundary: 12:01 AM PHT on the current PHT date
+            boundary_pht = now_pht.replace(hour=0, minute=1, second=0, microsecond=0)
+            if reset_pht < boundary_pht:
                 generation_tokens = 10
                 regeneration_tokens = 10
                 patch_payload["generation_tokens"] = generation_tokens

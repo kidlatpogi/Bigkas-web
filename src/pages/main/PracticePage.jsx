@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
-import { getScripts } from '../../api/scriptsApi';
-import { ROUTES } from '../../utils/constants';
+import { getScripts, duplicateSystemScript } from '../../api/scriptsApi';
+import { ROUTES, buildRoute } from '../../utils/constants';
 import { SYSTEM_PREWRITTEN_SPEECHES, RANDOM_TOPICS } from '../../utils/practiceData';
 import BackButton from '../../components/common/BackButton';
 import './PracticePage.css';
 
-/* ─── Icons ─── */
+/* â”€â”€â”€ Icons â”€â”€â”€ */
 function IconShuffle() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FBAF00"
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FCBA04"
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="16 3 21 3 21 8"/>
       <line x1="4" y1="20" x2="21" y2="3"/>
@@ -42,7 +42,17 @@ function IconClose() {
   );
 }
 
-/* ─── Tab options (mirrors mobile PracticeScreen) ─── */
+function IconCopy() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+    </svg>
+  );
+}
+
+/* â”€â”€â”€ Tab options (mirrors mobile PracticeScreen) â”€â”€â”€ */
 const TABS = [
   { value: 'prewritten',  label: 'Pre-written' },
   { value: 'randomizer',  label: 'Randomizer' },
@@ -50,12 +60,12 @@ const TABS = [
 ];
 
 /**
- * PracticePage — web adaptation of PracticeScreen.jsx (Bigkas-mobile).
+ * PracticePage â€” web adaptation of PracticeScreen.jsx (Bigkas-mobile).
  *
  * Tabs:
- *  Pre-written — system speeches + user self-authored scripts
- *  Randomizer  — random topic card + shuffle button
- *  Generate    — navigate to /scripts/generate; shows auto-generated scripts below
+ *  Pre-written â€” system speeches + user self-authored scripts
+ *  Randomizer  â€” random topic card + shuffle button
+ *  Generate    â€” navigate to /scripts/generate; shows auto-generated scripts below
  */
 export default function PracticePage() {
   const navigate = useNavigate();
@@ -65,9 +75,19 @@ export default function PracticePage() {
   const [scripts, setScripts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const PAGE_SIZE = 6;
+  const [page, setPage] = useState(1);
+
+  useEffect(() => { setPage(1); }, [selectedTab]);
+
   /* Teleprompter preview modal */
   const [previewScript, setPreviewScript] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewIsSystem, setPreviewIsSystem] = useState(false);
+
+  /* Copy-to-My-Scripts state */
+  const [isCopying, setIsCopying] = useState(false);
+  const [copyToast, setCopyToast] = useState(''); // '' | 'success' | 'error'
 
   /* Randomiser */
   const [randomTopic, setRandomTopic] = useState(() => RANDOM_TOPICS[0]);
@@ -99,8 +119,7 @@ export default function PracticePage() {
   /* Visible scripts per tab */
   const visibleScripts = useMemo(() => {
     if (selectedTab === 'prewritten') {
-      const userScripts = scripts.filter((s) => s.type === 'self-authored');
-      return [...SYSTEM_PREWRITTEN_SPEECHES, ...userScripts];
+      return [...SYSTEM_PREWRITTEN_SPEECHES];
     }
     if (selectedTab === 'generate') {
       return scripts.filter((s) => s.type === 'auto-generated');
@@ -108,9 +127,16 @@ export default function PracticePage() {
     return [];
   }, [scripts, selectedTab]);
 
+  const pagedScripts = useMemo(
+    () => visibleScripts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [visibleScripts, page]
+  );
+  const totalPages = Math.max(1, Math.ceil(visibleScripts.length / PAGE_SIZE));
+
   /* Open teleprompter modal */
-  const handleScriptPress = (script) => {
+  const handleScriptPress = (script, isSystem = false) => {
     setPreviewScript(script);
+    setPreviewIsSystem(isSystem);
     setShowPreview(true);
   };
 
@@ -125,6 +151,27 @@ export default function PracticePage() {
         entryPoint: 'practice',
       },
     });
+  };
+
+  /* Copy system script into user library, then open script editor */
+  const handleCopyAndEdit = async () => {
+    if (!user?.id) return;
+    setIsCopying(true);
+    try {
+      const { data, error } = await duplicateSystemScript(user.id, previewScript);
+      if (error) throw error;
+      setCopyToast('success');
+      setTimeout(() => {
+        setCopyToast('');
+        setShowPreview(false);
+        navigate(buildRoute.scriptEditor(data.id), { state: { isTempCopy: true } });
+      }, 1200);
+    } catch {
+      setCopyToast('error');
+      setTimeout(() => setCopyToast(''), 3000);
+    } finally {
+      setIsCopying(false);
+    }
   };
 
   /* Start randomiser practice */
@@ -144,11 +191,11 @@ export default function PracticePage() {
     <div className="practice-page">
       <div className="practice-wrap">
 
-        {/* Back button */}
-        <BackButton onClick={() => navigate(-1)} />
-
         {/* Header */}
-        <h1 className="practice-title">Practice{'\n'}Setup</h1>
+        <div className="practice-header">
+          <BackButton onClick={() => navigate(-1)} />
+          <h1 className="practice-title">Practice Setup</h1>
+        </div>
         <p className="practice-sub">
           Choose a speech to preview, generate your own, or try a random topic!
         </p>
@@ -168,7 +215,7 @@ export default function PracticePage() {
           ))}
         </div>
 
-        {/* ── Pre-written tab ── */}
+        {/* â”€â”€ Pre-written tab â”€â”€ */}
         {selectedTab === 'prewritten' && (
           <div className="practice-list">
             {isLoading ? (
@@ -179,16 +226,16 @@ export default function PracticePage() {
                 <p>No scripts yet. Write one from the Scripts tab or generate one!</p>
               </div>
             ) : (
-              visibleScripts.map((script) => (
+              pagedScripts.map((script) => (
                 <button
                   key={script.id}
                   className="practice-script-card"
-                  onClick={() => handleScriptPress(script)}
+                  onClick={() => handleScriptPress(script, true)}
                 >
                   <span className="practice-script-title">{script.title}</span>
                   <p className="practice-script-preview">
                     {(script.content || script.body || '').slice(0, 120)}
-                    {(script.content || script.body || '').length > 120 ? '…' : ''}
+                    {(script.content || script.body || '').length > 120 ? '...' : ''}
                   </p>
                 </button>
               ))
@@ -196,7 +243,7 @@ export default function PracticePage() {
           </div>
         )}
 
-        {/* ── Randomiser tab ── */}
+        {/* â”€â”€ Randomiser tab â”€â”€ */}
         {selectedTab === 'randomizer' && (
           <div className="practice-rand-wrap">
             <div className="practice-rand-card">
@@ -219,11 +266,11 @@ export default function PracticePage() {
           </div>
         )}
 
-        {/* ── Generate tab ── */}
+        {/* â”€â”€ Generate tab â”€â”€ */}
         {selectedTab === 'generate' && (
           <div className="practice-list">
             <button
-              className="practice-btn-primary practice-generate-btn"
+              className="btn-primary training-generate-btn"
               onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
             >
               Generate Speech
@@ -232,7 +279,7 @@ export default function PracticePage() {
             {visibleScripts.length > 0 && (
               <p className="practice-section-label">Your Generated Scripts</p>
             )}
-            {visibleScripts.map((script) => (
+            {pagedScripts.map((script) => (
               <button
                 key={script.id}
                 className="practice-script-card"
@@ -241,10 +288,19 @@ export default function PracticePage() {
                 <span className="practice-script-title">{script.title}</span>
                 <p className="practice-script-preview">
                   {(script.content || '').slice(0, 120)}
-                  {(script.content || '').length > 120 ? '…' : ''}
+                  {(script.content || '').length > 120 ? '...' : ''}
                 </p>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {selectedTab !== 'randomizer' && totalPages > 1 && (
+          <div className="practice-paged-nav">
+            <button className="practice-paged-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>&#8249; Prev</button>
+            <span className="practice-paged-info">{page} / {totalPages}</span>
+            <button className="practice-paged-btn" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next &#8250;</button>
           </div>
         )}
 
@@ -254,7 +310,7 @@ export default function PracticePage() {
         </button>
       </div>
 
-      {/* ── Teleprompter Preview Modal ── */}
+      {/* â”€â”€ Teleprompter Preview Modal â”€â”€ */}
       {showPreview && (
         <div
           className="practice-modal-overlay"
@@ -285,11 +341,32 @@ export default function PracticePage() {
               </p>
             </div>
 
+            {/* Copy-to-My-Scripts toast */}
+            {copyToast && (
+              <div className={`practice-copy-toast${copyToast === 'error' ? ' error' : ''}`}>
+                {copyToast === 'success'
+                  ? 'Successfully copied to My Scripts!'
+                  : 'Failed to copy script. Please try again.'}
+              </div>
+            )}
+
             {/* Actions */}
             <div className="practice-modal-actions">
               <button className="practice-btn-outline" onClick={() => setShowPreview(false)}>
                 Close
               </button>
+              {previewIsSystem && (
+                <button
+                  className="practice-btn-copy"
+                  onClick={handleCopyAndEdit}
+                  disabled={isCopying}
+                >
+                  {isCopying
+                    ? <span className="practice-copy-spinner" />
+                    : <IconCopy />}
+                  {isCopying ? 'Copying...' : 'Copy & Edit'}
+                </button>
+              )}
               <button className="practice-btn-primary" onClick={handleStartPractice}>
                 Start Practice
               </button>

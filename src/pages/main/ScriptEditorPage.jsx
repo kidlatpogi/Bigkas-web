@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
-import { getScript, createScript, updateScript } from '../../api/scriptsApi';
+import { getScript, createScript, updateScript, deleteScript } from '../../api/scriptsApi';
 import BackButton from '../../components/common/BackButton';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 
@@ -11,7 +12,9 @@ const MAX_CHARS = 2000;
 function ScriptEditorPage() {
   const navigate = useNavigate();
   const { scriptId } = useParams();
+  const { state: locationState } = useLocation();
   const { user } = useAuthContext();
+  const isTempCopy = locationState?.isTempCopy || false;
 
   const isEditing = Boolean(scriptId);
 
@@ -20,6 +23,11 @@ function ScriptEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error,   setError]   = useState('');
   const [isLoading, setIsLoading] = useState(isEditing);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // Track the saved snapshot so we can detect unsaved changes
+  const savedTitle   = useRef('');
+  const savedContent = useRef('');
 
   useEffect(() => {
     if (!isEditing) return;
@@ -28,8 +36,12 @@ function ScriptEditorPage() {
       try {
         const { data, error: sbErr } = await getScript(scriptId);
         if (sbErr) throw sbErr;
-        setTitle(data?.title || '');
-        setContent(data?.content || '');
+        const t = data?.title || '';
+        const c = data?.content || '';
+        setTitle(t);
+        setContent(c);
+        savedTitle.current   = t;
+        savedContent.current = c;
       } catch {
         setError('Failed to load script.');
       } finally {
@@ -68,6 +80,21 @@ function ScriptEditorPage() {
     }
   };
 
+  const isDirty = title !== savedTitle.current || content !== savedContent.current;
+
+  const handleCancelRequest = () => {
+    // No changes and not a temp copy — just leave silently
+    if (!isDirty && !isTempCopy) { handleDiscard(); return; }
+    setShowCancelModal(true);
+  };
+
+  const handleDiscard = async () => {
+    if (isTempCopy && scriptId) {
+      try { await deleteScript(scriptId); } catch { /* discard anyway */ }
+    }
+    navigate(-1);
+  };
+
   if (isLoading) {
     return (
       <div className="inner-page">
@@ -80,7 +107,7 @@ function ScriptEditorPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
-        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => navigate(-1)} />
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={handleCancelRequest} />
         <h1 className="inner-page-title">{isEditing ? 'Edit Script' : 'New Script'}</h1>
       </div>
 
@@ -113,13 +140,26 @@ function ScriptEditorPage() {
 
       {/* Actions */}
       <div className="btn-row">
-        <button className="btn-secondary" onClick={() => navigate(-1)} disabled={isSaving}>
+        <button className="btn-secondary" onClick={handleCancelRequest} disabled={isSaving}>
           Cancel
         </button>
-        <button className="btn-primary" style={{ background: '#010101', color: '#FFFFFF' }} onClick={handleSave} disabled={isSaving}>
+        <button className="btn-primary btn-dark" onClick={handleSave} disabled={isSaving}>
           {isSaving ? 'Saving…' : 'Save'}
         </button>
       </div>
+
+      <ConfirmationModal
+        isOpen={showCancelModal}
+        title="Discard changes?"
+        message={isTempCopy
+          ? 'This will permanently delete the copied script. Are you sure?'
+          : 'Any unsaved changes will be lost. Are you sure you want to leave?'}
+        confirmLabel="Discard"
+        cancelLabel="Stay"
+        type="danger"
+        onCancel={() => setShowCancelModal(false)}
+        onConfirm={handleDiscard}
+      />
     </div>
   );
 }

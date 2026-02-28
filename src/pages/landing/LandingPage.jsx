@@ -6,10 +6,10 @@ import bigkasLogo from '../../assets/Temporary Logo.png';
 import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './LandingPage.css';
 
-/* ═══════════════════════════════════════════════════════
-   SVG COMPONENTS — matching Bigkas-mobile design tokens
-   Colors: primary #FBAF00 · secondary #010101 · bg #F5F5F5
-   ═══════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SVG COMPONENTS â€” matching Bigkas-mobile design tokens
+   Colors: primary #FCBA04 Â· secondary #010101 Â· bg #F5F5F5
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Circular Progress Ring for Confidence Score */
 function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
@@ -47,7 +47,7 @@ function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
         />
         <defs>
           <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FBAF00" />
+            <stop offset="0%" stopColor="#FCBA04" />
             <stop offset="100%" stopColor="#D59300" />
           </linearGradient>
         </defs>
@@ -63,7 +63,7 @@ function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
   );
 }
 
-/* Waveform visualization — Vocal Stability card */
+/* Waveform visualization â€” Vocal Stability card */
 function WaveformViz() {
   const bars = [0.3, 0.5, 0.8, 0.6, 0.9, 0.4, 0.7, 0.85, 0.5, 0.65, 0.9, 0.35, 0.7, 0.55, 0.8, 0.4, 0.6, 0.75, 0.5, 0.85];
   return (
@@ -82,7 +82,7 @@ function WaveformViz() {
   );
 }
 
-/* Heatmap visualization — Visual Engagement card */
+/* Heatmap visualization â€” Visual Engagement card */
 const HEATMAP_DOTS = Array.from({ length: 24 }, (_, i) => {
   const seed = ((i * 7 + 13) * 17) % 100;
   return {
@@ -118,7 +118,7 @@ function HeatmapViz() {
   );
 }
 
-/* Filler word counter — Fluency Tracking card */
+/* Filler word counter â€” Fluency Tracking card */
 function FluencyViz() {
   return (
     <div className="fluency-viz">
@@ -140,7 +140,7 @@ function FluencyViz() {
   );
 }
 
-/* Mini growth chart — progression section */
+/* Mini growth chart â€” progression section */
 function GrowthChart() {
   const data = [42, 48, 55, 52, 63, 68, 72, 78, 85];
   const max = 100;
@@ -160,17 +160,17 @@ function GrowthChart() {
         </linearGradient>
       </defs>
       <polygon points={areaPoints} fill="url(#chartGrad)" />
-      <polyline points={points} fill="none" stroke="#FBAF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={points} fill="none" stroke="#FCBA04" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {data.map((v, i) => (
-        <circle key={i} cx={i * stepX} cy={h - (v / max) * h} r="3" fill="#010101" stroke="#FBAF00" strokeWidth="1.5" />
+        <circle key={i} cx={i * stepX} cy={h - (v / max) * h} r="3" fill="#010101" stroke="#FCBA04" strokeWidth="1.5" />
       ))}
     </svg>
   );
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    FEATURE CARD
-   ═══════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function FeatureCard({ icon, title, description, children, delay = 0 }) {
   return (
     <div className="feature-card" style={{ transitionDelay: `${delay}s` }}>
@@ -184,9 +184,9 @@ function FeatureCard({ icon, title, description, children, delay = 0 }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   STAT PILL — Hero stats
-   ═══════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   STAT PILL â€” Hero stats
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function StatPill({ value, label }) {
   return (
     <div className="stat-pill">
@@ -196,10 +196,10 @@ function StatPill({ value, label }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    LANDING PAGE
-   ═══════════════════════════════════════════════════════ */
-/* Smooth-scroll helper — scrolls to a section ref accounting for fixed nav height */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* Smooth-scroll helper â€” scrolls to a section ref accounting for fixed nav height */
 function scrollToSection(ref) {
   if (!ref?.current) return;
   const navHeight = 60;
@@ -259,7 +259,7 @@ export default function LandingPage() {
     <div className="landing">
       <ThemeToggleBtn />
 
-      {/* ══════ NAVIGATION ══════ */}
+      {/* â•â•â•â•â•â• NAVIGATION â•â•â•â•â•â• */}
       <nav className="landing-nav">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -294,7 +294,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ══════ HERO — 100vh ══════ */}
+      {/* â•â•â•â•â•â• HERO â€” 100vh â•â•â•â•â•â• */}
       <section className="hero-section">
         <div className="hero-bg" />
         <div className="hero-inner">
@@ -306,12 +306,12 @@ export default function LandingPage() {
             </h1>
             <p className="hero-sub">
               Fail in private, shine in public. Bigkas gives you a safe,
-              judgment-free space to practice speaking — powered by acoustic
+              judgment-free space to practice speaking â€” powered by acoustic
               biomarkers and computer vision calibrated for Filipino learners.
             </p>
             <div className="hero-actions">
               <button className="btn-primary" onClick={() => navigate(ROUTES.REGISTER)}>
-                Start Practicing — It&apos;s Free
+                Start Practicing â€” It&apos;s Free
               </button>
               <a href="#features" className="btn-ghost" onClick={(e) => { e.preventDefault(); scrollToSection(featuresRef); }}>See How It Works</a>
             </div>
@@ -335,7 +335,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Dashboard Mockup — mirrors mobile DashboardScreen */}
+          {/* Dashboard Mockup â€” mirrors mobile DashboardScreen */}
           <div className="hero-dashboard">
             <div className="dashboard-card">
               <div className="dashboard-header">
@@ -346,7 +346,7 @@ export default function LandingPage() {
               <div className="dashboard-metrics">
                 <div className="metric">
                   <span className="metric-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a2 2 0 00-2 2v4a2 2 0 004 0V4a2 2 0 00-2-2z" stroke="#FBAF00" strokeWidth="1.2" /><path d="M13 7v1a5 5 0 01-10 0V7M8 13v2" stroke="#FBAF00" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a2 2 0 00-2 2v4a2 2 0 004 0V4a2 2 0 00-2-2z" stroke="#FCBA04" strokeWidth="1.2" /><path d="M13 7v1a5 5 0 01-10 0V7M8 13v2" stroke="#FCBA04" strokeWidth="1.2" strokeLinecap="round" /></svg>
                   </span>
                   <span className="metric-val">92</span>
                   <span className="metric-lbl">Vocal</span>
@@ -354,7 +354,7 @@ export default function LandingPage() {
                 <div className="metric-divider" />
                 <div className="metric">
                   <span className="metric-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="#FBAF00" strokeWidth="1.2" /><path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z" stroke="#FBAF00" strokeWidth="1.2" /></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="#FCBA04" strokeWidth="1.2" /><path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z" stroke="#FCBA04" strokeWidth="1.2" /></svg>
                   </span>
                   <span className="metric-val">78</span>
                   <span className="metric-lbl">Visual</span>
@@ -362,7 +362,7 @@ export default function LandingPage() {
                 <div className="metric-divider" />
                 <div className="metric">
                   <span className="metric-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h7M3 11h9" stroke="#FBAF00" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 8h7M3 11h9" stroke="#FCBA04" strokeWidth="1.2" strokeLinecap="round" /></svg>
                   </span>
                   <span className="metric-val">88</span>
                   <span className="metric-lbl">Fluency</span>
@@ -378,18 +378,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ THE PROBLEM — 100vh ══════ */}
+      {/* â•â•â•â•â•â• THE PROBLEM â€” 100vh â•â•â•â•â•â• */}
       <section id="problem" className="problem-section" ref={problemRef}>
         <div className="section-wrap">
           <div className="problem-grid">
             <div className="problem-text">
               <span className="section-overline">The Problem</span>
               <h2 className="section-heading">
-                Stage Fright Is the #1 Fear —<br />
+                Stage Fright Is the #1 Fear â€”<br />
                 <span className="accent-text">Even Above Death.</span>
               </h2>
               <p className="section-body">
-                In Filipino classrooms, glossophobia — the fear of public speaking —
+                In Filipino classrooms, glossophobia â€” the fear of public speaking â€”
                 is a silent epidemic. Students freeze during oral recitations. Young
                 professionals struggle transitioning from text-based digital
                 communication to face-to-face workplace presentations.
@@ -422,18 +422,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ THE SOLUTION — 100vh ══════ */}
+      {/* â•â•â•â•â•â• THE SOLUTION â€” 100vh â•â•â•â•â•â• */}
       <section id="solution" className="solution-section" ref={solutionRef}>
         <div className="section-wrap">
           <span className="section-overline center">The Solution</span>
           <h2 className="section-heading center">
-            Your Private AI Speaking Coach —<br />
+            Your Private AI Speaking Coach â€”<br />
             <span className="accent-text">No Stage Required.</span>
           </h2>
           <p className="section-body center max-w-prose">
             Bigkas combines <strong>acoustic analysis</strong> and <strong>computer
               vision</strong> into a multi-modal diagnostic tool that fits in your
-            pocket. It doesn&apos;t just record — it <em>understands</em> your voice,
+            pocket. It doesn&apos;t just record â€” it <em>understands</em> your voice,
             your face, and your flow.
           </p>
 
@@ -441,8 +441,8 @@ export default function LandingPage() {
             <div className="pillar">
               <div className="pillar-icon">
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                  <circle cx="14" cy="14" r="13" stroke="#FBAF00" strokeWidth="1.5" fill="rgba(251,175,0,0.08)" />
-                  <path d="M14 8v8M10 12h8" stroke="#FBAF00" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="14" cy="14" r="13" stroke="#FCBA04" strokeWidth="1.5" fill="rgba(251,175,0,0.08)" />
+                  <path d="M14 8v8M10 12h8" stroke="#FCBA04" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
               <h4 className="pillar-title">Multi-Modal Analysis</h4>
@@ -451,8 +451,8 @@ export default function LandingPage() {
             <div className="pillar">
               <div className="pillar-icon">
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                  <circle cx="14" cy="14" r="13" stroke="#FBAF00" strokeWidth="1.5" fill="rgba(251,175,0,0.08)" />
-                  <path d="M9 14l3 3 7-7" stroke="#FBAF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="14" cy="14" r="13" stroke="#FCBA04" strokeWidth="1.5" fill="rgba(251,175,0,0.08)" />
+                  <path d="M9 14l3 3 7-7" stroke="#FCBA04" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h4 className="pillar-title">Standard Hardware</h4>
@@ -461,8 +461,8 @@ export default function LandingPage() {
             <div className="pillar">
               <div className="pillar-icon">
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                  <circle cx="14" cy="14" r="13" stroke="#FBAF00" strokeWidth="1.5" fill="rgba(251,175,0,0.08)" />
-                  <path d="M14 9v6l4 2" stroke="#FBAF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="14" cy="14" r="13" stroke="#FCBA04" strokeWidth="1.5" fill="rgba(251,175,0,0.08)" />
+                  <path d="M14 9v6l4 2" stroke="#FCBA04" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h4 className="pillar-title">Self-Paced Growth</h4>
@@ -472,7 +472,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ FEATURES — 100vh ══════ */}
+      {/* â•â•â•â•â•â• FEATURES â€” 100vh â•â•â•â•â•â• */}
       <section id="features" className="features-section" ref={featuresRef}>
         <div className="section-wrap">
           <span className="section-overline center">Diagnostic Features</span>
@@ -485,8 +485,8 @@ export default function LandingPage() {
             <FeatureCard
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" stroke="#FBAF00" strokeWidth="1.5" />
-                  <path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4m-4 0h8" stroke="#FBAF00" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" stroke="#FCBA04" strokeWidth="1.5" />
+                  <path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4m-4 0h8" stroke="#FCBA04" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               }
               title="Vocal Stability"
@@ -504,12 +504,12 @@ export default function LandingPage() {
             <FeatureCard
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="3" stroke="#FBAF00" strokeWidth="1.5" />
-                  <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z" stroke="#FBAF00" strokeWidth="1.5" />
+                  <circle cx="12" cy="12" r="3" stroke="#FCBA04" strokeWidth="1.5" />
+                  <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z" stroke="#FCBA04" strokeWidth="1.5" />
                 </svg>
               }
               title="Visual Engagement"
-              description="Facial landmark tracking and eye-contact heatmaps measure your non-verbal cues — ensuring your body speaks as powerfully as your words."
+              description="Facial landmark tracking and eye-contact heatmaps measure your non-verbal cues â€” ensuring your body speaks as powerfully as your words."
               delay={0.12}
             >
               <HeatmapViz />
@@ -522,11 +522,11 @@ export default function LandingPage() {
             <FeatureCard
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 6h16M4 12h10M4 18h14" stroke="#FBAF00" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M4 6h16M4 12h10M4 18h14" stroke="#FCBA04" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               }
               title="Fluency Tracking"
-              description="Real-time detection of filler words, prolonged pauses, and silence ratios. Know exactly where your flow breaks — and fix it."
+              description="Real-time detection of filler words, prolonged pauses, and silence ratios. Know exactly where your flow breaks â€” and fix it."
               delay={0.24}
             >
               <FluencyViz />
@@ -535,25 +535,25 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ TRUST / SCIENCE — 100vh ══════ */}
+      {/* â•â•â•â•â•â• TRUST / SCIENCE â€” 100vh â•â•â•â•â•â• */}
       <section id="trust" className="trust-section" ref={trustRef}>
         <div className="section-wrap">
           <div className="trust-grid">
             <div className="trust-text">
               <span className="section-overline">Scientific Credibility</span>
               <h2 className="section-heading">
-                Not Just a Recorder —<br />
+                Not Just a Recorder â€”<br />
                 <span className="accent-text">A Diagnostic Instrument.</span>
               </h2>
               <p className="section-body">
                 Bigkas leverages peer-reviewed acoustic biomarkers used in clinical
-                speech pathology. Jitter and Shimmer analysis — the same metrics
-                used to diagnose voice disorders — are repurposed here to measure
+                speech pathology. Jitter and Shimmer analysis â€” the same metrics
+                used to diagnose voice disorders â€” are repurposed here to measure
                 speaking confidence and vocal control.
               </p>
               <div className="trust-badge">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 1l2.5 5 5.5.8-4 3.9.9 5.3L10 13.5 5.1 16l.9-5.3-4-3.9 5.5-.8L10 1z" fill="#FBAF00" />
+                  <path d="M10 1l2.5 5 5.5.8-4 3.9.9 5.3L10 13.5 5.1 16l.9-5.3-4-3.9 5.5-.8L10 1z" fill="#FCBA04" />
                 </svg>
                 <span>Specifically calibrated for Standard English in a Filipino educational context.</span>
               </div>
@@ -589,18 +589,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ GROWTH / PROGRESSION — 100vh ══════ */}
+      {/* â•â•â•â•â•â• GROWTH / PROGRESSION â€” 100vh â•â•â•â•â•â• */}
       <section id="growth" className="growth-section" ref={growthRef}>
         <div className="section-wrap">
           <span className="section-overline center">Progression Tracking</span>
           <h2 className="section-heading center">
-            Watch Yourself Improve —<br />
+            Watch Yourself Improve â€”<br />
             <span className="accent-text">Session After Session.</span>
           </h2>
           <p className="section-body center max-w-prose">
             Every practice session is scored and logged. See your Speaking
             Confidence Score climb over time through a personalized growth chart.
-            It&apos;s not about being perfect — it&apos;s about getting 1% better every day.
+            It&apos;s not about being perfect â€” it&apos;s about getting 1% better every day.
           </p>
 
           <div className="growth-card">
@@ -619,14 +619,14 @@ export default function LandingPage() {
           <div className="bridge-text">
             <p>
               <strong>The Bridge:</strong> Whether you&apos;re a student preparing for oral exams
-              or a young professional moving from text-based habits to face-to-face presentations —
+              or a young professional moving from text-based habits to face-to-face presentations â€”
               Bigkas is your bridge to confident, articulate communication.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ══════ CTA — 100vh ══════ */}
+      {/* â•â•â•â•â•â• CTA â€” 100vh â•â•â•â•â•â• */}
       <section className="cta-section" ref={ctaRef}>
         <div className="cta-inner">
           <div className="cta-card">
@@ -647,7 +647,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════ FOOTER ══════ */}
+      {/* â•â•â•â•â•â• FOOTER â•â•â•â•â•â• */}
       <footer className="landing-footer">
         <div className="footer-inner">
           <div className="footer-left">

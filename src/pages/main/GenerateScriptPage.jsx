@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoShuffle } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
@@ -52,28 +52,33 @@ function GenerateScriptPage() {
   const [generationTokens, setGenerationTokens] = useState(10);
   const [regenerationTokens, setRegenerationTokens] = useState(10);
 
-  // Fetch and initialize token counts from backend
-  useEffect(() => {
+  // Shared token fetcher — used on mount and after cooldown expires
+  const fetchTokens = useCallback(async () => {
     if (!user?.id) return;
-
-    const fetchTokens = async () => {
-      try {
-        const response = await fetch(
-          `${ENV.API_BASE_URL}/api/ai/user-tokens?user_id=${encodeURIComponent(user.id)}`
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setGenerationTokens(Number(data.generation_tokens ?? 10));
-          setRegenerationTokens(Number(data.regeneration_tokens ?? 10));
-        }
-      } catch {
-        // Use default values
+    try {
+      const response = await fetch(
+        `${ENV.API_BASE_URL}/api/ai/user-tokens?user_id=${encodeURIComponent(user.id)}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setGenerationTokens(Number(data.generation_tokens ?? 10));
+        setRegenerationTokens(Number(data.regeneration_tokens ?? 10));
       }
-    };
-
-    fetchTokens();
+    } catch {
+      // Use default values
+    }
   }, [user?.id]);
+
+  // Fetch token balance on mount
+  useEffect(() => { fetchTokens(); }, [fetchTokens]);
+
+  // Re-fetch when cooldown expires so the balance is fresh before the next attempt
+  useEffect(() => {
+    if (cooldownSeconds === 0 && user?.id) {
+      fetchTokens();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cooldownSeconds]);
 
   // Cooldown countdown timer
   useEffect(() => {
@@ -184,13 +189,13 @@ function GenerateScriptPage() {
     if (!user?.id) return;
     setIsSaving(true);
     try {
-      await createScript({
+      const { data: savedScript } = await createScript({
         userId: user.id,
         title:   editTitle.trim() || generated.title,
         content: editContent.trim(),
         type:    'auto-generated',
       });
-      navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated' } });
+      navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated', newScriptId: savedScript?.id } });
     } catch {
       setError('Failed to save script.');
     } finally {
@@ -312,13 +317,12 @@ function GenerateScriptPage() {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group generate-modal-content">
               <label className="form-label">Content</label>
               <textarea
                 className="form-textarea"
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
-                rows={8}
               />
             </div>
 

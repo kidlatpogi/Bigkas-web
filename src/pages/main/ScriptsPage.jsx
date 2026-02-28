@@ -1,12 +1,23 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts, deleteScript } from '../../api/scriptsApi';
 import { ROUTES, buildRoute } from '../../utils/constants';
 import { formatEditedTime } from '../../utils/formatters';
 import FilterTabs from '../../components/common/FilterTabs';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import './InnerPages.css';
 import './ScriptsPage.css';
+import './FrameworksPage.css';
+
+function IconSearch() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.7"/>
+      <path d="M13.5 13.5l3 3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+    </svg>
+  );
+}
 
 function ScriptsPage() {
   const navigate = useNavigate();
@@ -20,9 +31,18 @@ function ScriptsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const menuButtonRefs = useRef({});
+
+  const [query, setQuery]         = useState('');
+  const [sortOrder, setSortOrder] = useState('recent');
+  const [glowId, setGlowId]       = useState(location.state?.newScriptId || null);
+  const glowTimerRef = useRef(null);
+
+  const PAGE_SIZE = 8;
+  const [page, setPage] = useState(1);
 
   const loadScripts = useCallback(async () => {
     if (!user?.id) return;
@@ -44,14 +64,51 @@ function ScriptsPage() {
     loadScripts();
   }, [loadScripts]);
 
+  // Reset search/sort/page when switching tabs
+  useEffect(() => {
+    setQuery('');
+    setSortOrder('recent');
+    setPage(1);
+  }, [activeTab]);
+
+  // Reset page when search or sort changes
+  useEffect(() => { setPage(1); }, [query, sortOrder]);
+
+  // Start the 5-second glow timer once the target script appears in the loaded list
+  useEffect(() => {
+    if (glowId && scripts.some(s => s.id === glowId)) {
+      clearTimeout(glowTimerRef.current);
+      glowTimerRef.current = setTimeout(() => setGlowId(null), 5000);
+      return () => clearTimeout(glowTimerRef.current);
+    }
+  }, [scripts, glowId]);
+
+  // Filtered + sorted view of scripts
+  const displayedScripts = useMemo(() => {
+    let list = [...scripts];
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      list = list.filter(s => (s.title || '').toLowerCase().includes(q));
+    }
+    if (sortOrder === 'az') list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    else if (sortOrder === 'za') list.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+    // 'recent' preserves backend order (updated_at desc)
+    return list;
+  }, [scripts, query, sortOrder]);
+
   const handleDelete = async (scriptId) => {
-    if (!window.confirm('Delete this script?')) return;
+    setDeleteTargetId(scriptId);
+  };
+
+  const handleConfirmDelete = async () => {
+    const scriptId = deleteTargetId;
+    setDeleteTargetId(null);
     setDeletingId(scriptId);
     try {
       await deleteScript(scriptId);
       setScripts(prev => prev.filter(s => s.id !== scriptId));
     } catch {
-      alert('Failed to delete script.');
+      // error is shown via ConfirmationModal's context; swallow silently
     } finally {
       setDeletingId(null);
     }
@@ -90,7 +147,7 @@ function ScriptsPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '16px' }}>
         <FilterTabs
           tabs={[
             { label: 'Self-Authored', value: 'self' },
@@ -99,6 +156,42 @@ function ScriptsPage() {
           active={activeTab}
           onChange={setActiveTab}
         />
+      </div>
+
+      {/* Search + Sort */}
+      <div className="fh-controls">
+        <div className="fh-search-wrap">
+          <span className="fh-search-icon"><IconSearch /></span>
+          <input
+            className="fh-search"
+            type="search"
+            placeholder="Search scripts…"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+            aria-label="Search scripts"
+          />
+          {query && (
+            <button className="fh-search-clear" onClick={() => { setQuery(''); setPage(1); }} aria-label="Clear search">✕</button>
+          )}
+        </div>
+        <div className="fh-sort-wrap">
+          <svg className="fh-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+          </svg>
+          <select
+            className="fh-sort"
+            value={sortOrder}
+            onChange={(e) => { setSortOrder(e.target.value); setPage(1); }}
+            aria-label="Sort order"
+          >
+            <option value="recent">Most Recent</option>
+            <option value="az">A → Z</option>
+            <option value="za">Z → A</option>
+          </select>
+          <svg className="fh-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
       </div>
 
       {/* Content */}
@@ -121,13 +214,24 @@ function ScriptsPage() {
         </div>
       )}
 
+      {!isLoading && !error && scripts.length > 0 && displayedScripts.length === 0 && (
+        <div className="empty-state">
+          <p className="empty-title">No results</p>
+          <p className="empty-desc">No scripts match "{query}". Try a different search.</p>
+        </div>
+      )}
+
       <div className="scripts-list">
-        {scripts.map((script) => (
-          <div key={script.id} className="script-card" onClick={() => navigate(buildRoute.scriptEditor(script.id))}>
+        {displayedScripts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((script) => (
+          <div
+            key={script.id}
+            className={`script-card${script.id === glowId ? ' script-card--glow' : ''}`}
+            onClick={() => navigate(buildRoute.scriptEditor(script.id))}
+          >
             {/* Top row: type badge + menu */}
             <div className="script-card-top">
               <span className={`script-badge ${script.type === 'auto-generated' ? 'generated' : 'self'}`}>
-                {script.type === 'auto-generated' ? 'Auto-Generated' : 'Self-Authored'}
+                {script.type === 'auto-generated' ? 'AI Generated' : 'Self-Authored'}
               </span>
               <button
                 className="script-menu-btn"
@@ -153,6 +257,14 @@ function ScriptsPage() {
           </div>
         ))}
       </div>
+
+      {Math.ceil(displayedScripts.length / PAGE_SIZE) > 1 && (
+        <div className="paged-nav">
+          <button className="paged-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>&#8249; Prev</button>
+          <span className="paged-info">{page} / {Math.ceil(displayedScripts.length / PAGE_SIZE)}</span>
+          <button className="paged-btn" disabled={page >= Math.ceil(displayedScripts.length / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}>Next &#8250;</button>
+        </div>
+      )}
 
       {/* ── Script options modal (ellipsis menu) ── */}
       {menuOpenId && (
@@ -198,6 +310,18 @@ function ScriptsPage() {
           </div>
         </>
       )}
+
+      {/* Delete confirmation modal */}
+      <ConfirmationModal
+        isOpen={Boolean(deleteTargetId)}
+        title="Delete script?"
+        message="This action cannot be undone. The script will be permanently removed from your library."
+        confirmLabel="Delete"
+        cancelLabel="Keep it"
+        type="danger"
+        onCancel={() => setDeleteTargetId(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

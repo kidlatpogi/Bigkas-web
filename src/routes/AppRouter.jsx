@@ -25,6 +25,7 @@ import ChangePasswordPage from '../pages/main/ChangePasswordPage';
 import AccountSettingsPage from '../pages/main/AccountSettingsPage';
 import TrainingSetupPage from '../pages/main/TrainingSetupPage';
 import TrainingPage from '../pages/main/TrainingPage';
+import FrameworksPage from '../pages/main/FrameworksPage';
 import ScriptEditorPage from '../pages/main/ScriptEditorPage';
 import GenerateScriptPage from '../pages/main/GenerateScriptPage';
 import TestAudioVideoPage from '../pages/main/TestAudioVideoPage';
@@ -125,6 +126,29 @@ function PublicRoute() {
 }
 
 /**
+ * Root Route Wrapper
+ * Redirects authenticated users to dashboard when hitting landing page.
+ */
+function HomeRoute() {
+  const { isAuthenticated, isInitializing } = useAuthContext();
+
+  if (isInitializing) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-logo">Bigkas</div>
+        <div className="loading-spinner" aria-label="Loading" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  }
+
+  return <LandingPage />;
+}
+
+/**
  * App Router Component
  * Defines all application routes
  */
@@ -166,6 +190,9 @@ function AppRouter() {
         <Route path={ROUTES.TRAINING_SETUP} element={<TrainingSetupPage />} />
         <Route path={ROUTES.TRAINING} element={<TrainingPage />} />
 
+        {/* Frameworks / Training Hub */}
+        <Route path={ROUTES.FRAMEWORKS} element={<FrameworksPage />} />
+
         {/* History / Progress */}
         <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
         <Route path={ROUTES.ALL_SESSIONS} element={<AllSessionsPage />} />
@@ -187,8 +214,8 @@ function AppRouter() {
         <Route path={ROUTES.DETAILED_FEEDBACK} element={<DetailedFeedbackPage />} />
       </Route>
 
-      {/* Landing Page — public root */}
-      <Route path={ROUTES.HOME} element={<LandingPage />} />
+      {/* Landing Page — redirects authenticated users to dashboard */}
+      <Route path={ROUTES.HOME} element={<HomeRoute />} />
 
       {/* 404 - Redirect to landing */}
       <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />

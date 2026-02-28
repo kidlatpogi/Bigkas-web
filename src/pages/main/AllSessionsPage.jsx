@@ -16,8 +16,11 @@ const FILTER_TABS = [
 
 function AllSessionsPage() {
   const navigate = useNavigate();
-  const { sessions, fetchSessions, loadMoreSessions, isLoading, hasMore } = useSessionContext();
+  const { sessions, fetchSessions, isLoading } = useSessionContext();
   const [filter, setFilter] = useState('All');
+
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchSessions(1, true);
@@ -44,7 +47,7 @@ function AllSessionsPage() {
 
   return (
     <div className="inner-page">
-      <div className="inner-page-header">
+      <div className="inner-page-header centered-header">
         <BackButton />
         <h1 className="inner-page-title">All Sessions</h1>
       </div>
@@ -53,7 +56,7 @@ function AllSessionsPage() {
       <FilterTabs
         tabs={FILTER_TABS}
         active={filter}
-        onChange={setFilter}
+        onChange={(val) => { setFilter(val); setPage(1); }}
       />
 
       {isLoading && sessions.length === 0 && (
@@ -68,7 +71,7 @@ function AllSessionsPage() {
       )}
 
       <div className="sessions-list">
-        {filtered.map((s) => {
+        {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((s) => {
           const score = s.confidence_score ?? 0;
           const tier = getScoreTier(score);
           return (
@@ -97,16 +100,11 @@ function AllSessionsPage() {
         })}
       </div>
 
-      {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <button
-            className="btn-secondary"
-            onClick={loadMoreSessions}
-            disabled={isLoading}
-            style={{ width: 'auto', padding: '10px 28px' }}
-          >
-            {isLoading ? 'Loading…' : 'Load More'}
-          </button>
+      {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+        <div className="paged-nav">
+          <button className="paged-btn" disabled={page === 1} onClick={() => setPage(p => p - 1)}>&#8249; Prev</button>
+          <span className="paged-info">{page} / {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+          <button className="paged-btn" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage(p => p + 1)}>Next &#8250;</button>
         </div>
       )}
     </div>

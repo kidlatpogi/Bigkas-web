@@ -1,9 +1,9 @@
-/* ══════════════════════════════════════════════════════════════════════
-   TrainingPage — 1:1 redesign from Bigkas-mobile TrainingScriptedScreen
-   Design tokens: primary #FBAF00 · black #010101 · white #FFFFFF
-   ══════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TrainingPage â€” 1:1 redesign from Bigkas-mobile TrainingScriptedScreen
+   Design tokens: primary #FCBA04 Â· black #010101 Â· white #FFFFFF
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── Page shell — fixed full-screen, sits above BottomNav (z-index 1000) ── */
+/* â”€â”€ Page shell â€” fixed full-screen, sits above BottomNav (z-index 1000) â”€â”€ */
 .tp-page {
   position: fixed;
   inset: 0;
@@ -15,7 +15,7 @@
   overflow: hidden;
 }
 
-/* ── Dark header bar ── */
+/* â”€â”€ Dark header bar â”€â”€ */
 .tp-header {
   display: flex;
   align-items: center;
@@ -57,7 +57,7 @@
   height: 38px;
   border-radius: 50%;
   border: none;
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
 
 .tp-header-spacer { width: 38px; flex-shrink: 0; }
 
-/* ── Main content wrapper ── */
+/* â”€â”€ Main content wrapper â”€â”€ */
 .tp-content {
   flex: 1;
   display: flex;
@@ -78,13 +78,13 @@
   overflow: hidden;
 }
 
-/* Split layout: scripted mode → two columns */
+/* Split layout: scripted mode â†’ two columns */
 .tp-content--split {
   flex-direction: row;
   align-items: stretch;
 }
 
-/* ── Left column (camera + waveform + controls) ── */
+/* â”€â”€ Left column (camera + waveform + controls) â”€â”€ */
 .tp-left {
   display: flex;
   flex-direction: column;
@@ -139,7 +139,7 @@
   50% { opacity: 0; }
 }
 
-/* Camera — capped height so controls always fit */
+/* Camera â€” capped height so controls always fit */
 .tp-camera-wrap {
   border-radius: 16px;
   overflow: hidden;
@@ -186,7 +186,7 @@
   letter-spacing: 0.02em;
 }
 
-/* Waveform — 50 bars */
+/* Waveform â€” 50 bars */
 .tp-waveform {
   display: flex;
   align-items: center;
@@ -230,7 +230,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #FBAF00;
+  background: #FCBA04;
 }
 
 .tp-idle-label {
@@ -238,7 +238,7 @@
   font-weight: 500;
 }
 
-/* ── Controls row ── */
+/* â”€â”€ Controls row â”€â”€ */
 .tp-controls {
   display: flex;
   flex-direction: row;
@@ -280,7 +280,7 @@
 }
 
 .tp-ctrl-btn:hover:not(:disabled) {
-  border-color: #FBAF00;
+  border-color: #FCBA04;
   transform: translateY(-1px);
 }
 
@@ -289,7 +289,7 @@
   cursor: not-allowed;
 }
 
-/* Large record button (80×80) */
+/* Large record button (80Ã—80) */
 .tp-record-btn {
   width: 80px;
   height: 80px;
@@ -340,7 +340,7 @@
   50%       { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
 }
 
-/* ── Right column — Teleprompter ── */
+/* â”€â”€ Right column â€” Teleprompter â”€â”€ */
 .tp-right {
   flex: 0 0 45%;
   display: flex;
@@ -377,7 +377,7 @@
   line-height: 1.85;
   color: rgba(1,1,1,0.55);
   padding-right: 4px;
-  border-left: 3px solid #FBAF00;
+  border-left: 3px solid #FCBA04;
   padding-left: 12px;
   border-radius: 2px;
   min-height: 0;  /* allow flexbox shrink */
@@ -391,7 +391,7 @@
 .tp-word { transition: background 0.2s, color 0.2s; }
 .tp-word--passed { color: rgba(1,1,1,0.35); }
 .tp-word--current {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   border-radius: 3px;
   padding: 0 2px;
@@ -425,11 +425,11 @@
 
 .tp-wpm-slider {
   width: 100%;
-  accent-color: #FBAF00;
+  accent-color: #FCBA04;
   height: 4px;
 }
 
-/* ── Countdown / Analysing overlay ── */
+/* â”€â”€ Countdown / Analysing overlay â”€â”€ */
 .tp-overlay {
   position: fixed;
   inset: 0;
@@ -450,7 +450,7 @@
 .tp-countdown-num {
   font-size: 110px;
   font-weight: 900;
-  color: #FBAF00;
+  color: #FCBA04;
   line-height: 1;
 }
 
@@ -458,7 +458,7 @@
   width: 48px;
   height: 48px;
   border: 4px solid rgba(255,255,255,0.2);
-  border-top-color: #FBAF00;
+  border-top-color: #FCBA04;
   border-radius: 50%;
   animation: tp-spin 0.8s linear infinite;
 }
@@ -473,7 +473,7 @@
   color: #FFFFFF;
 }
 
-/* ── Error banner ── */
+/* â”€â”€ Error banner â”€â”€ */
 .tp-error-banner {
   display: flex;
   align-items: center;
@@ -503,7 +503,7 @@
 
 .tp-error-retry:hover { background: rgba(255,59,48,0.1); }
 
-/* ── Empty state ── */
+/* â”€â”€ Empty state â”€â”€ */
 .tp-empty {
   flex: 1;
   display: flex;
@@ -533,7 +533,7 @@
 .tp-go-back-btn {
   margin-top: 12px;
   padding: 12px 28px;
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
   border: none;
   border-radius: 50px;
@@ -545,7 +545,7 @@
 
 .tp-go-back-btn:hover { opacity: 0.88; }
 
-/* ── Settings modal — above BottomNav (z-index 1000) and tp-page (1100) ── */
+/* â”€â”€ Settings modal â€” above BottomNav (z-index 1000) and tp-page (1100) â”€â”€ */
 .tp-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -630,7 +630,7 @@
 
 .tp-modal-slider {
   width: 100%;
-  accent-color: #FBAF00;
+  accent-color: #FCBA04;
 }
 
 /* Toggle switch */
@@ -645,7 +645,7 @@
   transition: background 0.2s;
 }
 
-.tp-toggle-btn--on { background: #FBAF00; }
+.tp-toggle-btn--on { background: #FCBA04; }
 
 .tp-toggle-thumb {
   position: absolute;
@@ -676,8 +676,8 @@
 
 .tp-modal-done:hover { opacity: 0.85; }
 
-/* ── Dark mode ── */
-[data-theme="dark"] .tp-page { background: #0E0E0E; }
+/* â”€â”€ Dark mode â”€â”€ */
+[data-theme="dark"] .tp-page { background: #0B0B0D; }
 [data-theme="dark"] .tp-camera-idle { background: #111; }
 
 [data-theme="dark"] .tp-mode-label { color: #F0F0F0; }
@@ -691,7 +691,7 @@
   color: #F0F0F0;
 }
 
-[data-theme="dark"] .tp-ctrl-btn:hover:not(:disabled) { border-color: #FBAF00; }
+[data-theme="dark"] .tp-ctrl-btn:hover:not(:disabled) { border-color: #FCBA04; }
 
 [data-theme="dark"] .tp-record-btn {
   background: #1A1A1A;
@@ -711,7 +711,7 @@
 [data-theme="dark"] .tp-script-sub { color: rgba(240,240,240,0.45); }
 [data-theme="dark"] .tp-teleprompter { color: rgba(240,240,240,0.55); }
 [data-theme="dark"] .tp-word--passed { color: rgba(240,240,240,0.3); }
-[data-theme="dark"] .tp-word--current { background: #FBAF00; color: #010101; }
+[data-theme="dark"] .tp-word--current { background: #FCBA04; color: #010101; }
 [data-theme="dark"] .tp-scroll-label { color: rgba(240,240,240,0.4); }
 [data-theme="dark"] .tp-wpm-value { color: #F0F0F0; }
 [data-theme="dark"] .tp-scroll-speed-row { border-color: #2A2A2A; }
@@ -727,4 +727,66 @@
 [data-theme="dark"] .tp-empty-title { color: #F0F0F0; }
 [data-theme="dark"] .tp-empty-desc { color: rgba(240,240,240,0.5); }
 [data-theme="dark"] .tp-error-banner { background: rgba(255,59,48,0.1); border-color: rgba(255,59,48,0.25); color: #FF6B6B; }
+
+/* â”€â”€ Silence-intervention Hint Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.tp-hint-toast {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); /* above bottom nav */
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 420px);
+  background: #FCBA04;
+  color: #010101;
+  border-radius: 14px;
+  padding: 14px 18px 14px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 999;
+  animation: tp-hint-slide-up 0.3s ease;
+}
+
+@keyframes tp-hint-slide-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.tp-hint-text {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.tp-hint-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(1, 1, 1, 0.6);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.tp-hint-dismiss:hover {
+  color: #010101;
+}
+
+[data-theme="dark"] .tp-hint-toast {
+  background: #D4940A; /* slightly deeper gold in dark mode */
+  color: #fff;
+}
+
+[data-theme="dark"] .tp-hint-dismiss {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .tp-hint-dismiss:hover {
+  color: #fff;
+}
 

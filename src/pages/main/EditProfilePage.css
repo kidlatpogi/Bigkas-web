@@ -14,7 +14,7 @@
   --edit-input-placeholder: rgba(17, 24, 39, 0.42);
   --edit-input-disabled-bg: #f1f3f5;
   --edit-input-disabled-text: #8b949e;
-  --edit-input-focus: #FBAF00;
+  --edit-input-focus: #FCBA04;
   min-height: calc(100vh - 50px);
   padding: 14px 16px 92px;
   background: var(--edit-page-bg);
@@ -299,7 +299,7 @@
 }
 
 [data-theme='dark'] .edit-profile-page {
-  --edit-page-bg: #121212;
+  --edit-page-bg: #0B0B0D;
   --edit-surface: #1e1e1e;
   --edit-surface-muted: #2a2a2a;
   --edit-border: #3a3a3a;
@@ -314,7 +314,7 @@
   --edit-input-placeholder: rgba(255, 255, 255, 0.3);
   --edit-input-disabled-bg: #222222;
   --edit-input-disabled-text: rgba(255, 255, 255, 0.35);
-  --edit-input-focus: #FBAF00;
+  --edit-input-focus: #FCBA04;
 }
 
 [data-theme='dark'] .edit-input:focus {
@@ -327,7 +327,7 @@
 }
 
 [data-theme='dark'] .edit-save {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 

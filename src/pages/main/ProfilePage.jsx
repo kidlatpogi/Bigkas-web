@@ -14,13 +14,6 @@ const CameraIcon = ({ size = 28 }) => (
   </svg>
 );
 
-const ChevronIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6"/>
-  </svg>
-);
-
 function ProfilePage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -30,6 +23,7 @@ function ProfilePage() {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [isSaving,        setIsSaving]        = useState(false);
   const [errors,          setErrors]          = useState({});
+  const [saveError,       setSaveError]       = useState('');
   const [initialData,     setInitialData]     = useState({
     firstName: '',
     lastName: '',
@@ -141,7 +135,7 @@ function ProfilePage() {
       setInitialData({ ...formData, avatarUri: formData.avatarUri || null });
       navigate(-1);
     } catch {
-      alert('Failed to save changes. Please try again.');
+      setSaveError('Failed to save changes. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -151,6 +145,7 @@ function ProfilePage() {
     setFormData(initialData);
     setErrors({});
     setAvatarModalOpen(false);
+    navigate(ROUTES.SETTINGS);
   };
 
   const initials = formData.firstName
@@ -254,27 +249,8 @@ function ProfilePage() {
           />
         </div>
 
-        {/* Chevron rows */}
-        <div className="profile-settings-list">
-          <button
-            className="profile-setting-row"
-            type="button"
-            onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
-          >
-            <span>Change Password</span>
-            <ChevronIcon />
-          </button>
-          <button
-            className="profile-setting-row"
-            type="button"
-            onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
-          >
-            <span>Account Settings</span>
-            <ChevronIcon />
-          </button>
-        </div>
-
         {/* Action buttons */}
+        {saveError && <p className="profile-error-msg" style={{ marginBottom: 12, textAlign: 'center' }}>{saveError}</p>}
         <button
           className="profile-btn-save"
           type="button"

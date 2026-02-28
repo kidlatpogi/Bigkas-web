@@ -57,14 +57,14 @@ function DetailedFeedbackPage() {
   ], [score]);
 
   if (isLoading && !session) {
-    return <div className="inner-page"><div className="page-loading">Loading…</div></div>;
+    return <div className="inner-page"><div className="page-loading">Loading...</div></div>;
   }
 
   if (!session) {
     return (
       <div className="inner-page">
         <div className="empty-state">
-          <span className="empty-icon">⚠️</span>
+          <span className="empty-icon">{/* warning */}&#9888;&#65039;</span>
           <p className="empty-title">Session not found</p>
           <button className="btn-primary" onClick={() => navigate(ROUTES.DASHBOARD)}>Go Home</button>
         </div>
@@ -99,7 +99,7 @@ function DetailedFeedbackPage() {
                 className="flow-bar"
                 style={{
                   height: `${(b / maxBar) * 100}%`,
-                  background: b >= 65 ? '#34C759' : b >= 45 ? '#FBAF00' : '#FF3B30',
+                  background: b >= 65 ? '#34C759' : b >= 45 ? '#FCBA04' : '#FF3B30',
                 }}
                 title={`${b}/100`}
               />

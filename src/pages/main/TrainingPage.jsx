@@ -18,6 +18,10 @@ function formatTime(sec) {
   return `${h}:${m}:${s}`;
 }
 
+/* ─── Silence Detection ─────────────────────────────────────────────────────── */
+const SILENCE_THRESHOLD  = 0.02;  // 0–1 normalised amplitude
+const SILENCE_TRIGGER_MS = 5000; // ms of silence before showing hint
+
 /* ─── Icons ────────────────────────────────────────────────────────────────── */
 function PauseIcon() {
   return (
@@ -93,12 +97,26 @@ function TrainingPage() {
   const analyserRef = useRef(null);
   const animRef     = useRef(null);
   const waveHistRef = useRef(Array(50).fill(0));
-  const wpmTimerRef = useRef(null);
+  const wpmTimerRef     = useRef(null);
+  const silenceStartRef  = useRef(null);
+  const hintDismissRef   = useRef(null);
+  const frameworksRef    = useRef([]);
+
+  /* Hint toast state */
+  const [showHint, setShowHint]       = useState(false);
+  const [hintContent, setHintContent] = useState('');
 
   const scriptWords = useMemo(() => {
     if (focus !== 'scripted' || !script?.content) return [];
     return script.content.split(/\s+/).filter(Boolean);
   }, [focus, script]);
+
+  /* ── Lazy-load frameworks for silence hints ── */
+  useEffect(() => {
+    import('../../assets/data/frameworks.json')
+      .then((m) => { frameworksRef.current = m.default ?? m; })
+      .catch(() => {});
+  }, []);
 
   /* ── Cleanup ── */
   useEffect(() => {
@@ -148,6 +166,26 @@ function TrainingPage() {
         const avg = data.reduce((a, b) => a + b, 0) / data.length / 255;
         waveHistRef.current = [...waveHistRef.current.slice(1), avg];
         setWaveformBars([...waveHistRef.current]);
+
+        /* Silence detection — only fires while actively recording */
+        if (avg < SILENCE_THRESHOLD) {
+          if (!silenceStartRef.current) {
+            silenceStartRef.current = Date.now();
+          } else if (Date.now() - silenceStartRef.current >= SILENCE_TRIGGER_MS) {
+            silenceStartRef.current = null;
+            const fw = frameworksRef.current;
+            if (Array.isArray(fw) && fw.length) {
+              const pick = fw[Math.floor(Math.random() * fw.length)];
+              setHintContent(`💡 Stuck? Try the ${pick.name}: “${pick.steps[0]}”`);
+              setShowHint(true);
+              clearTimeout(hintDismissRef.current);
+              hintDismissRef.current = setTimeout(() => setShowHint(false), 5000);
+            }
+          }
+        } else {
+          silenceStartRef.current = null;
+        }
+
         animRef.current = requestAnimationFrame(tick);
       };
       tick();
@@ -203,6 +241,9 @@ function TrainingPage() {
     clearInterval(timerRef.current);
     clearInterval(wpmTimerRef.current);
     cancelAnimationFrame(animRef.current);
+    silenceStartRef.current = null;
+    clearTimeout(hintDismissRef.current);
+    setShowHint(false);
     const recorder = mediaRef.current;
     if (!recorder || recorder.state === 'inactive') return;
 
@@ -250,6 +291,25 @@ function TrainingPage() {
         const avg = data.reduce((a, b) => a + b, 0) / data.length / 255;
         waveHistRef.current = [...waveHistRef.current.slice(1), avg];
         setWaveformBars([...waveHistRef.current]);
+
+        if (avg < SILENCE_THRESHOLD) {
+          if (!silenceStartRef.current) {
+            silenceStartRef.current = Date.now();
+          } else if (Date.now() - silenceStartRef.current >= SILENCE_TRIGGER_MS) {
+            silenceStartRef.current = null;
+            const fw = frameworksRef.current;
+            if (Array.isArray(fw) && fw.length) {
+              const pick = fw[Math.floor(Math.random() * fw.length)];
+              setHintContent(`💡 Stuck? Try the ${pick.name}: “${pick.steps[0]}”`);
+              setShowHint(true);
+              clearTimeout(hintDismissRef.current);
+              hintDismissRef.current = setTimeout(() => setShowHint(false), 5000);
+            }
+          }
+        } else {
+          silenceStartRef.current = null;
+        }
+
         animRef.current = requestAnimationFrame(tick);
       };
       tick();
@@ -268,6 +328,9 @@ function TrainingPage() {
     if (videoRef.current) videoRef.current.srcObject = null;
     waveHistRef.current = Array(50).fill(0);
     setWaveformBars(Array(50).fill(0));
+    silenceStartRef.current = null;
+    clearTimeout(hintDismissRef.current);
+    setShowHint(false);
     setStatus('idle');
     setElapsedSec(0);
     setHighlightIdx(-1);
@@ -535,6 +598,25 @@ function TrainingPage() {
 
             <button className="tp-modal-done" onClick={() => setShowSettings(false)}>Done</button>
           </div>
+        </div>
+      )}
+
+      {/* ── Silence-intervention hint toast ── */}
+      {showHint && (
+        <div
+          className="tp-hint-toast"
+          role="status"
+          aria-live="polite"
+          onClick={() => setShowHint(false)}
+        >
+          <span className="tp-hint-text">{hintContent}</span>
+          <button
+            className="tp-hint-dismiss"
+            aria-label="Dismiss hint"
+            onClick={(e) => { e.stopPropagation(); setShowHint(false); }}
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>

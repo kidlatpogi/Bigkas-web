@@ -1,5 +1,5 @@
 /**
- * BackButton — reusable circular back-navigation button.
+ * BackButton â€” reusable circular back-navigation button.
  * Design mirror of Bigkas-mobile BackButton component.
  */
 
@@ -29,6 +29,6 @@
 }
 
 .back-btn:focus-visible {
-  outline: 2px solid #FBAF00;
+  outline: 2px solid #FCBA04;
   outline-offset: 2px;
 }

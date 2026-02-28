@@ -62,15 +62,15 @@
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-xs:   0.75rem;    /* 12px — captions, labels */
-  --font-size-sm:   0.875rem;   /* 14px — secondary text */
-  --font-size-base: 1rem;       /* 16px — body (learnui.design minimum) */
-  --font-size-lg:   1.125rem;   /* 18px — large body */
-  --font-size-xl:   1.25rem;    /* 20px — h4 */
-  --font-size-2xl:  1.5rem;     /* 24px — h3 */
-  --font-size-3xl:  2rem;       /* 32px — h2 */
-  --font-size-4xl:  2.5rem;     /* 40px — h1 page titles */
-  --font-size-5xl:  3rem;       /* 48px — hero headings */
+  --font-size-xs:   0.75rem;    /* 12px â€” captions, labels */
+  --font-size-sm:   0.875rem;   /* 14px â€” secondary text */
+  --font-size-base: 1rem;       /* 16px â€” body (learnui.design minimum) */
+  --font-size-lg:   1.125rem;   /* 18px â€” large body */
+  --font-size-xl:   1.25rem;    /* 20px â€” h4 */
+  --font-size-2xl:  1.5rem;     /* 24px â€” h3 */
+  --font-size-3xl:  2rem;       /* 32px â€” h2 */
+  --font-size-4xl:  2.5rem;     /* 40px â€” h1 page titles */
+  --font-size-5xl:  3rem;       /* 48px â€” hero headings */
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -80,7 +80,7 @@
 
 /* Dark mode variables */
 [data-theme="dark"] {
-  --color-background: #121212;
+  --color-background: #0B0B0D;
   --color-surface: #1E1E1E;
   --color-surface-hover: #2A2A2A;
   --color-text-primary: #F0F0F0;
@@ -176,7 +176,7 @@ ol {
 
 /* Dark mode link color */
 [data-theme="dark"] a {
-  color: #FBAF00;
+  color: #FCBA04;
 }
 [data-theme="dark"] a:hover {
   color: #FFC340;
@@ -184,17 +184,17 @@ ol {
 
 /* Dark mode focus */
 [data-theme="dark"] :focus-visible {
-  outline-color: #FBAF00;
+  outline-color: #FCBA04;
 }
 
-/* Main content area — no top nav, content sits at the top */
+/* Main content area â€” no top nav, content sits at the top */
 .main-content {
   min-height: 100vh;
   /* Extra bottom padding so content clears the floating bottom nav */
   padding-bottom: 100px;
 }
 
-/* Theme transition — smooth colour changes on all elements */
+/* Theme transition â€” smooth colour changes on all elements */
 html,
 body,
 * {
@@ -220,7 +220,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ── Circular theme reveal animation — 1:1 from Portfolio repo ── */
+/* â”€â”€ Circular theme reveal animation â€” 1:1 from Portfolio repo â”€â”€ */
 /* Source: kidlatpogi/Portfolio  src/CSS/App.css */
 .theme-anim {
   position: fixed;

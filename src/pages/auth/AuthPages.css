@@ -1,11 +1,11 @@
 /**
- * Auth Pages — Split-panel layout matching Figma screenshots
+ * Auth Pages â€” Split-panel layout matching Figma screenshots
  * Left: Branding panel (white, BIGKAS + features)
  * Right: Form panel (white, form fields + yellow CTA)
- * Colors from Bigkas-mobile: primary #FBAF00, secondary #010101, bg #F5F5F5
+ * Colors from Bigkas-mobile: primary #FCBA04, secondary #010101, bg #F5F5F5
  */
 
-/* ── Page shell — full viewport, two columns ── */
+/* â”€â”€ Page shell â€” full viewport, two columns â”€â”€ */
 .auth-page {
   min-height: 100vh;
   display: grid;
@@ -13,9 +13,9 @@
   background: #2E2E2E;
 }
 
-/* ═══════════════════════════════════════════
-   LEFT — Branding Panel
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   LEFT â€” Branding Panel
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .auth-brand-panel {
   background: #FFFFFF;
   display: flex;
@@ -77,7 +77,7 @@
 .auth-brand-line {
   width: 60px;
   height: 3px;
-  background: #FBAF00;
+  background: #FCBA04;
   border-radius: 2px;
   margin-bottom: 48px;
 }
@@ -98,7 +98,7 @@
 .feature-num {
   font-size: 16px;
   font-weight: 700;
-  color: #FBAF00;
+  color: #FCBA04;
   min-width: 28px;
 }
 
@@ -110,9 +110,9 @@
   text-transform: uppercase;
 }
 
-/* ═══════════════════════════════════════════
-   RIGHT — Form Panel
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   RIGHT â€” Form Panel
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .auth-form-panel {
   background: #FFFFFF;
   display: flex;
@@ -135,7 +135,7 @@
   margin-bottom: 40px;
 }
 
-/* ── Form ── */
+/* â”€â”€ Form â”€â”€ */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -153,8 +153,8 @@
 }
 
 .auth-info-banner {
-  background-color: rgba(251, 175, 0, 0.08);
-  border: 1px solid rgba(251, 175, 0, 0.4);
+  background-color: rgba(252, 186, 4, 0.08);
+  border: 1px solid rgba(252, 186, 4, 0.4);
   color: #8A5A00;
   padding: 10px 16px;
   border-radius: 8px;
@@ -193,8 +193,8 @@
 
 .auth-resend-btn {
   background: transparent;
-  border: 1px solid rgba(251, 175, 0, 0.6);
-  color: #FBAF00;
+  border: 1px solid rgba(252, 186, 4, 0.6);
+  color: #FCBA04;
   padding: 6px 16px;
   border-radius: 6px;
   font-size: 12px;
@@ -206,8 +206,8 @@
 }
 
 .auth-resend-btn:hover:not(:disabled) {
-  background: rgba(251, 175, 0, 0.1);
-  border-color: #FBAF00;
+  background: rgba(252, 186, 4, 0.1);
+  border-color: #FCBA04;
 }
 
 .auth-resend-btn:disabled {
@@ -291,7 +291,7 @@
 }
 
 .auth-submit-btn-primary {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 
@@ -336,7 +336,7 @@
 }
 
 .form-input:focus {
-  border-bottom-color: #FBAF00;
+  border-bottom-color: #FCBA04;
 }
 
 .form-input::placeholder {
@@ -355,7 +355,7 @@
   margin-top: 2px;
 }
 
-/* ── Submit button — yellow outlined, rounded ── */
+/* â”€â”€ Submit button â€” yellow outlined, rounded â”€â”€ */
 .auth-submit-btn {
   width: 100%;
   padding: 14px 32px;
@@ -365,7 +365,7 @@
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  border: 2px solid #FBAF00;
+  border: 2px solid #FCBA04;
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.25s, color 0.25s;
@@ -374,7 +374,7 @@
 }
 
 .auth-submit-btn:hover:not(:disabled) {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 
@@ -383,7 +383,7 @@
   cursor: not-allowed;
 }
 
-/* ── Forgot password link ── */
+/* â”€â”€ Forgot password link â”€â”€ */
 .auth-forgot-link {
   display: block;
   margin-top: 24px;
@@ -397,10 +397,10 @@
 }
 
 .auth-forgot-link:hover {
-  color: #FBAF00;
+  color: #FCBA04;
 }
 
-/* ── Divider — "or" ── */
+/* â”€â”€ Divider â€” "or" â”€â”€ */
 .auth-divider {
   display: flex;
   align-items: center;
@@ -420,7 +420,7 @@
   text-transform: lowercase;
 }
 
-/* ── Google Sign-In button ── */
+/* â”€â”€ Google Sign-In button â”€â”€ */
 .auth-google-btn {
   width: 100%;
   display: flex;
@@ -451,7 +451,7 @@
   object-fit: contain;
 }
 
-/* ── Footer — account toggle ── */
+/* â”€â”€ Footer â€” account toggle â”€â”€ */
 .auth-footer {
   margin-top: 20px;
   text-align: left;
@@ -477,14 +477,14 @@
 }
 
 .auth-link:hover {
-  color: #FBAF00;
+  color: #FCBA04;
 }
 
-/* ═══════════════════════════════════════════
-   DARK MODE — Auth pages
-   ═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   DARK MODE â€” Auth pages
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 [data-theme="dark"] .auth-page {
-  background: #121212;
+  background: #0B0B0D;
 }
 
 [data-theme="dark"] .auth-brand-panel {
@@ -555,7 +555,7 @@
 }
 
 [data-theme="dark"] .auth-forgot-link:hover {
-  color: #FBAF00;
+  color: #FCBA04;
 }
 
 [data-theme="dark"] .auth-divider-line {
@@ -586,12 +586,12 @@
 }
 
 [data-theme="dark"] .auth-link:hover {
-  color: #FBAF00;
+  color: #FCBA04;
 }
 
 [data-theme="dark"] .auth-info-banner {
-  background-color: rgba(251, 175, 0, 0.12);
-  border-color: rgba(251, 175, 0, 0.5);
+  background-color: rgba(252, 186, 4, 0.12);
+  border-color: rgba(252, 186, 4, 0.5);
   color: #F3C977;
 }
 
@@ -624,7 +624,7 @@
   color: #F0F0F0;
 }
 
-/* ── Forgot Password ── */
+/* â”€â”€ Forgot Password â”€â”€ */
 .forgot-description {
   font-size: 14px;
   line-height: 1.6;
@@ -703,9 +703,170 @@
   color: #5A5A5A;
 }
 
-/* ═══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   OTP â€” Split-Box Input (VerifyEmailPage)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.otp-instructions {
+  font-size: 14px;
+  color: #3A3A3A;
+  line-height: 1.65;
+  margin-bottom: 36px;
+}
+
+.otp-email-highlight {
+  color: #010101;
+  font-weight: 700;
+}
+
+/* Box grid */
+.otp-boxes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.otp-box {
+  width: 52px;
+  height: 60px;
+  border: 2px solid #E2E2E2;
+  border-radius: 10px;
+  background: #FAFAFA;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #010101;
+  text-align: center;
+  caret-color: transparent;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  /* Hide the browser-native spin buttons */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.otp-box::-webkit-outer-spin-button,
+.otp-box::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.otp-box:focus {
+  border-color: #FCBA04;
+  box-shadow: 0 0 0 3px rgba(252, 186, 4, 0.18);
+  background: #FFFFFF;
+}
+
+.otp-box.otp-box-error {
+  border-color: #FF3B30;
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.12);
+  background: rgba(255, 59, 48, 0.03);
+}
+
+/* Error / success banners scoped to OTP */
+.otp-error-banner {
+  margin-top: 12px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.otp-resend-success {
+  margin-top: 12px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+/* Resend row */
+.otp-resend-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+.otp-resend-label {
+  font-size: 13px;
+  color: #777777;
+}
+
+.otp-resend-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FCBA04;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.otp-resend-btn:hover:not(:disabled) {
+  color: #C88800;
+}
+
+.otp-resend-btn:disabled {
+  color: #B0B0B0;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* Back row */
+.otp-back-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Dark-mode overrides */
+[data-theme="dark"] .otp-box {
+  background: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .otp-box:focus {
+  border-color: #FCBA04;
+  background: #1E1E1E;
+}
+
+[data-theme="dark"] .otp-box.otp-box-error {
+  border-color: #FF3B30;
+  background: rgba(255, 59, 48, 0.06);
+}
+
+[data-theme="dark"] .otp-instructions {
+  color: #B0B0B0;
+}
+
+[data-theme="dark"] .otp-email-highlight {
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .otp-resend-label {
+  color: #888888;
+}
+
+/* Responsive â€” compact boxes on small screens */
+@media (max-width: 480px) {
+  .otp-box {
+    width: 42px;
+    height: 52px;
+    font-size: 22px;
+  }
+
+  .otp-boxes {
+    gap: 7px;
+  }
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    RESPONSIVE
-   ═══════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media (max-width: 900px) {
   .auth-page {
     grid-template-columns: 1fr;

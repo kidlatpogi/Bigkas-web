@@ -1,18 +1,18 @@
 /**
- * Theme configuration — matches Bigkas-mobile design tokens
+ * Theme configuration â€” matches Bigkas-mobile design tokens
  * Source: https://github.com/kidlatpogi/Bigkas-mobile/tree/main/src/styles
  */
 
 export const theme = {
   colors: {
-    // Primary — Brand yellow
+    // Primary â€” Brand yellow
     primary: {
-      main: '#FBAF00',
+      main: '#FCBA04',
       dark: '#D59300',
       light: '#FFC340',
       contrast: '#010101',
     },
-    // Secondary — Black
+    // Secondary â€” Black
     secondary: {
       main: '#010101',
       light: '#2A2A2A',
@@ -53,7 +53,7 @@ export const theme = {
     },
   },
 
-  // Spacing scale — 4px grid
+  // Spacing scale â€” 4px grid
   spacing: {
     xs: '4px',
     sm: '8px',

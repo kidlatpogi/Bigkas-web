@@ -50,3 +50,16 @@ export const getScript     = (scriptId)          => scriptsApi.getScript(scriptI
 export const createScript  = (payload)           => scriptsApi.createScript(payload);
 export const updateScript  = (scriptId, payload) => scriptsApi.updateScript(scriptId, payload);
 export const deleteScript  = (scriptId)          => scriptsApi.deleteScript(scriptId);
+
+/**
+ * duplicateSystemScript — copies a read-only system speech into the user's
+ * personal library (scripts table) with ' (Copy)' appended to the title.
+ * The new record is type 'self-authored' so the user can edit it freely.
+ */
+export const duplicateSystemScript = (userId, script) =>
+  scriptsApi.createScript({
+    userId,
+    title:   `${script.title} (Copy)`,
+    content: script.content || script.body || '',
+    type:    'self-authored',
+  });

@@ -14,9 +14,9 @@ import { ROUTES } from '../../utils/constants';
 import temporaryLogo from '../../assets/Temporary Logo.png';
 import './DashboardPage.css';
 
-/* ─────────────────────────────────────────────────────────────
-   Daily content helpers — mirrors DashboardScreen in Bigkas-mobile
-   ───────────────────────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   Daily content helpers â€” mirrors DashboardScreen in Bigkas-mobile
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /** 10-tip curated list from the mobile repo */
 const TIPS = [
@@ -98,7 +98,7 @@ async function fetchDailyQuote() {
   return quoteRequestPromise;
 }
 
-/** Deterministic daily selection — same all day, rotates at midnight */
+/** Deterministic daily selection â€” same all day, rotates at midnight */
 function getDailyIndex(dateKey = getLocalDateKey()) {
   const [year, month, day] = dateKey.split('-').map(Number);
   const date = new Date(year, month - 1, day);
@@ -107,9 +107,9 @@ function getDailyIndex(dateKey = getLocalDateKey()) {
 
 function getDailyTip(dateKey) { return TIPS[getDailyIndex(dateKey) % TIPS.length]; }
 
-/* ─────────────────────────────────────────────────────────────
-   DashboardPage — 1:1 copy of the mobile DashboardScreen
-   ───────────────────────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   DashboardPage â€” 1:1 copy of the mobile DashboardScreen
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -117,11 +117,12 @@ export default function DashboardPage() {
   const [avatarError, setAvatarError] = useState(false);
   const [quote, setQuote] = useState(FALLBACK_QUOTE);
   const [dateKey, setDateKey] = useState(() => getLocalDateKey());
+  const [featuredLesson, setFeaturedLesson] = useState(null);
 
-  /* ── Daily content (mobile-synced quote source + deterministic tip) ── */
+  /* â”€â”€ Daily content (mobile-synced quote source + deterministic tip) â”€â”€ */
   const tip = useMemo(() => getDailyTip(dateKey), [dateKey]);
 
-  /* ── Derived display values ── */
+  /* â”€â”€ Derived display values â”€â”€ */
   const displayName = user?.nickname || user?.name || 'Speaker';
 
   const greeting = useMemo(() => {
@@ -140,7 +141,7 @@ export default function DashboardPage() {
     }).length;
   }, [sessions]);
 
-  /** @type {number} averageScore — average pronunciation score (0-100) */
+  /** @type {number} averageScore â€” average pronunciation score (0-100) */
   const averageScore = useMemo(() => {
     if (!sessions?.length) return 0;
     const total = sessions.reduce((sum, s) => sum + (s.score || 0), 0);
@@ -148,7 +149,7 @@ export default function DashboardPage() {
   }, [sessions]);
 
   /**
-   * streakCount — consecutive days with at least one session, counting
+   * streakCount â€” consecutive days with at least one session, counting
    * backward from today. Mirrors mobile DashboardScreen.jsx streakCount logic.
    */
   const streakCount = useMemo(() => {
@@ -172,7 +173,7 @@ export default function DashboardPage() {
     return streak;
   }, [sessions]);
 
-  /* ── Load sessions on mount (once) ── */
+  /* â”€â”€ Load sessions on mount (once) â”€â”€ */
   useEffect(() => {
     fetchSessions?.();
   }, [fetchSessions]);
@@ -194,15 +195,42 @@ export default function DashboardPage() {
     };
   }, []);
 
-  /* ── Load daily motivation quote (same source/behavior as mobile) ── */
+  /* â”€â”€ Load daily motivation quote (same source/behavior as mobile) â”€â”€ */
   useEffect(() => {
     fetchDailyQuote().then(setQuote);
+  }, [dateKey]);
+
+  /* â”€â”€ Lazily load all lesson sources and pick a daily featured entry â”€â”€ */
+  useEffect(() => {
+    const SOURCES = [
+      { categoryId: 'frameworks',           file: () => import('../../assets/data/frameworks.json') },
+      { categoryId: 'tips_and_tricks',       file: () => import('../../assets/data/tips_and_tricks.json') },
+      { categoryId: 'communication_cheats',  file: () => import('../../assets/data/communication_cheats.json') },
+      { categoryId: 'communication_skills',  file: () => import('../../assets/data/communication_skills.json') },
+    ];
+
+    Promise.all(
+      SOURCES.map(({ categoryId, file }) =>
+        file()
+          .then((mod) => {
+            const raw = mod.default ?? mod;
+            const arr = Array.isArray(raw) ? raw : Object.values(raw);
+            return arr.map((item) => ({ ...item, _categoryId: categoryId }));
+          })
+          .catch(() => [])
+      )
+    ).then((results) => {
+      const combined = results.flat();
+      if (!combined.length) return;
+      const idx = getDailyIndex(dateKey) % combined.length;
+      setFeaturedLesson(combined[idx]);
+    });
   }, [dateKey]);
 
   return (
     <div className="dashboard-page-new">
 
-      {/* ── Top bar: Bigkas logo (left) + profile avatar (right) ── */}
+      {/* â”€â”€ Top bar: Bigkas logo (left) + profile avatar (right) â”€â”€ */}
       <div className="dash-top-bar">
         <div className="dash-logo">
           <img src={temporaryLogo} alt="Bigkas logo" className="dash-logo-image" />
@@ -222,74 +250,92 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* ── Greeting ── */}
+      {/* â”€â”€ Greeting â”€â”€ */}
       <div className="dash-greeting">
         <p className="dash-greeting-text">{greeting}</p>
         <h1 className="dash-greeting-name">{displayName}</h1>
       </div>
 
-      {/* ── Hero card — "Ready to speak?" (black card, centered) ── */}
+      {/* â”€â”€ Hero card â€” "Ready to speak?" (black card, centered) â”€â”€ */}
       <div className="dash-hero-card">
-        {/* Header row — mic icon circle + streak badge */}
+        {/* Header row â€” mic icon circle + streak badge */}
         <div className="dash-hero-header">
           <div className="dash-hero-icon"><IoMic size={28} color="#FFFFFF" aria-hidden="true" /></div>
           <div className="dash-streak-badge">
-            <IoFlame size={14} color="#FBAF00" aria-hidden="true" />
+            <IoFlame size={14} color="#FCBA04" aria-hidden="true" />
             <span>{streakCount} day streak</span>
           </div>
         </div>
 
         {/* Copy */}
-        <h2 className="dash-hero-title">Ready to speak?</h2>
-        <p className="dash-hero-sub">Practice makes perfect! Start your daily session and improve your public speaking skills.</p>
+        <div className="dash-hero-body">
+          <h2 className="dash-hero-title">Ready to speak?</h2>
+          <p className="dash-hero-sub">Practice makes perfect! Start your daily session and improve your public speaking skills.</p>
+        </div>
 
         {/* CTA buttons */}
-        <button
-          className="dash-btn-practice"
-          onClick={() => navigate(ROUTES.PRACTICE)}
-        >
-          Start Practice
-        </button>
-        <p className="dash-hero-or">or</p>
-        <button
-          className="dash-btn-training"
-          onClick={() => navigate(ROUTES.TRAINING_SETUP)}
-        >
-          Start Training
-        </button>
+        <div className="dash-hero-actions">
+          <button
+            className="dash-btn-practice"
+            onClick={() => navigate(ROUTES.PRACTICE)}
+          >
+            Start Practice
+          </button>
+          <button
+            className="dash-btn-training"
+            onClick={() => navigate(ROUTES.TRAINING_SETUP)}
+          >
+            Start Training
+          </button>
+        </div>
       </div>
 
-      {/* ── Stats row (Today · Avg Score · Streak) ── */}
+      {/* â”€â”€ Stats row (Today Â· Avg Score Â· Streak) â”€â”€ */}
       <div className="dash-stats-card">
         <div className="dash-stat">
-          <IoCalendar size={24} color="#FBAF00" className="dash-stat-icon" aria-hidden="true" />
+          <IoCalendar size={24} color="#FCBA04" className="dash-stat-icon" aria-hidden="true" />
           <span className="dash-stat-value">{String(todayCount).padStart(2, '0')}</span>
           <span className="dash-stat-label">TODAY</span>
         </div>
         <div className="dash-stat-divider" />
         <div className="dash-stat">
-          <IoStar size={24} color="#FBAF00" className="dash-stat-icon" aria-hidden="true" />
+          <IoStar size={24} color="#FCBA04" className="dash-stat-icon" aria-hidden="true" />
           <span className="dash-stat-value">{averageScore}</span>
           <span className="dash-stat-label">AVG SCORE</span>
         </div>
         <div className="dash-stat-divider" />
         <div className="dash-stat">
-          <IoFlame size={24} color="#FBAF00" className="dash-stat-icon" aria-hidden="true" />
+          <IoFlame size={24} color="#FCBA04" className="dash-stat-icon" aria-hidden="true" />
           <span className="dash-stat-value">{String(streakCount).padStart(2, '0')}</span>
           <span className="dash-stat-label">STREAK</span>
         </div>
       </div>
 
-      {/* ── Info cards row (Motivation + Tip of the Day) ── */}
+      {/* â”€â”€ Quick-Learn card (daily featured lesson) â”€â”€ */}
+      {featuredLesson && (
+        <div className="dash-quicklearn-card">
+          <div className="dash-quicklearn-badge">LESSON OF THE DAY</div>
+          <h3 className="dash-quicklearn-name">{featuredLesson.name}</h3>
+          <p className="dash-quicklearn-summary">{featuredLesson.summary}</p>
+          <button
+            className="dash-quicklearn-btn"
+            onClick={() => navigate(ROUTES.FRAMEWORKS, { state: { lessonItem: featuredLesson } })}
+          >
+            Learn this Lesson
+          </button>
+        </div>
+      )}
+
+      {/* â”€â”€ Info cards row (Motivation + Tip of the Day) â”€â”€ */}
       <div className="dash-info-row">
-        {/* Motivation — mobile-synced daily quote */}
+        {/* Motivation â€” mobile-synced daily quote */}
         <div className="dash-info-card">
           <span className="dash-card-label">MOTIVATION</span>
           <p className="dash-quote-text">&ldquo;{quote.text}&rdquo;</p>
           <span className="dash-quote-author">- {quote.author}</span>
         </div>
 
-        {/* Tip of the Day — curated list, rotates daily */}
+        {/* Tip of the Day â€” curated list, rotates daily */}
         <div className="dash-info-card">
           <span className="dash-card-label">TIP OF THE DAY</span>
           <p className="dash-tip-title">{tip.title}</p>

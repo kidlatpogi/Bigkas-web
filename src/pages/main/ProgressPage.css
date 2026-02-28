@@ -67,7 +67,7 @@
 }
 
 .progress-range-btn.active {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 
@@ -82,20 +82,20 @@
 }
 
 .progress-baseline {
-  stroke: #FBAF00;
+  stroke: #FCBA04;
   stroke-width: 0.85;
 }
 
 .progress-polyline {
   fill: none;
-  stroke: #FBAF00;
+  stroke: #FCBA04;
   stroke-width: 0.85;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .progress-point {
-  fill: #FBAF00;
+  fill: #FCBA04;
 }
 
 .progress-label {
@@ -126,7 +126,7 @@
   margin: 0 0 2px;
 }
 
-.stat-num.stat-primary { color: #FBAF00; }
+.stat-num.stat-primary { color: #FCBA04; }
 .stat-num.stat-positive { color: #34C759; }
 .stat-num.stat-negative { color: #FF3B30; }
 
@@ -147,7 +147,7 @@
 .btn-link {
   background: none;
   border: none;
-  color: #FBAF00;
+  color: #FCBA04;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -257,7 +257,7 @@
 }
 
 [data-theme='dark'] .progress-range-btn.active {
-  background: #FBAF00;
+  background: #FCBA04;
   color: #010101;
 }
 

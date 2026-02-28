@@ -1,12 +1,100 @@
 .btn-link {
   background: none;
   border: none;
-  color: #FBAF00;
+  color: #FCBA04;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
 }
+
+/* ── Filter chips ── */
+.ts-filter-chips {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 12px;
+  flex-wrap: wrap;
+}
+
+.ts-chip {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1.5px solid #E0E0E0;
+  background: transparent;
+  color: rgba(1, 1, 1, 0.55);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.ts-chip:hover {
+  border-color: #FCBA04;
+  color: #010101;
+}
+.ts-chip.active {
+  border-color: #FCBA04;
+  background: #FCBA04;
+  color: #010101;
+}
+
+/* ── Empty state for "My AI Scripts" ── */
+.ts-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 16px;
+  border: 1.5px dashed #E0E0E0;
+  border-radius: 14px;
+  background: #FAFAFA;
+}
+.ts-empty-text {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Script preview badge ── */
+.script-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.script-preview-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.script-preview-badge.prewritten {
+  background: rgba(52, 199, 89, 0.12);
+  color: #28a745;
+}
+.script-preview-badge.generated {
+  background: rgba(252, 186, 4, 0.12);
+  color: #B08000;
+}
+.script-preview-badge.myScripts {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563EB;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+}
+
+/* Dark mode additions */
+[data-theme="dark"] .ts-chip { border-color: #2E2E2E; color: rgba(255,255,255,0.45); }
+[data-theme="dark"] .ts-chip:hover { border-color: #FCBA04; color: #F0F0F0; }
+[data-theme="dark"] .ts-chip.active { border-color: #FCBA04; background: #FCBA04; color: #010101; }
+[data-theme="dark"] .ts-empty-state { background: #1A1A1A; border-color: #2E2E2E; }
+[data-theme="dark"] .ts-empty-text  { color: rgba(255,255,255,0.4); }
+[data-theme="dark"] .script-preview-badge.prewritten { background: rgba(48, 209, 88, 0.10); color: #30D158; }
+[data-theme="dark"] .script-preview-badge.generated  { background: rgba(252, 186, 4, 0.10); color: #FCBA04; }
+[data-theme="dark"] .script-preview-badge.myScripts   { background: rgba(96, 165, 250, 0.10); color: #60A5FA; border-color: rgba(96, 165, 250, 0.18); }
 
 /* Center the Training Setup page */
 .training-setup-page {
@@ -44,7 +132,7 @@
 
 .script-preview-card {
   margin-bottom: 16px;
-  border-left: 4px solid #FBAF00;
+  border-left: 4px solid #FCBA04;
   padding-left: 16px;
 }
 
@@ -52,7 +140,7 @@
   font-size: 15px;
   font-weight: 700;
   color: #010101;
-  margin: 0 0 6px;
+  margin: 0;
 }
 
 .script-preview-content {
@@ -84,8 +172,8 @@
 }
 
 .focus-option.selected {
-  border-color: #FBAF00;
-  background: rgba(251, 175, 0, 0.05);
+  border-color: #FCBA04;
+  background: rgba(252, 186, 4, 0.05);
 }
 
 /* Custom radio circle */
@@ -102,8 +190,8 @@
 }
 
 .focus-option.selected .focus-radio-circle {
-  border-color: #FBAF00;
-  background: #FBAF00;
+  border-color: #FCBA04;
+  background: #FCBA04;
 }
 
 .focus-radio-dot {
@@ -133,13 +221,17 @@
 }
 
 /* Dark mode */
+[data-theme="dark"] .training-setup-page { background: #0B0B0D; }
+[data-theme="dark"] .script-preview-title   { color: #F0F0F0; }
+[data-theme="dark"] .script-preview-content { color: rgba(255,255,255,0.5); }
+
 [data-theme="dark"] .focus-option {
   background: #1E1E1E;
   border-color: #2E2E2E;
 }
 
 [data-theme="dark"] .focus-option.selected {
-  border-color: #FBAF00;
+  border-color: #FCBA04;
   background: rgba(251,175,0,0.08);
 }
 

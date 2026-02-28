@@ -28,6 +28,8 @@ export const ROUTES = {
   CHANGE_PASSWORD: '/settings/change-password',
   ACCOUNT_SETTINGS: '/settings/account',
   AUDIO_TEST: '/settings/test',
+  // Training Hub (Framework Library)
+  FRAMEWORKS: '/frameworks',
   // Session
   SESSION_DETAIL: '/session/:sessionId',
   SESSION_RESULT: '/session/:sessionId/result',
@@ -54,7 +56,7 @@ export const WORDS_PER_MINUTE = 150;
 // Score tiers
 export const SCORE_TIER = {
   excellent: { min: 85, label: 'Excellent', color: '#34C759' },
-  good: { min: 65, label: 'Good', color: '#FBAF00' },
+  good: { min: 65, label: 'Good', color: '#FCBA04' },
   fair: { min: 45, label: 'Fair', color: '#FF9500' },
   poor: { min: 0, label: 'Needs Work', color: '#FF3B30' },
 };
