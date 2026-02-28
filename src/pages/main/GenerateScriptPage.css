@@ -133,9 +133,10 @@
   color: #9CA3AF;
 }
 
-/* Generate modal */
+/* Generate modal — override .modal-box max-width: 500px */
 .generate-modal {
   width: min(82vw, 1200px);
+  max-width: min(82vw, 1200px);
   height: 80vh;
   max-height: 90vh;
   overflow: hidden;

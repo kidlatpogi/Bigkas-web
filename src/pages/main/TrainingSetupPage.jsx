@@ -8,16 +8,6 @@ import FilterTabs from '../../components/common/FilterTabs';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './TrainingSetupPage.css';
-import './FrameworksPage.css';
-
-function IconSearch() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.7"/>
-      <path d="M13.5 13.5l3 3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-    </svg>
-  );
-}
 
 const FOCUS_OPTIONS = [
   { value: 'scripted', label: 'Scripted Accuracy', desc: 'Strict adherence to text for pronunciation. AI will track every word you say.' },
@@ -34,7 +24,6 @@ function TrainingSetupPage() {
   const [focus, setFocus]                   = useState('scripted');
   const [isLoading, setIsLoading]           = useState(false);
   const [activeTab, setActiveTab]           = useState('self');  // 'self' | 'generated'
-  const [query, setQuery]                   = useState('');
   const [freeTopic, setFreeTopic]           = useState('');
   const [showTopicModal, setShowTopicModal] = useState(false);
 
@@ -69,23 +58,17 @@ function TrainingSetupPage() {
     []
   );
 
-  /* Apply tab + search filter */
+  /* Apply tab filter */
   const filteredScripts = useMemo(() => {
-    let base = activeTab === 'generated'
+    return activeTab === 'generated'
       ? userScripts
       : [...systemScripts, ...selfScripts];
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      base = base.filter(s => (s.title || '').toLowerCase().includes(q));
-    }
-    return base;
-  }, [activeTab, userScripts, systemScripts, selfScripts, query]);
+  }, [activeTab, userScripts, systemScripts, selfScripts]);
 
   const noScripts = !isLoading && (
     (activeTab === 'generated' && userScripts.length === 0) ||
     (activeTab === 'self' && selfScripts.length === 0 && systemScripts.length === 0)
   );
-  const noSearchResults = !isLoading && !noScripts && filteredScripts.length === 0 && query.trim() !== '';
 
   /* Keep selectedScript in sync when tab/filter changes */
   useEffect(() => {
@@ -94,10 +77,9 @@ function TrainingSetupPage() {
     }
   }, [filteredScripts, selectedScript]);
 
-  /* Reset query + selection when switching tabs */
+  /* Reset selection when switching tabs */
   const handleTabChange = (val) => {
     setActiveTab(val);
-    setQuery('');
     setSelectedScript(null);
   };
 
@@ -140,41 +122,13 @@ function TrainingSetupPage() {
         />
       </div>
 
-      {/* Quick-action: generate new speech (only on AI Generated tab) */}
-      {activeTab === 'generated' && (
-        <button
-          className="btn-primary training-generate-btn"
-          onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
-        >
-          Generate Speech
-        </button>
-      )}
-
-      {/* Search bar — matches Training Hub fh-controls style */}
-      {!noGeneratedScripts && (
-        <div className="fh-controls" style={{ margin: '12px 0 0' }}>
-          <div className="fh-search-wrap">
-            <span className="fh-search-icon"><IconSearch /></span>
-            <input
-              className="fh-search"
-              type="search"
-              placeholder="Search scripts…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Search scripts"
-            />
-            {query && (
-              <button
-                className="fh-search-clear"
-                onClick={() => setQuery('')}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Quick-action: generate new speech (always visible) */}
+      <button
+        className="btn-primary training-generate-btn"
+        onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
+      >
+        Generate Speech
+      </button>
 
       {/* Script dropdown */}
       <div className="form-group" style={{ marginTop: 12 }}>
@@ -189,10 +143,6 @@ function TrainingSetupPage() {
             >
               Generate a Speech
             </button>
-          </div>
-        ) : noSearchResults ? (
-          <div className="ts-empty-state">
-            <p className="ts-empty-text">No scripts match “{query}”. Try a different search.</p>
           </div>
         ) : (
           <select
