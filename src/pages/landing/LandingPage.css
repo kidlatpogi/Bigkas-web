@@ -1532,32 +1532,54 @@ html {
     display: flex;
   }
 
-  .landing-nav.nav-open .nav-links,
-  .landing-nav.nav-open .nav-actions {
+  /* When open, let nav-inner wrap so links + actions stack below the logo row */
+  .landing-nav.nav-open .nav-inner {
+    flex-wrap: wrap;
+  }
+
+  /* Logo stays left (order 0), hamburger stays right (order 0 natural) */
+  .landing-nav.nav-open .nav-logo  { order: 0; }
+  .landing-nav.nav-open .nav-hamburger { order: 0; }
+
+  /* Links row — full width, below the logo row */
+  .landing-nav.nav-open .nav-links {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 16px;
-    gap: 12px;
+    width: 100%;
+    order: 10;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    padding: 8px 0;
     align-items: stretch;
   }
 
-  .landing-nav.nav-open .nav-links {
-    padding-bottom: 0;
-  }
-
+  /* Actions row — full width, below links */
   .landing-nav.nav-open .nav-actions {
-    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    order: 11;
+    gap: 8px;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid var(--border);
+    align-items: stretch;
   }
 
-  .landing-nav.nav-open .nav-links a {
-    padding: 8px 0;
+  /* Style the button-based nav link items */
+  .landing-nav.nav-open .nav-links .nav-link-btn {
+    padding: 12px 4px;
     font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    width: 100%;
+    display: block;
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+  }
+
+  .landing-nav.nav-open .nav-links .nav-link-btn:hover {
+    background: rgba(1, 1, 1, 0.04);
+    color: var(--primary);
   }
 
   .footer-inner {
