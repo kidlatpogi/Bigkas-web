@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScript, createScript, updateScript, deleteScript } from '../../api/scriptsApi';
@@ -25,6 +25,10 @@ function ScriptEditorPage() {
   const [isLoading, setIsLoading] = useState(isEditing);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
+  // Track the saved snapshot so we can detect unsaved changes
+  const savedTitle   = useRef('');
+  const savedContent = useRef('');
+
   useEffect(() => {
     if (!isEditing) return;
     (async () => {
@@ -32,8 +36,12 @@ function ScriptEditorPage() {
       try {
         const { data, error: sbErr } = await getScript(scriptId);
         if (sbErr) throw sbErr;
-        setTitle(data?.title || '');
-        setContent(data?.content || '');
+        const t = data?.title || '';
+        const c = data?.content || '';
+        setTitle(t);
+        setContent(c);
+        savedTitle.current   = t;
+        savedContent.current = c;
       } catch {
         setError('Failed to load script.');
       } finally {
@@ -72,6 +80,14 @@ function ScriptEditorPage() {
     }
   };
 
+  const isDirty = title !== savedTitle.current || content !== savedContent.current;
+
+  const handleCancelRequest = () => {
+    // No changes and not a temp copy — just leave silently
+    if (!isDirty && !isTempCopy) { handleDiscard(); return; }
+    setShowCancelModal(true);
+  };
+
   const handleDiscard = async () => {
     if (isTempCopy && scriptId) {
       try { await deleteScript(scriptId); } catch { /* discard anyway */ }
@@ -91,7 +107,7 @@ function ScriptEditorPage() {
     <div className="inner-page">
       {/* Header */}
       <div className="inner-page-header" style={{ position: 'relative', justifyContent: 'center' }}>
-        <BackButton style={{ position: 'absolute', left: 0 }} onClick={() => setShowCancelModal(true)} />
+        <BackButton style={{ position: 'absolute', left: 0 }} onClick={handleCancelRequest} />
         <h1 className="inner-page-title">{isEditing ? 'Edit Script' : 'New Script'}</h1>
       </div>
 
@@ -124,7 +140,7 @@ function ScriptEditorPage() {
 
       {/* Actions */}
       <div className="btn-row">
-        <button className="btn-secondary" onClick={() => setShowCancelModal(true)} disabled={isSaving}>
+        <button className="btn-secondary" onClick={handleCancelRequest} disabled={isSaving}>
           Cancel
         </button>
         <button className="btn-primary btn-dark" onClick={handleSave} disabled={isSaving}>
