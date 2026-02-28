@@ -1,8 +1,8 @@
-/*
-   Bigkas Landing â€” CSS
+﻿/*
+   Bigkas Landing "” CSS
    Design tokens from Bigkas-mobile repository:
-   Primary: #FCBA04  Â·  Secondary: #010101  Â·  Background: #F5F5F5
-   Border: #E2E2E2   Â·  Surface: #FFFFFF
+   Primary: #FCBA04  ·  Secondary: #010101  ·  Background: #F5F5F5
+   Border: #E2E2E2   ·  Surface: #FFFFFF
    Font: Inter 400/500/600/700
    Spacing: xs:4  sm:8  md:16  lg:24  xl:32  xxl:48  xxxl:64
    Border Radius: sm:4  md:8  lg:12  xl:16  full:9999
@@ -48,7 +48,7 @@
   overflow-x: hidden;
 }
 
-/* â”€â”€ Utility classes â”€â”€ */
+/* ”€”€ Utility classes ”€”€ */
 .accent-text {
   color: var(--primary);
 }
@@ -63,7 +63,7 @@
   margin-right: auto;
 }
 
-/* â”€â”€ Section shell â”€â”€ */
+/* ”€”€ Section shell ”€”€ */
 .section-wrap {
   max-width: 1120px;
   margin: 0 auto;
@@ -109,7 +109,7 @@
   text-align: center;
 }
 
-/* â”€â”€ Nav-link and footer buttons styled as links â”€â”€ */
+/* ”€”€ Nav-link and footer buttons styled as links ”€”€ */
 .nav-link-btn,
 .footer-link-btn {
   background: none;
@@ -136,7 +136,7 @@
   color: var(--primary);
 }
 
-/* â”€â”€ Scroll-snap for section-to-section navigation â”€â”€ */
+/* ”€”€ Scroll-snap for section-to-section navigation ”€”€ */
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
@@ -154,7 +154,7 @@ html {
   scroll-snap-stop: always;
 }
 
-/* â”€â”€ Scroll-triggered animation base â”€â”€ */
+/* ”€”€ Scroll-triggered animation base ”€”€ */
 .problem-section,
 .solution-section,
 .features-section,
@@ -176,9 +176,9 @@ html {
   transform: translateY(0);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   NAV â€” sticky, white with border
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   NAV "” sticky, white with border
+   ═══════════════════════════════════════════ */
 .landing-nav {
   position: fixed;
   top: 0;
@@ -334,9 +334,9 @@ html {
   color: var(--primary);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   HERO â€” 100vh Â· Black card bg (matches mobile)
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   HERO "” 100vh · Black card bg (matches mobile)
+   ═══════════════════════════════════════════ */
 .hero-section {
   min-height: 100vh;
   display: flex;
@@ -536,7 +536,7 @@ html {
   color: var(--text-muted);
 }
 
-/* Dashboard mockup â€” Black card like mobile hero */
+/* Dashboard mockup "” Black card like mobile hero */
 .hero-dashboard {
   display: flex;
   justify-content: center;
@@ -700,9 +700,9 @@ html {
   letter-spacing: 1.5px;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PROBLEM SECTION â€” 100vh
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   PROBLEM SECTION "” 100vh
+   ═══════════════════════════════════════════ */
 .problem-section {
   min-height: 100vh;
   display: flex;
@@ -756,9 +756,9 @@ html {
   background: var(--border);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SOLUTION SECTION â€” 100vh
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   SOLUTION SECTION "” 100vh
+   ═══════════════════════════════════════════ */
 .solution-section {
   min-height: 100vh;
   display: flex;
@@ -807,9 +807,9 @@ html {
   text-align: justify;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   FEATURES SECTION â€” 100vh
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   FEATURES SECTION "” 100vh
+   ═══════════════════════════════════════════ */
 .features-section {
   min-height: 100vh;
   display: flex;
@@ -974,9 +974,9 @@ html {
   background: var(--border);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   TRUST SECTION â€” 100vh
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   TRUST SECTION "” 100vh
+   ═══════════════════════════════════════════ */
 .trust-section {
   min-height: 100vh;
   display: flex;
@@ -1067,9 +1067,9 @@ html {
   color: var(--text-primary);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   GROWTH SECTION â€” 100vh
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   GROWTH SECTION "” 100vh
+   ═══════════════════════════════════════════ */
 .growth-section {
   min-height: 100vh;
   display: flex;
@@ -1149,9 +1149,9 @@ html {
   color: var(--primary);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   CTA SECTION â€” 100vh Â· Black card (mobile hero style)
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   CTA SECTION "” 100vh · Black card (mobile hero style)
+   ═══════════════════════════════════════════ */
 .cta-section {
   min-height: 100vh;
   display: flex;
@@ -1235,9 +1235,9 @@ html {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    FOOTER
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ═══════════════════════════════════════════ */
 .landing-footer {
   background: var(--white);
   border-top: 1px solid var(--border);
@@ -1307,9 +1307,9 @@ html {
   align-items: center;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ═══════════════════════════════════════════
    KEYFRAME ANIMATIONS
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ═══════════════════════════════════════════ */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -1368,9 +1368,9 @@ html {
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   DARK MODE â€” Landing overrides
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   DARK MODE "” Landing overrides
+   ═══════════════════════════════════════════ */
 [data-theme="dark"] .landing {
   --bg: #0B0B0D;
   --surface: #1E1E1E;
@@ -1450,10 +1450,16 @@ html {
   border-top-color: var(--border);
 }
 
-[data-theme="dark"] .landing-nav.nav-open .nav-links,
-[data-theme="dark"] .landing-nav.nav-open .nav-actions {
-  background: var(--bg);
-  border-bottom-color: var(--border);
+[data-theme="dark"] .nav-drawer-links {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .nav-drawer-actions {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .nav-drawer-links .nav-link-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
 }
 
 [data-theme="dark"] .bio-bar {
@@ -1464,9 +1470,9 @@ html {
   background: rgba(252, 186, 4, 0.08);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   RESPONSIVE â€” 1024 / 768 / 480
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════════════════════════════
+   RESPONSIVE "” 1024 / 768 / 480
+   ═══════════════════════════════════════════ */
 @media (max-width: 1024px) {
   .hero-inner {
     grid-template-columns: 1fr;
@@ -1520,54 +1526,56 @@ html {
 }
 
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-
+  /* Hide the desktop nav-links / nav-actions */
+  .nav-links,
   .nav-actions {
     display: none;
   }
 
+  /* Show hamburger */
   .nav-hamburger {
     display: flex;
   }
 
-  /* When open, let nav-inner wrap so links + actions stack below the logo row */
-  .landing-nav.nav-open .nav-inner {
+  /* ── Mobile drawer: collapsed by default ── */
+  .nav-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 100%;
+    order: 10;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  /* Inner wrapper needs overflow:hidden for the grid trick to work */
+  .nav-drawer-inner {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Slide open when nav has nav-open class */
+  .landing-nav.nav-open .nav-drawer {
+    grid-template-rows: 1fr;
+  }
+
+  /* nav-inner stays a single flex row (logo + hamburger) */
+  .nav-inner {
     flex-wrap: wrap;
   }
 
-  /* Logo stays left (order 0), hamburger stays right (order 0 natural) */
-  .landing-nav.nav-open .nav-logo  { order: 0; }
-  .landing-nav.nav-open .nav-hamburger { order: 0; }
-
-  /* Links row — full width, below the logo row */
-  .landing-nav.nav-open .nav-links {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    order: 10;
-    gap: 0;
+  /* Drawer link list */
+  .nav-drawer-links {
+    list-style: none;
     border-top: 1px solid var(--border);
     padding: 8px 0;
-    align-items: stretch;
-  }
-
-  /* Actions row — full width, below links */
-  .landing-nav.nav-open .nav-actions {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    order: 11;
-    gap: 8px;
-    padding: 8px 0 12px;
-    border-bottom: 1px solid var(--border);
-    align-items: stretch;
+    gap: 0;
   }
 
-  /* Style the button-based nav link items */
-  .landing-nav.nav-open .nav-links .nav-link-btn {
-    padding: 12px 4px;
+  .nav-drawer-links .nav-link-btn {
+    padding: 13px 4px;
     font-size: 16px;
     font-weight: 500;
     text-align: left;
@@ -1575,11 +1583,45 @@ html {
     display: block;
     color: var(--text-primary);
     border-radius: var(--radius-md);
+    transition: background 0.15s, color 0.15s;
   }
 
-  .landing-nav.nav-open .nav-links .nav-link-btn:hover {
+  .nav-drawer-links .nav-link-btn:hover {
     background: rgba(1, 1, 1, 0.04);
     color: var(--primary);
+  }
+
+  /* Drawer action buttons */
+  .nav-drawer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-drawer-actions .btn-nav-outline,
+  .nav-drawer-actions .btn-nav-solid {
+    width: 100%;
+  }
+
+  /* ── Hamburger → X animation ── */
+  .nav-hamburger span {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   0.2s ease;
+  }
+
+  .landing-nav.nav-open .nav-hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .landing-nav.nav-open .nav-hamburger span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .landing-nav.nav-open .nav-hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .footer-inner {

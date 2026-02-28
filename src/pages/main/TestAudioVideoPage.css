@@ -1,4 +1,4 @@
-/* â”€â”€ TestAudioVideoPage.css â”€â”€ */
+﻿/* ”€”€ TestAudioVideoPage.css ”€”€ */
 
 .av-page {
   max-width: 520px;
@@ -7,7 +7,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* â”€â”€ Header â”€â”€ */
+/* ”€”€ Header ”€”€ */
 .av-header {
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@
   margin: 0;
 }
 
-/* â”€â”€ Section â”€â”€ */
+/* ”€”€ Section ”€”€ */
 .av-section {
   margin-bottom: 24px;
 }
@@ -35,7 +35,7 @@
   margin: 0 0 10px;
 }
 
-/* â”€â”€ Camera â”€â”€ */
+/* ”€”€ Camera ”€”€ */
 .av-camera-wrap {
   width: 100%;
   height: 230px;
@@ -88,7 +88,7 @@
   background: rgba(0, 0, 0, 0.75);
 }
 
-/* â”€â”€ Status row â”€â”€ */
+/* ”€”€ Status row ”€”€ */
 .av-status-row {
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@
   color: #666;
 }
 
-/* â”€â”€ Mic card â”€â”€ */
+/* ”€”€ Mic card ”€”€ */
 .av-mic-card {
   background: #fff;
   border-radius: 14px;
@@ -115,7 +115,7 @@
   padding: 20px 16px;
 }
 
-/* â”€â”€ Level bars (AudioLevelIndicator) â”€â”€ */
+/* ”€”€ Level bars (AudioLevelIndicator) ”€”€ */
 .av-visualizer {
   display: flex;
   justify-content: center;
@@ -146,7 +146,7 @@
   background: rgba(252, 186, 4, 0.5);
 }
 
-/* â”€â”€ Mic button â”€â”€ */
+/* ”€”€ Mic button ”€”€ */
 .av-mic-btn {
   width: 100%;
   padding: 14px;
@@ -185,7 +185,7 @@
   opacity: 1;
 }
 
-/* â”€â”€ Done button â”€â”€ */
+/* ”€”€ Done button ”€”€ */
 .av-done-wrap {
   margin-top: 8px;
 }
@@ -208,7 +208,7 @@
   background: #E8E8E8;
 }
 
-/* â”€â”€ Dark mode â”€â”€ */
+/* ”€”€ Dark mode ”€”€ */
 [data-theme="dark"] .av-page { background: #0B0B0D; }
 
 [data-theme="dark"] .av-title {

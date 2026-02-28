@@ -1,6 +1,6 @@
-/**
- * NicknamePage â€” matches mobile NicknameScreen design
- * Design tokens: Primary #FCBA04 Â· Black #010101 Â· BG #F5F5F5
+﻿/**
+ * NicknamePage "” matches mobile NicknameScreen design
+ * Design tokens: Primary #FCBA04 · Black #010101 · BG #F5F5F5
  */
 
 .nickname-page {
@@ -18,7 +18,7 @@
   max-width: 420px;
 }
 
-/* â”€â”€ Brand logo â”€â”€ */
+/* ”€”€ Brand logo ”€”€ */
 .nickname-logo-wrap {
   display: flex;
   align-items: center;
@@ -39,7 +39,7 @@
   letter-spacing: 0.5px;
 }
 
-/* â”€â”€ Heading â”€â”€ */
+/* ”€”€ Heading ”€”€ */
 .nickname-title {
   font-size: 32px;
   font-weight: 700;
@@ -48,7 +48,7 @@
   margin: 0 0 12px;
 }
 
-/* â”€â”€ Subtitle â”€â”€ */
+/* ”€”€ Subtitle ”€”€ */
 .nickname-subtitle {
   font-size: 15px;
   font-weight: 500;
@@ -57,7 +57,7 @@
   margin: 0 0 32px;
 }
 
-/* â”€â”€ Input â”€â”€ */
+/* ”€”€ Input ”€”€ */
 .nickname-field-wrap {
   margin-bottom: 20px;
 }
@@ -102,7 +102,7 @@
   margin-top: 6px;
 }
 
-/* â”€â”€ Continue button â”€â”€ */
+/* ”€”€ Continue button ”€”€ */
 .nickname-btn {
   width: 100%;
   padding: 16px;

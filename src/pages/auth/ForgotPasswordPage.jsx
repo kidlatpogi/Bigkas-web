@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { isValidEmail } from '../../utils/validators';
@@ -54,7 +54,7 @@ function ForgotPasswordPage() {
   return (
     <div className="auth-page">
       <ThemeToggleBtn />
-      {/* â”€â”€ Left branding panel â”€â”€ */}
+      {/* ”€”€ Left branding panel ”€”€ */}
       <div className="auth-brand-panel">
         <BackButton onClick={() => navigate(ROUTES.LOGIN)} />
 
@@ -80,7 +80,7 @@ function ForgotPasswordPage() {
         </div>
       </div>
 
-      {/* â”€â”€ Right form panel â”€â”€ */}
+      {/* ”€”€ Right form panel ”€”€ */}
       <div className="auth-form-panel">
         <div className="auth-form-container">
           <h2 className="auth-form-title">FORGOT PASSWORD</h2>

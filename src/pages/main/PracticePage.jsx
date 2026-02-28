@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+﻿import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts, duplicateSystemScript } from '../../api/scriptsApi';
@@ -7,7 +7,7 @@ import { SYSTEM_PREWRITTEN_SPEECHES, RANDOM_TOPICS } from '../../utils/practiceD
 import BackButton from '../../components/common/BackButton';
 import './PracticePage.css';
 
-/* â”€â”€â”€ Icons â”€â”€â”€ */
+/* ”€”€”€ Icons ”€”€”€ */
 function IconShuffle() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FCBA04"
@@ -52,7 +52,7 @@ function IconCopy() {
   );
 }
 
-/* â”€â”€â”€ Tab options (mirrors mobile PracticeScreen) â”€â”€â”€ */
+/* ”€”€”€ Tab options (mirrors mobile PracticeScreen) ”€”€”€ */
 const TABS = [
   { value: 'prewritten',  label: 'Pre-written' },
   { value: 'randomizer',  label: 'Randomizer' },
@@ -60,12 +60,12 @@ const TABS = [
 ];
 
 /**
- * PracticePage â€” web adaptation of PracticeScreen.jsx (Bigkas-mobile).
+ * PracticePage "” web adaptation of PracticeScreen.jsx (Bigkas-mobile).
  *
  * Tabs:
- *  Pre-written â€” system speeches + user self-authored scripts
- *  Randomizer  â€” random topic card + shuffle button
- *  Generate    â€” navigate to /scripts/generate; shows auto-generated scripts below
+ *  Pre-written "” system speeches + user self-authored scripts
+ *  Randomizer  "” random topic card + shuffle button
+ *  Generate    "” navigate to /scripts/generate; shows auto-generated scripts below
  */
 export default function PracticePage() {
   const navigate = useNavigate();
@@ -215,7 +215,7 @@ export default function PracticePage() {
           ))}
         </div>
 
-        {/* â”€â”€ Pre-written tab â”€â”€ */}
+        {/* ”€”€ Pre-written tab ”€”€ */}
         {selectedTab === 'prewritten' && (
           <div className="practice-list">
             {isLoading ? (
@@ -243,7 +243,7 @@ export default function PracticePage() {
           </div>
         )}
 
-        {/* â”€â”€ Randomiser tab â”€â”€ */}
+        {/* ”€”€ Randomiser tab ”€”€ */}
         {selectedTab === 'randomizer' && (
           <div className="practice-rand-wrap">
             <div className="practice-rand-card">
@@ -266,7 +266,7 @@ export default function PracticePage() {
           </div>
         )}
 
-        {/* â”€â”€ Generate tab â”€â”€ */}
+        {/* ”€”€ Generate tab ”€”€ */}
         {selectedTab === 'generate' && (
           <div className="practice-list">
             <button
@@ -310,7 +310,7 @@ export default function PracticePage() {
         </button>
       </div>
 
-      {/* â”€â”€ Teleprompter Preview Modal â”€â”€ */}
+      {/* ”€”€ Teleprompter Preview Modal ”€”€ */}
       {showPreview && (
         <div
           className="practice-modal-overlay"
