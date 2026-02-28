@@ -16,7 +16,7 @@ const FILTER_TABS = [
 
 function AllSessionsPage() {
   const navigate = useNavigate();
-  const { sessions, fetchSessions, loadMoreSessions, isLoading, hasMore } = useSessionContext();
+  const { sessions, fetchSessions, isLoading } = useSessionContext();
   const [filter, setFilter] = useState('All');
 
   const PAGE_SIZE = 10;

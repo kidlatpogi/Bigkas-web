@@ -45,10 +45,10 @@ function TrainingSetupPage() {
   }, [loadScripts]);
 
   const handleStart = () => {
-    if (!selectedScript) return;
     if (focus === 'free') {
       setShowTopicModal(true);
     } else {
+      if (!selectedScript) return;
       navigate(ROUTES.TRAINING, { state: { script: selectedScript, focus } });
     }
   };
@@ -95,13 +95,14 @@ function TrainingSetupPage() {
         </div>
       ) : (
         <div className="form-group">
-          <label className="form-label">Choose Script</label>
+          <label className="form-label" style={focus === 'free' ? { opacity: 0.4 } : {}}>Choose Script</label>
           {isLoading ? (
             <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
           ) : (
             <select
               className="form-select"
               value={selectedScript?.id || ''}
+              disabled={focus === 'free'}
               onChange={(e) => {
                 const s = scripts.find(sc => sc.id === e.target.value);
                 setSelectedScript(s || null);
@@ -164,7 +165,7 @@ function TrainingSetupPage() {
         <button
           className="btn-primary"
           onClick={handleStart}
-          disabled={!selectedScript}
+          disabled={focus === 'scripted' && !selectedScript}
         >
           Start Training
         </button>

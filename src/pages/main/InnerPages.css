@@ -150,6 +150,23 @@
   font-family: inherit;
 }
 
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+}
+
+.form-select:disabled {
+  background-color: #F0F0F0;
+  color: #AAAAAA;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
@@ -537,6 +554,9 @@
   background: #2A2A2A;
   border-color: #3A3A3A;
   color: #F0F0F0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
 [data-theme="dark"] .form-input:focus,
 [data-theme="dark"] .form-textarea:focus,
@@ -545,9 +565,11 @@
   background: #2E2E2E;
 }
 [data-theme="dark"] .form-input:disabled,
-[data-theme="dark"] .form-textarea:disabled {
+[data-theme="dark"] .form-textarea:disabled,
+[data-theme="dark"] .form-select:disabled {
   background: #222222;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.25);
+  cursor: not-allowed;
 }
 [data-theme="dark"] .form-input::placeholder,
 [data-theme="dark"] .form-textarea::placeholder { color: rgba(255,255,255,0.3); }
