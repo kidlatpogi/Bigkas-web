@@ -17,7 +17,7 @@
 
   max-width: 860px;
   margin: 0 auto;
-  padding: 32px 24px 64px;
+  padding: 32px 24px calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ── Page header ── */
@@ -513,9 +513,29 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 768px) {
+  /* Session rows: ensure text truncates and tap targets stay ≥44px */
+  .session-row {
+    padding: 14px 12px;
+    min-height: 44px;
+  }
+
+  .session-row-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* Inner page header — wrap on very small names */
+  .inner-page-title {
+    font-size: 20px;
+  }
+}
+
 @media (max-width: 600px) {
   .inner-page {
-    padding: 20px 16px 48px;
+    padding: 20px 16px calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
   .form-row {
@@ -525,6 +545,20 @@
 
   .btn-row {
     flex-direction: column;
+  }
+
+  /* Scripts page: header action buttons full-width */
+  .inner-page-header {
+    flex-wrap: wrap;
+  }
+
+  .scripts-header-actions {
+    width: 100%;
+  }
+
+  .scripts-header-actions .btn-primary,
+  .scripts-header-actions .btn-outline {
+    flex: 1;
   }
 }
 

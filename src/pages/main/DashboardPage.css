@@ -459,7 +459,7 @@
 @media (max-width: 700px) {
   .dashboard-page-new {
     width: calc(100vw - 24px);
-    padding-bottom: 96px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
   .dash-greeting-name    { font-size: 32px; letter-spacing: -0.6px; }
   .dash-hero-title       { font-size: 26px; }
@@ -470,6 +470,28 @@
   .dash-stat             { padding: 16px 8px; }
   .dash-stat-value       { font-size: 26px; }
   .dash-info-row         { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .dashboard-page-new {
+    width: calc(100vw - 16px);
+    padding: 20px 0 calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+  .dash-greeting-name    { font-size: 26px; letter-spacing: -0.4px; }
+  .dash-greeting-text    { font-size: 13px; }
+  .dash-hero-card        { padding: 20px 16px; border-radius: 16px; }
+  .dash-hero-title       { font-size: 20px; letter-spacing: -0.4px; }
+  .dash-hero-sub         { font-size: 13px; }
+  .dash-btn-practice,
+  .dash-btn-training     { padding: 13px 16px; font-size: 14px; }
+  .dash-stat-value       { font-size: 22px; }
+  .dash-stat-label       { font-size: 9px; letter-spacing: 1px; }
+  .dash-quicklearn-card  { padding: 20px 16px; border-radius: 16px; }
+  .dash-quicklearn-name  { font-size: 17px; }
+  .dash-info-card        { padding: 18px 16px; }
+  .dash-quote-text       { font-size: 15px; }
+  .dash-tip-title        { font-size: 14px; }
+  .dash-tip-body         { font-size: 13px; }
 }
 
 @media (min-width: 960px) {
