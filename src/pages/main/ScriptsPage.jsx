@@ -37,7 +37,7 @@ function ScriptsPage() {
   const menuButtonRefs = useRef({});
 
   const [query, setQuery]         = useState('');
-  const [sortOrder, setSortOrder] = useState('recent');
+  const [sortOrder, setSortOrder] = useState('newest');
   const [glowId, setGlowId]       = useState(location.state?.newScriptId || null);
   const glowTimerRef = useRef(null);
 
@@ -67,7 +67,7 @@ function ScriptsPage() {
   // Reset search/sort/page when switching tabs
   useEffect(() => {
     setQuery('');
-    setSortOrder('recent');
+    setSortOrder('newest');
     setPage(1);
   }, [activeTab]);
 
@@ -90,9 +90,10 @@ function ScriptsPage() {
       const q = query.trim().toLowerCase();
       list = list.filter(s => (s.title || '').toLowerCase().includes(q));
     }
-    if (sortOrder === 'az') list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    if (sortOrder === 'az')     list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     else if (sortOrder === 'za') list.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
-    // 'recent' preserves backend order (updated_at desc)
+    else if (sortOrder === 'newest') list.sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
+    else if (sortOrder === 'oldest') list.sort((a, b) => new Date(a.updated_at || a.created_at || 0) - new Date(b.updated_at || b.created_at || 0));
     return list;
   }, [scripts, query, sortOrder]);
 
@@ -184,7 +185,8 @@ function ScriptsPage() {
             onChange={(e) => { setSortOrder(e.target.value); setPage(1); }}
             aria-label="Sort order"
           >
-            <option value="recent">Most Recent</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
             <option value="az">A → Z</option>
             <option value="za">Z → A</option>
           </select>
