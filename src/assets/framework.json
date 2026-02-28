@@ -1,0 +1,56 @@
+[
+  {
+    "id": "3-2-1",
+    "name": "The 3-2-1 Trick",
+    "summary": "Stop rambling. Force your brain into a clean numbered structure that audiences can follow instantly.",
+    "usage_scenario": "Best for Q&A sessions, impromptu speeches, and social media content.",
+    "steps": ["Pick 3 main points, types, or reasons", "Narrow it to 2 supporting ideas", "Land on 1 core takeaway"],
+    "youtubeId": "5m-C5mwpmxU",
+    "studyLink": "https://vinhgiang.com/frameworks"
+  },
+  {
+    "id": "PREP",
+    "name": "P.R.E.P Method",
+    "summary": "The gold standard for professional, structured opinions. Delivers your view in four clear steps.",
+    "usage_scenario": "Ideal for job interviews, business meetings, and debate-style questions.",
+    "steps": ["Point — state your clear position", "Reason — explain why you believe it", "Example — support with a real story or data", "Point — restate your position to close"],
+    "youtubeId": "2zvvQj9ezWg",
+    "studyLink": "https://www.indeed.com/career-advice/interviewing/prep-method"
+  },
+  {
+    "id": "PAS",
+    "name": "P.A.S Framework",
+    "summary": "Pull your audience in emotionally by identifying a problem they feel deeply, then offering your solution.",
+    "usage_scenario": "Perfect for persuasive speeches, sales pitches, and change-of-mind arguments.",
+    "steps": ["Problem — name the pain point clearly", "Agitation — intensify the emotion around it", "Solution — introduce your answer as the relief"],
+    "youtubeId": "LYClMNS2gQw",
+    "studyLink": "https://copyblogger.com/problem-agitate-solve/"
+  },
+  {
+    "id": "HIC",
+    "name": "H.I.C Framework",
+    "summary": "Give any talk a crisp, three-part arc — grab them, inform them, then move them to act.",
+    "usage_scenario": "Great for presentations, class reports, and short elevator pitches.",
+    "steps": ["Hook — open with a story, question, or bold statement", "Inform — deliver your key message and evidence", "Call to Action — close by telling the audience exactly what to do next"],
+    "youtubeId": "Unzc731iCUY",
+    "studyLink": "https://speakingaboutpresenting.com/structure/speech-structure/"
+  },
+  {
+    "id": "STAR",
+    "name": "S.T.A.R Method",
+    "summary": "Tell powerful, memorable stories by walking through a real-life experience step by step.",
+    "usage_scenario": "Best for behavioural interview questions ('Tell me about a time when...') and personal narratives.",
+    "steps": ["Situation — set the scene and give context", "Task — describe your specific responsibility", "Action — explain the steps you personally took", "Result — share the measurable outcome"],
+    "youtubeId": "0nN7Q7DrI6Q",
+    "studyLink": "https://www.themuse.com/advice/star-interview-method"
+  },
+  {
+    "id": "AIDA",
+    "name": "A.I.D.A Framework",
+    "summary": "Classic marketing and persuasion arc that moves listeners from awareness to action.",
+    "usage_scenario": "Excellent for pitches, product demos, and motivational talks.",
+    "steps": ["Attention — capture focus with a bold opener", "Interest — build curiosity with relevant facts", "Desire — ignite want by showing personal benefit", "Action — give a clear, simple next step"],
+    "youtubeId": "EJtNLeCVJuA",
+    "studyLink": "https://en.wikipedia.org/wiki/AIDA_(marketing)"
+  }
+]

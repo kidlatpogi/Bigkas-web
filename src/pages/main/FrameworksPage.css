@@ -1,0 +1,443 @@
+/* ══════════════════════════════════════════════════════════════════
+   FrameworksPage — Training Hub
+   Design tokens: primary #FBAF00 · black #010101 · bg #F5F5F5
+   ══════════════════════════════════════════════════════════════════ */
+
+.fw-page {
+  --primary: #FBAF00;
+  --black: #010101;
+  --bg: #F5F5F5;
+  --white: #FFFFFF;
+  --text-secondary: rgba(1, 1, 1, 0.6);
+  --radius: 12px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  background: var(--bg);
+  min-height: calc(100vh - 50px);
+  width: min(1120px, calc(100vw - 40px));
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 0 96px;
+  font-family: var(--font);
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.fw-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.fw-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fw-page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--black);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.fw-page-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────── */
+.fw-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 0;
+}
+
+.fw-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(251, 175, 0, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: fw-spin 0.8s linear infinite;
+}
+
+@keyframes fw-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Grid ────────────────────────────────────────────────────────── */
+.fw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ── Card ────────────────────────────────────────────────────────── */
+.fw-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #E9E9E9;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.fw-card:hover {
+  box-shadow: 0 8px 24px rgba(1, 1, 1, 0.09);
+  transform: translateY(-2px);
+}
+
+.fw-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fw-card-id {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: rgba(251, 175, 0, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.fw-card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.fw-card-summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.fw-card-usage {
+  font-size: 12px;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.fw-usage-label {
+  font-weight: 700;
+  color: var(--black);
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+
+/* ── Steps pills ─────────────────────────────────────────────────── */
+.fw-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.fw-step-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #F8F8F8;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.fw-step-num {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  min-width: 18px;
+  line-height: 1.5;
+}
+
+.fw-step-text {
+  font-size: 13px;
+  color: var(--black);
+  line-height: 1.5;
+}
+
+/* ── Watch button ────────────────────────────────────────────────── */
+.fw-watch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 11px 20px;
+  background: transparent;
+  border: 2px solid var(--primary);
+  border-radius: 9999px;
+  color: var(--black);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-family: var(--font);
+}
+
+.fw-watch-btn:hover {
+  background: var(--primary);
+}
+
+/* ── Modal backdrop ──────────────────────────────────────────────── */
+.fw-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 1, 1, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1200;
+  overflow-y: auto;
+}
+
+/* ── Modal box ───────────────────────────────────────────────────── */
+.fw-modal {
+  width: 100%;
+  max-width: 640px;
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(1, 1, 1, 0.25);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.fw-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid #F0F0F0;
+  gap: 12px;
+}
+
+.fw-modal-id {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.fw-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0;
+}
+
+.fw-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #E2E2E2;
+  background: transparent;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.fw-modal-close:hover {
+  border-color: var(--black);
+  background: #F5F5F5;
+}
+
+/* ── YouTube embed ───────────────────────────────────────────────── */
+.fw-video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  background: #000;
+}
+
+.fw-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.fw-video-placeholder {
+  background: #1A1A1A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  aspect-ratio: 16 / 9;
+}
+
+.fw-video-placeholder-text {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ── Modal body ──────────────────────────────────────────────────── */
+.fw-modal-summary {
+  padding: 16px 24px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.fw-modal-steps {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fw-modal-steps-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(1, 1, 1, 0.4);
+  margin: 0 0 4px;
+}
+
+.fw-modal-step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 14px;
+  background: #F8F8F8;
+  border-radius: 8px;
+}
+
+.fw-modal-step-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+  min-width: 20px;
+}
+
+.fw-modal-step-text {
+  font-size: 14px;
+  color: var(--black);
+  line-height: 1.5;
+}
+
+.fw-modal-study-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 24px 24px;
+  padding: 10px 16px;
+  background: rgba(251, 175, 0, 0.08);
+  border: 1px solid rgba(251, 175, 0, 0.35);
+  border-radius: 8px;
+  color: #6B4500;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  width: fit-content;
+}
+
+.fw-modal-study-link:hover {
+  background: rgba(251, 175, 0, 0.16);
+}
+
+/* ── Dark mode ───────────────────────────────────────────────────── */
+[data-theme="dark"] .fw-page {
+  --bg: #121212;
+  --white: #1E1E1E;
+  --black: #F0F0F0;
+  --text-secondary: rgba(240, 240, 240, 0.55);
+}
+
+[data-theme="dark"] .fw-card {
+  border-color: #2A2A2A;
+}
+
+[data-theme="dark"] .fw-step-pill,
+[data-theme="dark"] .fw-modal-step-row {
+  background: #2A2A2A;
+}
+
+[data-theme="dark"] .fw-modal {
+  background: #1E1E1E;
+}
+
+[data-theme="dark"] .fw-modal-header {
+  border-bottom-color: #2A2A2A;
+}
+
+[data-theme="dark"] .fw-modal-close {
+  border-color: #3A3A3A;
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .fw-modal-close:hover {
+  background: #2A2A2A;
+  border-color: #F0F0F0;
+}
+
+[data-theme="dark"] .fw-modal-summary {
+  color: rgba(240, 240, 240, 0.6);
+}
+
+[data-theme="dark"] .fw-modal-step-row {
+  background: #2A2A2A;
+}
+
+[data-theme="dark"] .fw-modal-step-text,
+[data-theme="dark"] .fw-card-name,
+[data-theme="dark"] .fw-step-text {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .fw-video-placeholder {
+  background: #0A0A0A;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .fw-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fw-page-title {
+    font-size: 22px;
+  }
+
+  .fw-modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .fw-modal {
+    border-radius: 16px 16px 0 0;
+    max-height: 92vh;
+  }
+}

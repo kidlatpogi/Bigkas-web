@@ -5,7 +5,7 @@ import { ROUTES } from '../../utils/constants';
 import bigkasLogo from '../../assets/Temporary Logo.png';
 import './AuthPages.css';
 
-const OTP_LENGTH = 8;
+const OTP_LENGTH = 6;
 const RESEND_COOLDOWN_SECS = 60;
 const PENDING_EMAIL_KEY = 'bigkas_pending_verification_email';
 
@@ -32,7 +32,7 @@ function mapOtpError(error) {
 }
 
 /**
- * VerifyEmailPage — 8-Digit OTP entry after registration.
+ * VerifyEmailPage — 6-Digit OTP entry after registration.
  *
  * Email resolution priority:
  *  1. React Router navigation state  (navigate(ROUTES.VERIFY_EMAIL, { state: { email } }))
@@ -144,7 +144,7 @@ function VerifyEmailPage() {
   const handleVerify = async () => {
     const token = digits.join('');
     if (token.length < OTP_LENGTH) {
-      setError('Please enter all 8 digits.');
+      setError('Please enter all 6 digits.');
       focusBox(digits.findIndex((d) => !d));
       return;
     }
@@ -252,7 +252,7 @@ function VerifyEmailPage() {
           <h2 className="auth-form-title">VERIFY YOUR EMAIL</h2>
 
           <p className="otp-instructions">
-            We sent an 8-digit code to{' '}
+            We sent a 6-digit code to{' '}
             <strong className="otp-email-highlight">{maskedEmail}</strong>.
             Enter it below to activate your account.
           </p>

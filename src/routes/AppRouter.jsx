@@ -25,6 +25,7 @@ import ChangePasswordPage from '../pages/main/ChangePasswordPage';
 import AccountSettingsPage from '../pages/main/AccountSettingsPage';
 import TrainingSetupPage from '../pages/main/TrainingSetupPage';
 import TrainingPage from '../pages/main/TrainingPage';
+import FrameworksPage from '../pages/main/FrameworksPage';
 import ScriptEditorPage from '../pages/main/ScriptEditorPage';
 import GenerateScriptPage from '../pages/main/GenerateScriptPage';
 import TestAudioVideoPage from '../pages/main/TestAudioVideoPage';
@@ -188,6 +189,9 @@ function AppRouter() {
         {/* Training */}
         <Route path={ROUTES.TRAINING_SETUP} element={<TrainingSetupPage />} />
         <Route path={ROUTES.TRAINING} element={<TrainingPage />} />
+
+        {/* Frameworks / Training Hub */}
+        <Route path={ROUTES.FRAMEWORKS} element={<FrameworksPage />} />
 
         {/* History / Progress */}
         <Route path={ROUTES.HISTORY} element={<HistoryPage />} />

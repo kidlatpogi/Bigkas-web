@@ -117,6 +117,7 @@ export default function DashboardPage() {
   const [avatarError, setAvatarError] = useState(false);
   const [quote, setQuote] = useState(FALLBACK_QUOTE);
   const [dateKey, setDateKey] = useState(() => getLocalDateKey());
+  const [featuredFramework, setFeaturedFramework] = useState(null);
 
   /* ── Daily content (mobile-synced quote source + deterministic tip) ── */
   const tip = useMemo(() => getDailyTip(dateKey), [dateKey]);
@@ -199,6 +200,19 @@ export default function DashboardPage() {
     fetchDailyQuote().then(setQuote);
   }, [dateKey]);
 
+  /* ── Lazily load frameworks and pick a daily featured one ── */
+  useEffect(() => {
+    import('../../assets/framework.json')
+      .then((mod) => {
+        const raw = mod.default;
+        const data = Array.isArray(raw) ? raw : Object.values(raw);
+        if (!data.length) return;
+        const idx = getDailyIndex(dateKey) % data.length;
+        setFeaturedFramework(data[idx]);
+      })
+      .catch(() => {});
+  }, [dateKey]);
+
   return (
     <div className="dashboard-page-new">
 
@@ -279,6 +293,21 @@ export default function DashboardPage() {
           <span className="dash-stat-label">STREAK</span>
         </div>
       </div>
+
+      {/* ── Quick-Learn card (daily featured framework) ── */}
+      {featuredFramework && (
+        <div className="dash-quicklearn-card">
+          <div className="dash-quicklearn-badge">FRAMEWORK OF THE DAY</div>
+          <h3 className="dash-quicklearn-name">{featuredFramework.name}</h3>
+          <p className="dash-quicklearn-summary">{featuredFramework.summary}</p>
+          <button
+            className="dash-quicklearn-btn"
+            onClick={() => navigate(ROUTES.FRAMEWORKS)}
+          >
+            Learn this Style
+          </button>
+        </div>
+      )}
 
       {/* ── Info cards row (Motivation + Tip of the Day) ── */}
       <div className="dash-info-row">

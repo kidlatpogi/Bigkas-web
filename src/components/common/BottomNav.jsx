@@ -10,6 +10,8 @@ import {
   IoPersonOutline,
   IoSettings,
   IoSettingsOutline,
+  IoBook,
+  IoBookOutline,
 } from 'react-icons/io5';
 import { ROUTES } from '../../utils/constants';
 import './BottomNav.css';
@@ -25,24 +27,28 @@ const ICON_COMPONENTS = {
   'person-outline': IoPersonOutline,
   settings: IoSettings,
   'settings-outline': IoSettingsOutline,
+  book: IoBook,
+  'book-outline': IoBookOutline,
 };
 
 /* ─── Icon names spec (from TECHNICAL_DOCS / mobile TAB_ICONS) ─── */
 const TAB_ICONS = {
-  Scripts:   { focused: 'document-text', outline: 'document-text-outline' },
-  Progress:  { focused: 'stats-chart',   outline: 'stats-chart-outline' },
-  Dashboard: { focused: 'home',          outline: 'home-outline' },
-  Profile:   { focused: 'person',        outline: 'person-outline' },
-  Settings:  { focused: 'settings',      outline: 'settings-outline' },
+  Scripts:    { focused: 'document-text',   outline: 'document-text-outline' },
+  Progress:   { focused: 'stats-chart',      outline: 'stats-chart-outline' },
+  Dashboard:  { focused: 'home',             outline: 'home-outline' },
+  Learn:      { focused: 'book',             outline: 'book-outline' },
+  Profile:    { focused: 'person',           outline: 'person-outline' },
+  Settings:   { focused: 'settings',         outline: 'settings-outline' },
 };
 
 /* ─── Tab config mirroring mobile BottomTabNavigator ─── */
 const TABS = [
-  { to: ROUTES.SCRIPTS, label: 'Scripts' },
-  { to: ROUTES.PROGRESS, label: 'Progress' },
-  { to: ROUTES.DASHBOARD, label: 'Dashboard', center: true },
-  { to: ROUTES.PROFILE, label: 'Profile' },
-  { to: ROUTES.SETTINGS, label: 'Settings' },
+  { to: ROUTES.SCRIPTS,    label: 'Scripts' },
+  { to: ROUTES.PROGRESS,   label: 'Progress' },
+  { to: ROUTES.DASHBOARD,  label: 'Dashboard', center: true },
+  { to: ROUTES.FRAMEWORKS, label: 'Learn' },
+  { to: ROUTES.PROFILE,    label: 'Profile' },
+  { to: ROUTES.SETTINGS,   label: 'Settings' },
 ];
 
 /**

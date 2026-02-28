@@ -28,6 +28,8 @@ export const ROUTES = {
   CHANGE_PASSWORD: '/settings/change-password',
   ACCOUNT_SETTINGS: '/settings/account',
   AUDIO_TEST: '/settings/test',
+  // Training Hub (Framework Library)
+  FRAMEWORKS: '/frameworks',
   // Session
   SESSION_DETAIL: '/session/:sessionId',
   SESSION_RESULT: '/session/:sessionId/result',
