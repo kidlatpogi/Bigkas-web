@@ -195,4 +195,35 @@
   border-top-color: #F0F0F0;
 }
 
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
 
+/* Disable tooltips on touch-only devices (prevents sticky tooltip on tap) */
+@media (hover: none) {
+  [data-tooltip]::after,
+  [data-tooltip]::before {
+    display: none;
+  }
+}
+
+/* Compact layout on very small screens (<= 380px) */
+@media (max-width: 380px) {
+  .bottom-nav {
+    padding: 6px;
+    gap: 6px;
+    bottom: 12px;
+  }
+  .bottom-nav-home {
+    width: 44px;
+    height: 44px;
+  }
+  .bottom-nav-pill {
+    height: 44px;
+    padding: 4px 6px;
+  }
+  .bottom-nav-item {
+    width: 40px;
+    height: 38px;
+  }
+}

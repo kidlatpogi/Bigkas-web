@@ -95,7 +95,15 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scrollbar-gutter: stable both-edges;
+  scroll-behavior: smooth;
+  background-color: var(--color-background);
+  /* scrollbar-gutter only on desktop — causes overflow on narrow mobile viewports */
+}
+
+@media (min-width: 769px) {
+  html {
+    scrollbar-gutter: stable both-edges;
+  }
 }
 
 body {
@@ -106,6 +114,10 @@ body {
   background-color: var(--color-background);
   min-height: 100vh;
   overflow-y: scroll;
+  /* Prevent horizontal scrolling on all devices */
+  overflow-x: hidden;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Focus styles */
@@ -132,6 +144,8 @@ button {
   background: none;
   font-family: inherit;
   font-size: inherit;
+  /* Minimum 44px touch target */
+  min-height: 44px;
 }
 
 /* Inputs reset */
@@ -140,6 +154,8 @@ textarea,
 select {
   font-family: inherit;
   font-size: inherit;
+  /* Minimum 44px touch target */
+  min-height: 44px;
 }
 
 /* Images */
@@ -155,23 +171,40 @@ ol {
   list-style: none;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Scrollbar styling — desktop only, hides on mobile to save space */
+@media (min-width: 769px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-background);
+/* Prevent "sticky hover" states on touch-only devices */
+@media (hover: none) {
+  a:hover,
+  button:hover {
+    opacity: 1;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+/* Prevent iOS input zoom — must be >= 16px */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 
 /* Dark mode link color */
@@ -192,6 +225,13 @@ ol {
   min-height: 100vh;
   /* Extra bottom padding so content clears the floating bottom nav */
   padding-bottom: 100px;
+  overflow-x: hidden;
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding-bottom: 110px;
+  }
 }
 
 /* Theme transition â€” smooth colour changes on all elements */

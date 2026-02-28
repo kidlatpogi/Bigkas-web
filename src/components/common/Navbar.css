@@ -1,9 +1,9 @@
-/**
- * Navbar â€” Bigkas Web
- * White background, sticky top, responsive hamburger for mobile â‰¤ 768 px
+﻿/**
+ * Navbar -- Bigkas Web
+ * White background, sticky top, responsive hamburger for mobile <= 768px
  */
 
-/* â”€â”€ Base â”€â”€ */
+/* -- Base -- */
 .navbar {
   background: #FFFFFF;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -15,76 +15,14 @@
   z-index: 200;
 }
 
-.navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 32px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* â”€â”€ Brand â”€â”€ */
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-
-.navbar-logo-img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-}
-
-.brand-text {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #010101;
-  letter-spacing: -0.3px;
-}
-
-/* â”€â”€ Desktop nav links â”€â”€ */
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.nav-link {
-  padding: 7px 16px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(1, 1, 1, 0.45);
-  border-radius: 8px;
-  text-decoration: none;
-  transition: color 0.15s ease, background 0.15s ease;
-  white-space: nowrap;
-}
-
-.nav-link:hover {
-  color: #010101;
-  background: rgba(1, 1, 1, 0.05);
-}
-
-.nav-link-active {
-  color: #010101;
-  font-weight: 700;
-}
-
-/* â”€â”€ Right area (theme btn + hamburger) â”€â”€ */
+/* -- Right area (theme btn + hamburger) -- */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-/* â”€â”€ Theme toggle â”€â”€ */
+/* -- Theme toggle -- */
 .navbar-theme-btn {
   display: inline-flex;
   align-items: center;
@@ -99,14 +37,13 @@
   transition: background 0.2s, color 0.2s, transform 0.2s;
   flex-shrink: 0;
 }
-
 .navbar-theme-btn:hover {
   background: rgba(252, 186, 4, 0.15);
   color: #FCBA04;
   transform: scale(1.08);
 }
 
-/* â”€â”€ Hamburger button (hidden on desktop) â”€â”€ */
+/* -- Hamburger button (hidden on desktop, >= 44px touch target) -- */
 .navbar-hamburger {
   display: none;
   flex-direction: column;
@@ -117,10 +54,12 @@
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.15s;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
 }
-
 .navbar-hamburger:hover { background: rgba(1, 1, 1, 0.05); }
-
 .navbar-hamburger span {
   display: block;
   width: 22px;
@@ -130,13 +69,12 @@
   transition: transform 0.25s ease, opacity 0.25s ease;
   transform-origin: center;
 }
-
-/* Animate to Ã— when open */
+/* Animate to X when open */
 .navbar-hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .navbar-hamburger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .navbar-hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* â”€â”€ Mobile drawer â”€â”€ */
+/* -- Mobile drawer -- */
 .navbar-drawer {
   display: none;
   flex-direction: column;
@@ -148,7 +86,6 @@
   transition: max-height 0.3s ease;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
-
 .navbar-drawer.drawer-open {
   display: flex;
   max-height: 400px;
@@ -163,14 +100,15 @@
   text-decoration: none;
   border-radius: 10px;
   transition: color 0.15s, background 0.15s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
-
 .drawer-link:hover {
   color: #010101;
   background: rgba(1, 1, 1, 0.04);
   font-weight: 700;
 }
-
 .drawer-link-active {
   color: #FCBA04;
   background: rgba(252, 186, 4, 0.08);
@@ -191,10 +129,9 @@
   text-align: left;
   transition: background 0.15s;
 }
-
 .drawer-logout:hover { background: rgba(255, 59, 48, 0.12); }
 
-/* â”€â”€ Backdrop overlay â”€â”€ */
+/* -- Backdrop overlay -- */
 .navbar-backdrop {
   position: fixed;
   inset: 0;
@@ -202,62 +139,57 @@
   z-index: 99;
   animation: fadeInBackdrop 0.18s ease;
 }
-
 @keyframes fadeInBackdrop {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* â”€â”€ Responsive â”€â”€ */
-@media (max-width: 768px) {
-  .navbar-container {
-    padding: 0 20px;
-  }
-  .navbar-links   { display: none; }
-  .navbar-hamburger { display: flex; }
-}
-
-/* â”€â”€ Dark mode â”€â”€ */
+/* -- Dark mode -- */
 [data-theme="dark"] .navbar {
   background: #1E1E1E;
   border-bottom-color: rgba(255,255,255,0.08);
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
-[data-theme="dark"] .brand-text { color: #F0F0F0; }
-[data-theme="dark"] .nav-link   { color: rgba(240,240,240,0.45); }
-[data-theme="dark"] .nav-link:hover   { color: #F0F0F0; background: rgba(255,255,255,0.07); }
-[data-theme="dark"] .nav-link-active  { color: #F0F0F0; }
+[data-theme="dark"] .brand-text            { color: #F0F0F0; }
+[data-theme="dark"] .nav-link              { color: rgba(240,240,240,0.45); }
+[data-theme="dark"] .nav-link:hover        { color: #F0F0F0; background: rgba(255,255,255,0.07); }
+[data-theme="dark"] .nav-link-active       { color: #F0F0F0; }
 [data-theme="dark"] .navbar-hamburger span { background: #F0F0F0; }
-[data-theme="dark"] .navbar-drawer { background: #1E1E1E; border-top-color: rgba(255,255,255,0.08); }
-[data-theme="dark"] .drawer-link   { color: rgba(240,240,240,0.55); }
-[data-theme="dark"] .drawer-link:hover  { color: #F0F0F0; background: rgba(255,255,255,0.06); }
-[data-theme="dark"] .drawer-link-active { color: #FCBA04; background: rgba(251,175,0,0.12); }
-[data-theme="dark"] .navbar-theme-btn   { background: rgba(255,255,255,0.1); color: #F0F0F0; }
+[data-theme="dark"] .navbar-drawer         { background: #1E1E1E; border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .drawer-link           { color: rgba(240,240,240,0.55); }
+[data-theme="dark"] .drawer-link:hover     { color: #F0F0F0; background: rgba(255,255,255,0.06); }
+[data-theme="dark"] .drawer-link-active    { color: #FCBA04; background: rgba(251,175,0,0.12); }
+[data-theme="dark"] .navbar-theme-btn      { background: rgba(255,255,255,0.1); color: #F0F0F0; }
 [data-theme="dark"] .navbar-theme-btn:hover { background: rgba(251,175,0,0.2); color: #FCBA04; }
+
+/* ================================================================
+   CONSOLIDATED LAYOUT RULES
+   Final values that win the cascade; fluid & responsive.
+   ================================================================ */
 
 .navbar-container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 30px;
+  padding: 0 clamp(16px, 3vw, 30px);
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* â”€â”€ Brand â”€â”€ */
+/* -- Brand -- */
 .navbar-brand {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .navbar-logo-img {
   width: 28px;
   height: 28px;
   object-fit: contain;
-  /* no filter â€” keep original gold/yellow colour of logo */
 }
 
 .brand-text {
@@ -268,7 +200,7 @@
   letter-spacing: 0;
 }
 
-/* â”€â”€ Nav links â”€â”€ */
+/* -- Desktop nav links -- */
 .navbar-links {
   display: flex;
   align-items: center;
@@ -278,12 +210,16 @@
 .nav-link {
   padding: 6px 14px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 20px;
+  font-size: clamp(15px, 1.4vw, 20px);
   font-weight: 600;
   color: rgba(1,1,1,0.40);
   border-radius: 6px;
   transition: color 0.18s, background 0.18s;
   text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -309,9 +245,36 @@
   background: #FCBA04;
 }
 
-/* Mobile â€” hide links, show only brand */
-@media (max-width: 640px) {
-  .navbar-links {
-    display: none;
+/* -- Prevent sticky hover states on touch-only devices -- */
+@media (hover: none) {
+  .nav-link:hover,
+  .drawer-link:hover,
+  .navbar-hamburger:hover,
+  .navbar-theme-btn:hover {
+    background: initial;
+    color: inherit;
+    transform: none;
   }
+}
+
+/* ================================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================================ */
+
+/* Small desktop */
+@media (max-width: 1024px) {
+  .navbar-container { padding: 0 24px; }
+}
+
+/* Tablet / phablet -- switch to hamburger */
+@media (max-width: 768px) {
+  .navbar-container  { padding: 0 16px; }
+  .navbar-links      { display: none; }
+  .navbar-hamburger  { display: flex; }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .navbar-container { padding: 0 12px; }
+  .brand-text       { font-size: 20px; }
 }
