@@ -15,8 +15,8 @@ const FOCUS_OPTIONS = [
 
 const FILTER_CHIPS = [
   { value: 'all',        label: 'All' },
-  { value: 'prewritten', label: 'Pre-Written' },
-  { value: 'generated',  label: 'My AI Scripts' },
+  { value: 'myScripts',  label: 'My Scripts' },
+  { value: 'generated',  label: 'Generated Scripts' },
 ];
 
 function TrainingSetupPage() {
@@ -24,6 +24,7 @@ function TrainingSetupPage() {
   const { user } = useAuthContext();
 
   const [userScripts, setUserScripts]       = useState([]);
+  const [selfScripts, setSelfScripts]       = useState([]);
   const [selectedScript, setSelectedScript] = useState(null);
   const [focus, setFocus]                   = useState('scripted');
   const [isLoading, setIsLoading]           = useState(false);
@@ -31,18 +32,24 @@ function TrainingSetupPage() {
   const [freeTopic, setFreeTopic]           = useState('');
   const [showTopicModal, setShowTopicModal] = useState(false);
 
-  /* Load the user’s auto-generated scripts from Supabase */
+  /* Load the user’s scripts from Supabase */
   const loadScripts = useCallback(async () => {
     if (!user?.id) return;
     setIsLoading(true);
     try {
-      const { data, error } = await getScripts(user.id, 'auto-generated');
-      if (error) throw error;
+      const [genRes, selfRes] = await Promise.all([
+        getScripts(user.id, 'auto-generated'),
+        getScripts(user.id, 'self-authored'),
+      ]);
       setUserScripts(
-        (Array.isArray(data) ? data : []).map(s => ({ ...s, type: 'generated' }))
+        (Array.isArray(genRes.data) ? genRes.data : []).map(s => ({ ...s, type: 'generated' }))
+      );
+      setSelfScripts(
+        (Array.isArray(selfRes.data) ? selfRes.data : []).map(s => ({ ...s, type: 'myScripts' }))
       );
     } catch {
       setUserScripts([]);
+      setSelfScripts([]);
     } finally {
       setIsLoading(false);
     }
@@ -57,16 +64,16 @@ function TrainingSetupPage() {
   );
 
   const allAvailableScripts = useMemo(
-    () => [...systemScripts, ...userScripts],
-    [systemScripts, userScripts]
+    () => [...systemScripts, ...selfScripts, ...userScripts],
+    [systemScripts, selfScripts, userScripts]
   );
 
   /* Apply filter chip */
   const filteredScripts = useMemo(() => {
-    if (scriptFilter === 'prewritten') return systemScripts;
+    if (scriptFilter === 'myScripts') return selfScripts;
     if (scriptFilter === 'generated')  return userScripts;
     return allAvailableScripts;
-  }, [scriptFilter, systemScripts, userScripts, allAvailableScripts]);
+  }, [scriptFilter, selfScripts, userScripts, allAvailableScripts]);
 
   /* Keep selectedScript in sync when filter changes */
   useEffect(() => {
@@ -91,6 +98,7 @@ function TrainingSetupPage() {
   };
 
   const noGeneratedScripts = scriptFilter === 'generated' && userScripts.length === 0 && !isLoading;
+  const noMyScripts = scriptFilter === 'myScripts' && selfScripts.length === 0 && !isLoading;
 
   return (
     <div className="inner-page training-setup-page">
@@ -107,7 +115,7 @@ function TrainingSetupPage() {
         className="btn-primary training-generate-btn"
         onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
       >
-        + Generate New Speech
+        Generate Speech
       </button>
 
       {/* Filter chips */}
@@ -137,6 +145,16 @@ function TrainingSetupPage() {
               Generate a Speech
             </button>
           </div>
+        ) : noMyScripts ? (
+          <div className="ts-empty-state">
+            <p className="ts-empty-text">You haven’t written any scripts yet.</p>
+            <button
+              className="btn-primary training-generate-btn"
+              onClick={() => navigate(ROUTES.SCRIPT_EDITOR)}
+            >
+              Write a Script
+            </button>
+          </div>
         ) : (
           <select
             className="form-select"
@@ -150,7 +168,7 @@ function TrainingSetupPage() {
             <option value="">— Select a script —</option>
             {filteredScripts.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.type === 'prewritten' ? '📋 ' : '🤖 '}{s.title || 'Untitled Script'}
+                {s.title || 'Untitled Script'}
               </option>
             ))}
           </select>
@@ -163,7 +181,7 @@ function TrainingSetupPage() {
           <div className="script-preview-header">
             <p className="script-preview-title">{selectedScript.title}</p>
             <span className={`script-preview-badge ${selectedScript.type}`}>
-              {selectedScript.type === 'prewritten' ? 'Pre-Written' : 'AI Generated'}
+              {selectedScript.type === 'myScripts' ? 'My Script' : selectedScript.type === 'generated' ? 'AI Generated' : 'Pre-Written'}
             </span>
           </div>
           <p className="script-preview-content">

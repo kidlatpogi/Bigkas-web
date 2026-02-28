@@ -46,29 +46,60 @@ class UserTokensResponse(BaseModel):
 async def get_user_tokens(user_id: str = Query(..., min_length=1)):
     """
     Get the current token balance for the authenticated user.
-    
+    Applies the daily PHT reset if needed so the returned value is always fresh.
+
     Returns:
         generation_tokens: Number of new generation tokens available
         regeneration_tokens: Number of regeneration tokens available
     """
+    from datetime import datetime, timezone, timedelta
+
     if not limiter_service.is_configured:
         raise HTTPException(
             status_code=503,
             detail="Script generation rate limiter is not configured on the backend.",
         )
-    
+
     async with httpx.AsyncClient() as client:
         profile = await limiter_service._fetch_profile_limits(client, user_id)
-        
+
         if not profile:
             return UserTokensResponse(
                 generation_tokens=10,
                 regeneration_tokens=10,
             )
-        
+
+        generation_tokens = int(profile.get("generation_tokens") or 10)
+        regeneration_tokens = int(profile.get("regeneration_tokens") or 10)
+
+        # Apply daily reset check (12:01 AM PHT) so the balance shown is always current
+        now = datetime.now(timezone.utc)
+        PHT = timezone(timedelta(hours=8))
+        token_reset_at = profile.get("token_reset_at")
+        should_reset = False
+        if token_reset_at:
+            reset_dt = datetime.fromisoformat(token_reset_at.replace("Z", "+00:00"))
+            now_pht = now.astimezone(PHT)
+            reset_pht = reset_dt.astimezone(PHT)
+            boundary_pht = now_pht.replace(hour=0, minute=1, second=0, microsecond=0)
+            if reset_pht < boundary_pht:
+                should_reset = True
+        else:
+            should_reset = True
+
+        if should_reset:
+            generation_tokens = 10
+            regeneration_tokens = 10
+            # Persist the reset so check_and_consume won’t double-reset later
+            await limiter_service._update_profile_limits(client, user_id, {
+                "generation_tokens": 10,
+                "regeneration_tokens": 10,
+                "token_reset_at": now.isoformat(),
+            })
+
         return UserTokensResponse(
-            generation_tokens=int(profile.get("generation_tokens") or 10),
-            regeneration_tokens=int(profile.get("regeneration_tokens") or 10),
+            generation_tokens=generation_tokens,
+            regeneration_tokens=regeneration_tokens,
         )
 
 
