@@ -126,6 +126,8 @@
 }
 
 /* ── Dark mode ── */
+[data-theme="dark"] .settings-page { background: #0B0B0D; }
+
 [data-theme="dark"] .settings-section-title {
   color: #F0F0F0;
 }

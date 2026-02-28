@@ -133,6 +133,8 @@
 }
 
 /* Dark mode */
+[data-theme="dark"] .training-setup-page { background: #0B0B0D; }
+
 [data-theme="dark"] .focus-option {
   background: #1E1E1E;
   border-color: #2E2E2E;

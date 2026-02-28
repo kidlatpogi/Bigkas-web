@@ -677,7 +677,7 @@
 .tp-modal-done:hover { opacity: 0.85; }
 
 /* ── Dark mode ── */
-[data-theme="dark"] .tp-page { background: #0E0E0E; }
+[data-theme="dark"] .tp-page { background: #0B0B0D; }
 [data-theme="dark"] .tp-camera-idle { background: #111; }
 
 [data-theme="dark"] .tp-mode-label { color: #F0F0F0; }

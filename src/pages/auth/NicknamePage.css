@@ -126,7 +126,7 @@
 }
 
 /* Dark mode */
-[data-theme="dark"] .nickname-page       { background: #121212; }
+[data-theme="dark"] .nickname-page       { background: #0B0B0D; }
 [data-theme="dark"] .nickname-container  { }
 [data-theme="dark"] .nickname-brand-text { color: #FFFFFF; }
 [data-theme="dark"] .nickname-title      { color: #FFFFFF; }

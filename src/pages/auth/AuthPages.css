@@ -484,7 +484,7 @@
    DARK MODE — Auth pages
    ═══════════════════════════════════════════ */
 [data-theme="dark"] .auth-page {
-  background: #121212;
+  background: #0B0B0D;
 }
 
 [data-theme="dark"] .auth-brand-panel {

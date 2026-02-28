@@ -531,7 +531,7 @@
 
 /* ── Dark mode ───────────────────────────────────────────────────── */
 [data-theme="dark"] .fh-page {
-  --bg: #121212;
+  --bg: #0B0B0D;
   --surface: #1E1E1E;
   --black: #F0F0F0;
   --border: #2A2A2A;

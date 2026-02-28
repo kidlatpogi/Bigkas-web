@@ -68,9 +68,9 @@ ul, ol {
 }
 
 [data-theme="dark"] .loading-screen {
-  background: #121212;
+  background: #0B0B0D;
 }
 
 [data-theme="dark"] .loading-logo {
-  color: #F0F0F0;
+  color: #F5F5F5;
 }

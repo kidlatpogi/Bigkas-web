@@ -375,7 +375,7 @@
 }
 
 /* ── Dark mode ── */
-[data-theme="dark"] .practice-page        { --bg: #121212; }
+[data-theme="dark"] .practice-page        { --bg: #0B0B0D; }
 [data-theme="dark"] .practice-back        { background: rgba(255,255,255,0.08); color: #F0F0F0; }
 [data-theme="dark"] .practice-back:hover  { background: rgba(255,255,255,0.13); }
 [data-theme="dark"] .practice-title       { color: #F0F0F0; }

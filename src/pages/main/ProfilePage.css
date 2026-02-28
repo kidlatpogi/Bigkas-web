@@ -284,6 +284,8 @@
   margin-top: 2px;
 }
 
+[data-theme="dark"] .profile-page { background: #0B0B0D; }
+
 [data-theme="dark"] .profile-avatar-ring {
   border-color: #9ca3af;
   background: #1f2937;

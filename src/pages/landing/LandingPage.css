@@ -1351,7 +1351,7 @@ html {
    DARK MODE — Landing overrides
    ═══════════════════════════════════════════ */
 [data-theme="dark"] .landing {
-  --bg: #121212;
+  --bg: #0B0B0D;
   --surface: #1E1E1E;
   --white: #1E1E1E;
   --gray-100: #1A1A1A;

@@ -80,7 +80,7 @@
 
 /* Dark mode variables */
 [data-theme="dark"] {
-  --color-background: #121212;
+  --color-background: #0B0B0D;
   --color-surface: #1E1E1E;
   --color-surface-hover: #2A2A2A;
   --color-text-primary: #F0F0F0;
