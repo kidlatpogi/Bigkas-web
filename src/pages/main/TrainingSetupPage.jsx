@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { getScripts } from '../../api/scriptsApi';
-import { SYSTEM_PREWRITTEN_SPEECHES } from '../../utils/practiceData';
 import BackButton from '../../components/common/BackButton';
 import FilterTabs from '../../components/common/FilterTabs';
 import { ROUTES } from '../../utils/constants';
@@ -52,22 +51,16 @@ function TrainingSetupPage() {
 
   useEffect(() => { loadScripts(); }, [loadScripts]);
 
-  /* Combined + typed system speeches */
-  const systemScripts = useMemo(
-    () => SYSTEM_PREWRITTEN_SPEECHES.map(s => ({ ...s, type: 'prewritten' })),
-    []
-  );
-
-  /* Apply tab filter */
+  /* Apply tab filter — Self-Authored tab shows only user's own scripts (no pre-written) */
   const filteredScripts = useMemo(() => {
     return activeTab === 'generated'
       ? userScripts
-      : [...systemScripts, ...selfScripts];
-  }, [activeTab, userScripts, systemScripts, selfScripts]);
+      : selfScripts;
+  }, [activeTab, userScripts, selfScripts]);
 
   const noScripts = !isLoading && (
     (activeTab === 'generated' && userScripts.length === 0) ||
-    (activeTab === 'self' && selfScripts.length === 0 && systemScripts.length === 0)
+    (activeTab === 'self' && selfScripts.length === 0)
   );
 
   /* Keep selectedScript in sync when tab/filter changes */
@@ -107,8 +100,16 @@ function TrainingSetupPage() {
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
 
+      {/* Quick-action: generate new speech (always visible) */}
+      <button
+        className="btn-primary training-generate-btn"
+        onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
+      >
+        Generate Speech
+      </button>
+
       {/* ── Script selection ── */}
-      <p className="section-label">Select Script</p>
+      <p className="section-label" style={{ marginTop: 20 }}>Select Script</p>
 
       {/* FilterTabs — Self-Authored vs AI Generated */}
       <div style={{ marginBottom: '16px' }}>
@@ -121,14 +122,6 @@ function TrainingSetupPage() {
           onChange={handleTabChange}
         />
       </div>
-
-      {/* Quick-action: generate new speech (always visible) */}
-      <button
-        className="btn-primary training-generate-btn"
-        onClick={() => navigate(ROUTES.GENERATE_SCRIPT)}
-      >
-        Generate Speech
-      </button>
 
       {/* Script dropdown */}
       <div className="form-group" style={{ marginTop: 12 }}>
