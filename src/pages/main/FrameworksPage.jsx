@@ -4,6 +4,7 @@ import './FrameworksPage.css';
 
 /* ─── Category definitions ──────────────────────────────────────────────────── */
 const CATEGORIES = [
+  { id: 'all', label: 'All' },
   {
     id: 'frameworks',
     label: 'Frameworks',
@@ -209,6 +210,39 @@ export default function FrameworksPage() {
   /* ── Load items when tab changes ── */
   useEffect(() => {
     let cancelled = false;
+
+    if (activeTab === 'all') {
+      /* Load all category files in parallel, combine results */
+      const allCats = CATEGORIES.filter((c) => c.file);
+      const loaders = allCats.map((c) =>
+        dataCache[c.id]
+          ? Promise.resolve(dataCache[c.id])
+          : c.file().then((mod) => {
+              const raw  = mod.default ?? mod;
+              const data = Array.isArray(raw) ? raw : Object.values(raw);
+              dataCache[c.id] = data;
+              return data;
+            }),
+      );
+
+      if (!dataCache['all']) {
+        Promise.resolve().then(() => { if (!cancelled) { setLoading(true); setItems([]); } });
+      }
+
+      Promise.all(loaders)
+        .then((results) => {
+          if (!cancelled) {
+            const combined = results.flat();
+            dataCache['all'] = combined;
+            setItems(combined);
+            setLoading(false);
+          }
+        })
+        .catch(() => { if (!cancelled) setLoading(false); });
+
+      return () => { cancelled = true; };
+    }
+
     const cat = CATEGORIES.find((c) => c.id === activeTab);
 
     // Resolve from cache (immediate) or dynamic import (async) — same async chain

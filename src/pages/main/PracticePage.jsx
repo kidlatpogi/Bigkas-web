@@ -144,11 +144,11 @@ export default function PracticePage() {
     <div className="practice-page">
       <div className="practice-wrap">
 
-        {/* Back button */}
-        <BackButton onClick={() => navigate(-1)} />
-
         {/* Header */}
-        <h1 className="practice-title">Practice{'\n'}Setup</h1>
+        <div className="practice-header">
+          <BackButton onClick={() => navigate(-1)} />
+          <h1 className="practice-title">Practice Setup</h1>
+        </div>
         <p className="practice-sub">
           Choose a speech to preview, generate your own, or try a random topic!
         </p>

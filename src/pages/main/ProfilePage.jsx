@@ -14,13 +14,6 @@ const CameraIcon = ({ size = 28 }) => (
   </svg>
 );
 
-const ChevronIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6"/>
-  </svg>
-);
-
 function ProfilePage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -151,7 +144,7 @@ function ProfilePage() {
     setFormData(initialData);
     setErrors({});
     setAvatarModalOpen(false);
-    navigate(ROUTES.DASHBOARD);
+    navigate(ROUTES.SETTINGS);
   };
 
   const initials = formData.firstName
@@ -253,26 +246,6 @@ function ProfilePage() {
             onChange={e => updateField('nickname', e.target.value)}
             placeholder="@nickname"
           />
-        </div>
-
-        {/* Chevron rows */}
-        <div className="profile-settings-list">
-          <button
-            className="profile-setting-row"
-            type="button"
-            onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
-          >
-            <span>Change Password</span>
-            <ChevronIcon />
-          </button>
-          <button
-            className="profile-setting-row"
-            type="button"
-            onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
-          >
-            <span>Account Settings</span>
-            <ChevronIcon />
-          </button>
         </div>
 
         {/* Action buttons */}

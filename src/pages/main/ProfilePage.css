@@ -216,14 +216,15 @@
 }
 
 .profile-btn-cancel {
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  color: #111827;
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  border: 1.5px solid #D5D5D5;
+  background: transparent;
+  color: #888;
+  box-shadow: none;
 }
 
 .profile-btn-cancel:hover {
-  background: #f8fafc;
+  border-color: #aaa;
+  color: #555;
 }
 
 .profile-avatar-modal-overlay {
@@ -231,7 +232,7 @@
   inset: 0;
   background: rgba(17, 24, 39, 0.42);
   display: grid;
-  place-items: end center;
+  place-items: center;
   z-index: 60;
   padding: 16px;
 }
@@ -278,10 +279,16 @@
 }
 
 .profile-avatar-modal-cancel {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  color: #374151;
+  background: transparent;
+  border: 1.5px solid #D5D5D5;
+  color: #888;
   margin-top: 2px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.profile-avatar-modal-cancel:hover {
+  border-color: #aaa;
+  color: #555;
 }
 
 [data-theme="dark"] .profile-page { background: #0B0B0D; }
@@ -348,13 +355,14 @@
 }
 
 [data-theme="dark"] .profile-btn-cancel {
-  border-color: #d1d5db;
-  background: #ffffff;
-  color: #111827;
+  border-color: #555;
+  background: transparent;
+  color: #888;
 }
 
 [data-theme="dark"] .profile-btn-cancel:hover {
-  background: #f8fafc;
+  border-color: #888;
+  color: #aaa;
 }
 
 [data-theme="dark"] .profile-avatar-modal {
@@ -376,8 +384,9 @@
 }
 
 [data-theme="dark"] .profile-avatar-modal-cancel {
-  border-color: #374151;
-  background: #111827;
+  border-color: #555;
+  background: transparent;
+  color: #888;
 }
 
 @media (max-width: 640px) {

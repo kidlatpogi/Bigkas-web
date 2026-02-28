@@ -44,7 +44,7 @@ function AllSessionsPage() {
 
   return (
     <div className="inner-page">
-      <div className="inner-page-header">
+      <div className="inner-page-header centered-header">
         <BackButton />
         <h1 className="inner-page-title">All Sessions</h1>
       </div>

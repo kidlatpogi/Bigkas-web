@@ -45,6 +45,22 @@
   margin: 0;
 }
 
+/* Centered header — back button pinned left, title centered */
+.inner-page-header.centered-header {
+  justify-content: center;
+  position: relative;
+}
+
+.inner-page-header.centered-header .inner-page-back {
+  position: absolute;
+  left: 0;
+}
+
+.inner-page-header.centered-header .inner-page-title {
+  text-align: center;
+  flex: 1;
+}
+
 /* ── Section heading ── */
 .section-label {
   font-size: 13px;
