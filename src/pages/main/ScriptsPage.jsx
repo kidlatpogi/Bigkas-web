@@ -8,6 +8,7 @@ import FilterTabs from '../../components/common/FilterTabs';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import './InnerPages.css';
 import './ScriptsPage.css';
+import './FrameworksPage.css';
 
 function IconSearch() {
   return (
@@ -158,36 +159,36 @@ function ScriptsPage() {
       </div>
 
       {/* Search + Sort */}
-      <div className="sc-controls">
-        <div className="sc-search-wrap">
-          <span className="sc-search-icon"><IconSearch /></span>
+      <div className="fh-controls">
+        <div className="fh-search-wrap">
+          <span className="fh-search-icon"><IconSearch /></span>
           <input
-            className="sc-search"
+            className="fh-search"
             type="search"
             placeholder="Search scripts…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
             aria-label="Search scripts"
           />
           {query && (
-            <button className="sc-search-clear" onClick={() => setQuery('')} aria-label="Clear search">✕</button>
+            <button className="fh-search-clear" onClick={() => { setQuery(''); setPage(1); }} aria-label="Clear search">✕</button>
           )}
         </div>
-        <div className="sc-sort-wrap">
-          <svg className="sc-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <div className="fh-sort-wrap">
+          <svg className="fh-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
           </svg>
           <select
-            className="sc-sort"
+            className="fh-sort"
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
+            onChange={(e) => { setSortOrder(e.target.value); setPage(1); }}
             aria-label="Sort order"
           >
             <option value="recent">Most Recent</option>
             <option value="az">A → Z</option>
             <option value="za">Z → A</option>
           </select>
-          <svg className="sc-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <svg className="fh-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
@@ -230,7 +231,7 @@ function ScriptsPage() {
             {/* Top row: type badge + menu */}
             <div className="script-card-top">
               <span className={`script-badge ${script.type === 'auto-generated' ? 'generated' : 'self'}`}>
-                {script.type === 'auto-generated' ? 'Auto-Generated' : 'Self-Authored'}
+                {script.type === 'auto-generated' ? 'AI Generated' : 'Self-Authored'}
               </span>
               <button
                 className="script-menu-btn"

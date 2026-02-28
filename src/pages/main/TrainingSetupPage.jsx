@@ -181,7 +181,7 @@ function TrainingSetupPage() {
           <div className="script-preview-header">
             <p className="script-preview-title">{selectedScript.title}</p>
             <span className={`script-preview-badge ${selectedScript.type}`}>
-              {selectedScript.type === 'myScripts' ? 'My Script' : selectedScript.type === 'generated' ? 'AI Generated' : 'Pre-Written'}
+              {selectedScript.type === 'myScripts' ? 'Self-Authored' : selectedScript.type === 'generated' ? 'AI Generated' : 'Pre-Written'}
             </span>
           </div>
           <p className="script-preview-content">

@@ -317,13 +317,12 @@ function GenerateScriptPage() {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group generate-modal-content">
               <label className="form-label">Content</label>
               <textarea
                 className="form-textarea"
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
-                rows={8}
               />
             </div>
 
