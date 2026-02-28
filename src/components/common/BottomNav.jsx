@@ -8,8 +8,10 @@ import {
   IoBookOutline,
   IoSettings,
   IoSettingsOutline,
-  IoTime,
-  IoTimeOutline,
+  IoStatsChart,
+  IoStatsChartOutline,
+  IoPerson,
+  IoPersonOutline,
 } from 'react-icons/io5';
 import { ROUTES } from '../../utils/constants';
 import './BottomNav.css';
@@ -23,34 +25,38 @@ const ICON_COMPONENTS = {
   'book-outline':          IoBookOutline,
   settings:                IoSettings,
   'settings-outline':      IoSettingsOutline,
-  time:                    IoTime,
-  'time-outline':          IoTimeOutline,
+  'stats-chart':           IoStatsChart,
+  'stats-chart-outline':   IoStatsChartOutline,
+  person:                  IoPerson,
+  'person-outline':        IoPersonOutline,
 };
 
 const TAB_ICONS = {
-  History:   { focused: 'time',          outline: 'time-outline' },
-  Scripts:   { focused: 'document-text', outline: 'document-text-outline' },
-  Dashboard: { focused: 'home',          outline: 'home-outline' },
-  Training:  { focused: 'book',          outline: 'book-outline' },
-  Settings:  { focused: 'settings',      outline: 'settings-outline' },
+  Scripts:   { focused: 'document-text',  outline: 'document-text-outline' },
+  Progress:  { focused: 'stats-chart',    outline: 'stats-chart-outline'   },
+  Home:      { focused: 'home',           outline: 'home-outline'           },
+  Learn:     { focused: 'book',           outline: 'book-outline'           },
+  Profile:   { focused: 'person',         outline: 'person-outline'         },
+  Settings:  { focused: 'settings',       outline: 'settings-outline'       },
 };
 
 /**
- * 5-tab Bottom Nav with a Floating Action Button (FAB) center Dashboard.
- * Layout: History · Scripts · [Home FAB] · Training · Settings
+ * 6-tab Bottom Nav with a Floating Action Button (FAB) center Dashboard.
+ * Layout: Scripts · Progress · [Home FAB] · Learn · Profile · Settings
  */
 const TABS = [
-  { to: ROUTES.HISTORY,    label: 'History' },
-  { to: ROUTES.SCRIPTS,    label: 'Scripts' },
-  { to: ROUTES.DASHBOARD,  label: 'Dashboard', center: true },
-  { to: ROUTES.FRAMEWORKS, label: 'Training' },
+  { to: ROUTES.SCRIPTS,    label: 'Scripts'  },
+  { to: ROUTES.PROGRESS,   label: 'Progress' },
+  { to: ROUTES.DASHBOARD,  label: 'Home',    center: true },
+  { to: ROUTES.FRAMEWORKS, label: 'Learn'    },
+  { to: ROUTES.PROFILE,    label: 'Profile'  },
   { to: ROUTES.SETTINGS,   label: 'Settings' },
 ];
 
 /**
- * BottomNav — floating pill tab bar.
+ * BottomNav — floating pill tab bar with icon + text labels.
  * The center Dashboard tab uses a raised FAB circle.
- * Active: icon filled; inactive: outline variant.
+ * Active: icon filled + label bold; inactive: outline icon + muted label.
  */
 export default function BottomNav() {
   const location = useLocation();
@@ -70,18 +76,24 @@ export default function BottomNav() {
             to={tab.to}
             className={[
               'bottom-nav-item',
-              tab.center  ? 'bottom-nav-center' : '',
-              active      ? 'active'            : '',
+              tab.center ? 'bottom-nav-center' : '',
+              active     ? 'active'            : '',
             ].filter(Boolean).join(' ')}
             aria-label={tab.label}
             aria-current={active ? 'page' : undefined}
           >
             {tab.center ? (
-              <span className="bottom-nav-fab">
-                <TabIcon size={28} aria-hidden="true" />
-              </span>
+              <>
+                <span className="bottom-nav-fab">
+                  <TabIcon size={26} aria-hidden="true" />
+                </span>
+                <span className="bottom-nav-label">{tab.label}</span>
+              </>
             ) : (
-              <TabIcon size={24} aria-hidden="true" />
+              <>
+                <TabIcon size={22} aria-hidden="true" />
+                <span className="bottom-nav-label">{tab.label}</span>
+              </>
             )}
           </NavLink>
         );

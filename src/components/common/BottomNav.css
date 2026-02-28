@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    BottomNav — floating pill + FAB center Home button
-   Layout: History · Scripts · [FAB Home] · Training · Settings
+   Layout: Scripts · Progress · [FAB Home] · Learn · Profile · Settings
    ═══════════════════════════════════════════════════════ */
 
 .bottom-nav {
@@ -15,46 +15,62 @@
   justify-content: center;
   gap: 0;
 
-  height: 64px;
-  padding: 0 8px 8px;      /* extra bottom padding keeps items above pill edge */
+  height: 72px;
+  padding: 0 10px 10px;
   background: #FFFFFF;
-  border-radius: 36px;
+  border-radius: 40px;
   box-shadow:
     0 8px 32px rgba(1, 1, 1, 0.14),
     0 2px 8px rgba(1, 1, 1, 0.07);
-  min-width: 280px;
+  min-width: 340px;
   overflow: visible;       /* allow FAB to poke above the pill */
 }
 
 /* ── Regular tab items ─────────────────────────────────── */
 .bottom-nav-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 44px;
-  border-radius: 22px;
-  color: rgba(1, 1, 1, 0.38);
+  justify-content: flex-end;
+  gap: 3px;
+  width: 50px;
+  height: 52px;
+  padding-bottom: 2px;
+  border-radius: 24px;
+  color: rgba(1, 1, 1, 0.35);
   text-decoration: none;
   transition: color 0.2s, transform 0.15s;
   flex-shrink: 0;
 }
 
 .bottom-nav-item:hover {
-  color: rgba(1, 1, 1, 0.65);
+  color: rgba(1, 1, 1, 0.62);
 }
 
 .bottom-nav-item.active {
   color: #010101;
 }
 
+/* ── Tab text label ────────────────────────────────────── */
+.bottom-nav-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font, 'Nunito', sans-serif);
+}
+
 /* ── Center FAB wrapper ────────────────────────────────── */
 .bottom-nav-center {
   width: 56px;
+  flex-direction: column;
+  gap: 3px;
   /* raise the whole link-element so the FAB circle sits above the bar */
   margin-bottom: auto;   /* pushes item to the top of the flex container */
-  margin-top: -20px;     /* extra lift above the pill */
-  color: transparent;    /* icon colour handled by the .bottom-nav-fab span */
+  margin-top: -18px;     /* extra lift above the pill */
+  color: rgba(1, 1, 1, 0.35);
 }
 
 /* The gold/dark circle behind the home icon */
@@ -62,15 +78,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: #010101;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.75);
   box-shadow:
     0 4px 16px rgba(1, 1, 1, 0.30),
     0 1px 4px  rgba(1, 1, 1, 0.15);
   transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.bottom-nav-center .bottom-nav-label {
+  color: rgba(1, 1, 1, 0.35);
+  transition: color 0.2s;
 }
 
 .bottom-nav-center:hover .bottom-nav-fab {
@@ -89,6 +110,10 @@
     0 1px 4px  rgba(251, 175, 0, 0.30);
 }
 
+.bottom-nav-center.active .bottom-nav-label {
+  color: #010101;
+}
+
 /* ── Dark mode ─────────────────────────────────────────── */
 [data-theme="dark"] .bottom-nav {
   background: #1E1E1E;
@@ -98,11 +123,11 @@
 }
 
 [data-theme="dark"] .bottom-nav-item {
-  color: rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.30);
 }
 
 [data-theme="dark"] .bottom-nav-item:hover {
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 [data-theme="dark"] .bottom-nav-item.active {
@@ -117,11 +142,23 @@
     0 1px 4px  rgba(0, 0, 0, 0.3);
 }
 
+[data-theme="dark"] .bottom-nav-center {
+  color: rgba(255, 255, 255, 0.30);
+}
+
+[data-theme="dark"] .bottom-nav-center .bottom-nav-label {
+  color: rgba(255, 255, 255, 0.30);
+}
+
 [data-theme="dark"] .bottom-nav-center.active .bottom-nav-fab {
   background: #FBAF00;
   color: #010101;
   box-shadow:
     0 4px 16px rgba(251, 175, 0, 0.45),
     0 1px 6px  rgba(251, 175, 0, 0.25);
+}
+
+[data-theme="dark"] .bottom-nav-center.active .bottom-nav-label {
+  color: #FBAF00;
 }
 

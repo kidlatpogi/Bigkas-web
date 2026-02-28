@@ -258,7 +258,6 @@ export default function FrameworksPage() {
       {/* ── Page Header ── */}
       <div className="fh-header">
         <h1 className="fh-title">Training Hub</h1>
-        <p className="fh-subtitle">Frameworks, tips, and skills to level up your speaking</p>
       </div>
 
       {/* ── Search + Sort row ── */}
@@ -284,16 +283,24 @@ export default function FrameworksPage() {
           )}
         </div>
 
-        <select
-          className="fh-sort"
-          value={sortOrder}
-          onChange={(e) => { setSortOrder(e.target.value); setPage(1); }}
-          aria-label="Sort order"
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+        <div className="fh-sort-wrap">
+          <svg className="fh-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+          </svg>
+          <select
+            className="fh-sort"
+            value={sortOrder}
+            onChange={(e) => { setSortOrder(e.target.value); setPage(1); }}
+            aria-label="Sort order"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+          <svg className="fh-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
       </div>
 
       {/* ── Category Tabs ── */}
