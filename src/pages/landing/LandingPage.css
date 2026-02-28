@@ -289,6 +289,11 @@ html {
   font-size: 13px;
 }
 
+/* Mobile drawer — hidden on desktop */
+.nav-drawer {
+  display: none;
+}
+
 /* Hamburger — 44px tap target */
 .nav-hamburger {
   display: none;
