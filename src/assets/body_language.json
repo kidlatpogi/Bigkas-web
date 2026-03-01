@@ -4,15 +4,11 @@
     "author": "Vanessa Van Edwards",
     "name": "The Hand Trust Rule",
     "summary": "Keeping hands visible to build instant trust with your audience.",
-    "steps": ["Keep hands above the table", "Use open palms", "Gestures should stay in the 'Power Box'"],
-    "youtubeId": "XJo6jhtSq78"
-  },
-  {
-    "id": "triple-nod",
-    "author": "Vanessa Van Edwards",
-    "name": "The Engagement Triple-Nod",
-    "summary": "A non-verbal way to encourage others to keep talking.",
-    "steps": ["Listen for a pause", "Give 3 slow nods", "Hold eye contact"],
+    "steps": [
+      "Keep hands above the table",
+      "Use open palms",
+      "Gestures should stay in the 'Power Box'"
+    ],
     "youtubeId": "XJo6jhtSq78"
   }
 ]

@@ -1,18 +1,26 @@
 [
   {
     "id": "threading",
-    "author": "Charisma on Command",
+    "author": "Vinh Giang",
     "name": "Conversational Threading",
     "summary": "How to never run out of things to say in any situation.",
-    "steps": ["Identify a keyword", "Follow that thread", "Ask a chunky question"],
-    "youtubeId": "PiNN-HmHu7A"
+    "steps": [
+      "Identify a keyword",
+      "Follow that thread",
+      "Ask a chunky question"
+    ],
+    "youtubeId": "fzW_vPrluU0"
   },
   {
     "id": "energy-matching",
     "author": "Vinh Giang",
     "name": "Match, Mirror, and Lead",
     "summary": "Adjusting your energy to match the room before leading them.",
-    "steps": ["Match energy level", "Mirror body language", "Gently lead the pace"],
+    "steps": [
+      "Match energy level",
+      "Mirror body language",
+      "Gently lead the pace"
+    ],
     "youtubeId": "ikbcrpowlIs"
   }
 ]

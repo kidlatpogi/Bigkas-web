@@ -203,10 +203,10 @@ export default function DashboardPage() {
   /* ── Lazily load all lesson sources and pick a daily featured entry ── */
   useEffect(() => {
     const SOURCES = [
-      { categoryId: 'frameworks',           file: () => import('../../assets/data/frameworks.json') },
-      { categoryId: 'tips_and_tricks',       file: () => import('../../assets/data/tips_and_tricks.json') },
-      { categoryId: 'communication_cheats',  file: () => import('../../assets/data/communication_cheats.json') },
-      { categoryId: 'communication_skills',  file: () => import('../../assets/data/communication_skills.json') },
+      { categoryId: 'frameworks', file: () => import('../../assets/data/frameworks.json') },
+      { categoryId: 'tips_and_tricks', file: () => import('../../assets/data/tips_and_tricks.json') },
+      { categoryId: 'communication_cheats', file: () => import('../../assets/data/communication_cheats.json') },
+      { categoryId: 'communication_skills', file: () => import('../../assets/data/communication_skills.json') },
     ];
 
     Promise.all(
@@ -300,7 +300,7 @@ export default function DashboardPage() {
         <div className="dash-stat-divider" />
         <div className="dash-stat">
           <IoStar size={24} color="#FCBA04" className="dash-stat-icon" aria-hidden="true" />
-          <span className="dash-stat-value">{averageScore}</span>
+          <span className="dash-stat-value">{String(averageScore).padStart(2, '0')}</span>
           <span className="dash-stat-label">AVG SCORE</span>
         </div>
         <div className="dash-stat-divider" />
