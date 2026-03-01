@@ -82,7 +82,9 @@
 }
 
 /* Removes browser default clear œ• for search inputs */
-.fh-search::-webkit-search-cancel-button { display: none; }
+.fh-search::-webkit-search-cancel-button {
+  display: none;
+}
 
 .fh-search-clear {
   position: absolute;
@@ -97,7 +99,9 @@
   transition: color 0.15s;
 }
 
-.fh-search-clear:hover { color: var(--black); }
+.fh-search-clear:hover {
+  color: var(--black);
+}
 
 .fh-sort-wrap {
   position: relative;
@@ -111,7 +115,7 @@
   left: 12px;
   width: 15px;
   height: 15px;
-  color: var(--text-muted, rgba(1,1,1,0.45));
+  color: var(--text-muted, rgba(1, 1, 1, 0.45));
   pointer-events: none;
   flex-shrink: 0;
 }
@@ -121,7 +125,7 @@
   right: 12px;
   width: 14px;
   height: 14px;
-  color: var(--text-muted, rgba(1,1,1,0.45));
+  color: var(--text-muted, rgba(1, 1, 1, 0.45));
   pointer-events: none;
 }
 
@@ -142,7 +146,9 @@
   transition: border-color 0.18s;
 }
 
-.fh-sort:focus { border-color: var(--primary); }
+.fh-sort:focus {
+  border-color: var(--primary);
+}
 
 /* ── Category Tabs ───────────────────────────────────────────────── */
 .fh-tabs {
@@ -154,7 +160,9 @@
   margin-bottom: 24px;
 }
 
-.fh-tabs::-webkit-scrollbar { display: none; }
+.fh-tabs::-webkit-scrollbar {
+  display: none;
+}
 
 .fh-tab {
   flex-shrink: 0;
@@ -200,7 +208,9 @@
 }
 
 @keyframes fh-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .fh-empty {
@@ -314,7 +324,9 @@
   transition: opacity 0.2s;
 }
 
-.fh-card-btn:hover { opacity: 0.82; }
+.fh-card-btn:hover {
+  opacity: 0.82;
+}
 
 /* ── Pagination ──────────────────────────────────────────────────── */
 .fh-pagination {
@@ -431,6 +443,12 @@
 .fh-modal-close {
   width: 36px;
   height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
+  padding: 0;
+  box-sizing: border-box;
   border-radius: 50%;
   border: 1.5px solid var(--border);
   background: transparent;
@@ -440,11 +458,13 @@
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  line-height: 0;
+  overflow: hidden;
   transition: background 0.18s, border-color 0.18s;
 }
 
 .fh-modal-close:hover {
-  background: #F0F0F0;
+  background: #E73E52;
   border-color: #CACACA;
 }
 
@@ -549,7 +569,9 @@
   transform: translateY(-1px);
 }
 
-.fh-modal-link:active { transform: scale(0.98); }
+.fh-modal-link:active {
+  transform: scale(0.98);
+}
 
 /* ── Dark mode ───────────────────────────────────────────────────── */
 [data-theme="dark"] .fh-page {
@@ -586,7 +608,9 @@
   color: #F0F0F0;
 }
 
-[data-theme="dark"] .fh-modal { background: #1E1E1E; }
+[data-theme="dark"] .fh-modal {
+  background: #1E1E1E;
+}
 
 [data-theme="dark"] .fh-modal-close {
   color: #F0F0F0;
@@ -598,11 +622,27 @@
   border-color: #F0F0F0;
 }
 
-[data-theme="dark"] .fh-modal-step-row { background: #2A2A2A; }
-[data-theme="dark"] .fh-modal-step-text { color: #F0F0F0; }
-[data-theme="dark"] .fh-modal-steps-label { color: rgba(240, 240, 240, 0.3); }
-[data-theme="dark"] .fh-modal-link { background: #FCBA04; color: #010101; box-shadow: 0 4px 14px rgba(252, 186, 4, 0.25); }
-[data-theme="dark"] .fh-modal-link:hover { background: #ffc72e; }
+[data-theme="dark"] .fh-modal-step-row {
+  background: #2A2A2A;
+}
+
+[data-theme="dark"] .fh-modal-step-text {
+  color: #F0F0F0;
+}
+
+[data-theme="dark"] .fh-modal-steps-label {
+  color: rgba(240, 240, 240, 0.3);
+}
+
+[data-theme="dark"] .fh-modal-link {
+  background: #FCBA04;
+  color: #010101;
+  box-shadow: 0 4px 14px rgba(252, 186, 4, 0.25);
+}
+
+[data-theme="dark"] .fh-modal-link:hover {
+  background: #ffc72e;
+}
 
 /* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 640px) {
@@ -610,15 +650,22 @@
     grid-template-columns: 1fr;
   }
 
-  .fh-title { font-size: 23px; }
+  .fh-title {
+    font-size: 23px;
+  }
 
   .fh-controls {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .fh-sort-wrap { width: 100%; }
-  .fh-sort { width: 100%; }
+  .fh-sort-wrap {
+    width: 100%;
+  }
+
+  .fh-sort {
+    width: 100%;
+  }
 
   .fh-modal-backdrop {
     padding: 0;
@@ -630,4 +677,3 @@
     max-height: 92vh;
   }
 }
-
