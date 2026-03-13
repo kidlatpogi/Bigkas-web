@@ -5,9 +5,12 @@ import { buildRoute, getScoreTier, ROUTES } from '../../utils/constants';
 import { formatDate, formatDuration } from '../../utils/formatters';
 import './InnerPages.css';
 
+const FILTER_REFERENCE_NOW = Date.now();
+
 function HistoryPage() {
   const navigate = useNavigate();
   const { sessions, fetchSessions, loadMoreSessions, isLoading, hasMore, error } = useSessionContext();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [scoreFilter, setScoreFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
@@ -17,8 +20,6 @@ function HistoryPage() {
   }, [fetchSessions]);
 
   const filteredSessions = useMemo(() => {
-    const now = Date.now();
-
     return sessions.filter((session) => {
       const score = session.confidence_score ?? 0;
       const tier = getScoreTier(score);
@@ -34,7 +35,7 @@ function HistoryPage() {
         (scoreFilter === 'needs-work' && tier.label === 'Needs Work');
 
       const createdAt = new Date(session.created_at).getTime();
-      const daysAgo = Number.isFinite(createdAt) ? (now - createdAt) / (1000 * 60 * 60 * 24) : Infinity;
+      const daysAgo = Number.isFinite(createdAt) ? (FILTER_REFERENCE_NOW - createdAt) / (1000 * 60 * 60 * 24) : Infinity;
       const matchesDate =
         dateFilter === 'all' ||
         (dateFilter === '7d' && daysAgo <= 7) ||
@@ -49,13 +50,13 @@ function HistoryPage() {
     <div className="inner-page">
       <div className="inner-page-header">
         <h1 className="inner-page-title">History</h1>
-        <span style={{ fontSize: 14, color: '#888' }}>
+        <span className="history-session-count">
           {sessions.length > 0 ? `${sessions.length} session${sessions.length !== 1 ? 's' : ''}` : ''}
         </span>
       </div>
 
       {isLoading && sessions.length === 0 && (
-        <div className="page-loading">Loading sessions…</div>
+        <div className="page-loading">Loading sessions...</div>
       )}
 
       {error && !isLoading && (
@@ -64,9 +65,8 @@ function HistoryPage() {
 
       {!isLoading && !error && sessions.length === 0 && (
         <div className="empty-state">
-          <span className="empty-icon">📝</span>
           <p className="empty-title">No sessions yet</p>
-              <span className="history-session-count">
+          <p className="empty-desc">Start practicing to see your history here.</p>
           <button
             className="btn-primary"
             style={{ marginTop: 16 }}
@@ -75,37 +75,37 @@ function HistoryPage() {
             Start Practice
           </button>
         </div>
-                    <div className="history-search-wrap">
-                      <input
-                        id="history-search"
-                        type="search"
-                        className="form-input history-search-input"
-                        placeholder="Search by script or spoken text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                      {searchQuery && (
-                        <button
-                          type="button"
-                          className="history-search-clear"
-                          onClick={() => setSearchQuery('')}
-                          aria-label="Clear history search"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                id="history-search"
-                type="search"
-                className="form-input"
-                placeholder="Search by script or spoken text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+      )}
+
+      {!isLoading && !error && sessions.length > 0 && (
+        <div className="page-card history-controls-card">
+          <div className="history-controls-grid">
+            <div className="form-group history-control-group">
+              <label htmlFor="history-search" className="form-label">Search Session Text</label>
+              <div className="history-search-wrap">
+                <input
+                  id="history-search"
+                  type="search"
+                  className="form-input history-search-input"
+                  placeholder="Search by script or spoken text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    className="history-search-clear"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear history search"
+                  >
+                    x
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="history-filter-row">
-              <div className="form-group" style={{ marginBottom: 0 }}>
+              <div className="form-group history-control-group">
                 <label htmlFor="history-score-filter" className="form-label">Score</label>
                 <select
                   id="history-score-filter"
@@ -121,7 +121,7 @@ function HistoryPage() {
                 </select>
               </div>
 
-              <div className="form-group" style={{ marginBottom: 0 }}>
+              <div className="form-group history-control-group">
                 <label htmlFor="history-date-filter" className="form-label">Date Range</label>
                 <select
                   id="history-date-filter"
@@ -134,10 +134,10 @@ function HistoryPage() {
                   <option value="30d">Last 30 days</option>
                   <option value="90d">Last 90 days</option>
                 </select>
-              <div className="history-load-more-wrap">
+              </div>
             </div>
           </div>
-                  style={{ width: 'auto', padding: '10px 28px' }}
+
           <p className="history-results-count">
             Showing {filteredSessions.length} of {sessions.length} sessions
           </p>
@@ -154,7 +154,7 @@ function HistoryPage() {
       <div className="sessions-list">
         {filteredSessions.map((s) => {
           const score = s.confidence_score ?? 0;
-          const tier  = getScoreTier(score);
+          const tier = getScoreTier(score);
           return (
             <div
               key={s.id}
@@ -167,12 +167,12 @@ function HistoryPage() {
                 </p>
                 <p className="session-row-date">
                   {formatDate(s.created_at)}
-                  {s.duration_sec ? ` · ${formatDuration(s.duration_sec)}` : ''}
+                  {s.duration_sec ? ` - ${formatDuration(s.duration_sec)}` : ''}
                 </p>
               </div>
               <span
                 className="score-badge"
-                style={{ background: tier.color + '22', color: tier.color }}
+                style={{ background: `${tier.color}22`, color: tier.color }}
               >
                 {score}
               </span>
@@ -182,14 +182,14 @@ function HistoryPage() {
       </div>
 
       {hasMore && (
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <div className="history-load-more-wrap">
           <button
             className="btn-secondary"
             style={{ width: 'auto', padding: '10px 28px' }}
             onClick={loadMoreSessions}
             disabled={isLoading}
           >
-            {isLoading ? 'Loading…' : 'Load More'}
+            {isLoading ? 'Loading...' : 'Load More'}
           </button>
         </div>
       )}
@@ -198,4 +198,3 @@ function HistoryPage() {
 }
 
 export default HistoryPage;
-
