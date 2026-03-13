@@ -364,7 +364,7 @@ function LoginPage() {
 
           <div className="auth-footer">
             <p className="auth-footer-label">DON'T HAVE AN ACCOUNT?</p>
-            <Link to={ROUTES.REGISTER} className="auth-link">REGISTER</Link>
+            <Link to={ROUTES.REGISTER} className="auth-link">Create Account</Link>
           </div>
         </div>
       </div>
