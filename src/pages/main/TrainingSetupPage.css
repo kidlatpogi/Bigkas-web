@@ -117,10 +117,36 @@
   border-radius: 14px;
 }
 
+.ts-select-script-label {
+  margin-top: 20px;
+}
+
+.ts-filter-tabs-wrap {
+  margin-bottom: 16px;
+}
+
+.ts-script-select-group {
+  margin-top: 12px;
+}
+
+.ts-loading-text {
+  color: #888;
+  font-size: 14px;
+  margin: 0;
+}
+
 .form-hint {
   font-size: 13px;
   color: #888;
   margin-top: 4px;
+}
+
+.ts-focus-label {
+  margin-top: 8px;
+}
+
+.ts-action-row {
+  margin-top: 32px;
 }
 
 .script-preview-card {
@@ -222,6 +248,7 @@
 [data-theme="dark"] .training-setup-page { background: #0B0B0D; }
 [data-theme="dark"] .script-preview-title   { color: #F0F0F0; }
 [data-theme="dark"] .script-preview-content { color: rgba(255,255,255,0.5); }
+[data-theme="dark"] .ts-loading-text { color: rgba(255,255,255,0.5); }
 
 [data-theme="dark"] .focus-option {
   background: #1E1E1E;

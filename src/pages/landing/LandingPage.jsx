@@ -272,7 +272,7 @@ export default function LandingPage() {
   return (
     <div className="landing">
       {/* ══════ NAVIGATION ══════ */}
-      <nav className="landing-nav">
+      <nav className="landing-nav" aria-label="Primary landing navigation">
         <div className="nav-inner">
           <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img src={bigkasLogo} alt="Bigkas logo" className="logo-img" />

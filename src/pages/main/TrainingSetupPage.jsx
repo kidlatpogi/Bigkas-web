@@ -17,6 +17,14 @@ function TrainingSetupPage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
 
+  const handleSafeBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+    navigate(ROUTES.PRACTICE);
+  }, [navigate]);
+
   const [userScripts, setUserScripts]       = useState([]);
   const [selfScripts, setSelfScripts]       = useState([]);
   const [selectedScript, setSelectedScript] = useState(null);
@@ -96,7 +104,7 @@ function TrainingSetupPage() {
   return (
     <div className="inner-page training-setup-page">
       <div className="inner-page-header training-setup-header">
-        <BackButton onClick={() => navigate(-1)} />
+        <BackButton onClick={handleSafeBack} />
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
 
@@ -109,10 +117,10 @@ function TrainingSetupPage() {
       </button>
 
       {/* ── Script selection ── */}
-      <p className="section-label" style={{ marginTop: 20 }}>Select Script</p>
+      <p className="section-label ts-select-script-label">Select Script</p>
 
       {/* FilterTabs — Self-Authored vs AI Generated */}
-      <div style={{ marginBottom: '16px' }}>
+      <div className="ts-filter-tabs-wrap">
         <FilterTabs
           tabs={[
             { label: 'Self-Authored', value: 'self' },
@@ -124,9 +132,9 @@ function TrainingSetupPage() {
       </div>
 
       {/* Script dropdown */}
-      <div className="form-group" style={{ marginTop: 12 }}>
+      <div className="form-group ts-script-select-group">
         {isLoading ? (
-          <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
+          <p className="ts-loading-text">Loading scripts…</p>
         ) : noGeneratedScripts ? (
           <div className="ts-empty-state">
             <p className="ts-empty-text">You haven’t generated any AI scripts yet.</p>
@@ -180,7 +188,7 @@ function TrainingSetupPage() {
       )}
 
       {/* Focus selection */}
-      <p className="section-label" style={{ marginTop: 8 }}>Choose Your Focus</p>
+      <p className="section-label ts-focus-label">Choose Your Focus</p>
       <div className="focus-options" role="radiogroup" aria-label="Choose your focus">
         {FOCUS_OPTIONS.map((opt) => (
           <div
@@ -219,8 +227,8 @@ function TrainingSetupPage() {
       </div>
 
       {/* Actions */}
-      <div className="btn-row" style={{ marginTop: 32 }}>
-        <button className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
+      <div className="btn-row ts-action-row">
+        <button className="btn-secondary" onClick={handleSafeBack}>Cancel</button>
         <button
           className="btn-primary"
           onClick={handleStart}
