@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { buildRoute, getScoreTier, ROUTES } from '../../utils/constants';
@@ -8,10 +8,42 @@ import './InnerPages.css';
 function HistoryPage() {
   const navigate = useNavigate();
   const { sessions, fetchSessions, loadMoreSessions, isLoading, hasMore, error } = useSessionContext();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [scoreFilter, setScoreFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
 
   useEffect(() => {
     fetchSessions(1, true);
   }, [fetchSessions]);
+
+  const filteredSessions = useMemo(() => {
+    const now = Date.now();
+
+    return sessions.filter((session) => {
+      const score = session.confidence_score ?? 0;
+      const tier = getScoreTier(score);
+      const targetText = (session.target_text || 'Practice session').toLowerCase();
+      const query = searchQuery.trim().toLowerCase();
+
+      const matchesQuery = !query || targetText.includes(query);
+      const matchesScore =
+        scoreFilter === 'all' ||
+        (scoreFilter === 'excellent' && tier.label === 'Excellent') ||
+        (scoreFilter === 'good' && tier.label === 'Good') ||
+        (scoreFilter === 'fair' && tier.label === 'Fair') ||
+        (scoreFilter === 'needs-work' && tier.label === 'Needs Work');
+
+      const createdAt = new Date(session.created_at).getTime();
+      const daysAgo = Number.isFinite(createdAt) ? (now - createdAt) / (1000 * 60 * 60 * 24) : Infinity;
+      const matchesDate =
+        dateFilter === 'all' ||
+        (dateFilter === '7d' && daysAgo <= 7) ||
+        (dateFilter === '30d' && daysAgo <= 30) ||
+        (dateFilter === '90d' && daysAgo <= 90);
+
+      return matchesQuery && matchesScore && matchesDate;
+    });
+  }, [dateFilter, scoreFilter, searchQuery, sessions]);
 
   return (
     <div className="inner-page">
@@ -45,8 +77,70 @@ function HistoryPage() {
         </div>
       )}
 
+      {!isLoading && !error && sessions.length > 0 && (
+        <div className="page-card history-controls-card">
+          <div className="history-controls-grid">
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label htmlFor="history-search" className="form-label">Search Session Text</label>
+              <input
+                id="history-search"
+                type="search"
+                className="form-input"
+                placeholder="Search by script or spoken text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            <div className="history-filter-row">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="history-score-filter" className="form-label">Score</label>
+                <select
+                  id="history-score-filter"
+                  className="form-select"
+                  value={scoreFilter}
+                  onChange={(e) => setScoreFilter(e.target.value)}
+                >
+                  <option value="all">All Scores</option>
+                  <option value="excellent">Excellent</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="needs-work">Needs Work</option>
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="history-date-filter" className="form-label">Date Range</label>
+                <select
+                  id="history-date-filter"
+                  className="form-select"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                >
+                  <option value="all">All Time</option>
+                  <option value="7d">Last 7 days</option>
+                  <option value="30d">Last 30 days</option>
+                  <option value="90d">Last 90 days</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <p className="history-results-count">
+            Showing {filteredSessions.length} of {sessions.length} sessions
+          </p>
+        </div>
+      )}
+
+      {!isLoading && !error && sessions.length > 0 && filteredSessions.length === 0 && (
+        <div className="empty-state">
+          <p className="empty-title">No matching sessions</p>
+          <p className="empty-desc">Try adjusting your search or filters.</p>
+        </div>
+      )}
+
       <div className="sessions-list">
-        {sessions.map((s) => {
+        {filteredSessions.map((s) => {
           const score = s.confidence_score ?? 0;
           const tier  = getScoreTier(score);
           return (

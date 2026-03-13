@@ -373,6 +373,28 @@
 .score-badge.fair      { background: rgba(255,149,0,0.15);  color: #FF9500; }
 .score-badge.poor      { background: rgba(255,59,48,0.15);  color: #FF3B30; }
 
+.history-controls-card {
+  margin-bottom: 14px;
+}
+
+.history-controls-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.history-results-count {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
 /* ── Chevron row ── */
 .chevron-row {
   display: flex;
@@ -579,6 +601,10 @@
     flex: 1;
   }
 
+  .history-filter-row {
+    grid-template-columns: 1fr;
+  }
+
   /* Buttons: full-width primary action */
   .btn-primary[style*="width: 100"] {
     display: block;
@@ -644,6 +670,7 @@
   color: rgba(255,255,255,0.25);
   cursor: not-allowed;
 }
+[data-theme="dark"] .history-results-count { color: rgba(255,255,255,0.5); }
 [data-theme="dark"] .form-input::placeholder,
 [data-theme="dark"] .form-textarea::placeholder { color: rgba(255,255,255,0.3); }
 [data-theme="dark"] .char-count { color: rgba(255,255,255,0.4); }

@@ -178,6 +178,7 @@ function RegisterPage() {
 
       {/* ── Right form panel ── */}
       <div className="auth-form-panel">
+        <BackButton className="auth-mobile-back" onClick={() => navigate(ROUTES.HOME)} />
         <div className="auth-form-container">
           <h2 className="auth-form-title">CREATE ACCOUNT</h2>
 

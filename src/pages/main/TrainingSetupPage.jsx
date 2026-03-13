@@ -157,6 +157,12 @@ function TrainingSetupPage() {
         )}
       </div>
 
+      {focus === 'free' && (
+        <p className="form-hint" role="status" aria-live="polite">
+          Script selection is not required in Free Speech mode.
+        </p>
+      )}
+
       {/* Selected script preview */}
       {selectedScript && (
         <div className="page-card script-preview-card">
