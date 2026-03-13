@@ -1,4 +1,4 @@
-﻿import { useRef, useEffect, useState } from 'react';
+﻿import { useRef, useEffect, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import { useTheme } from '../../context/useTheme';
@@ -12,7 +12,7 @@ import './LandingPage.css';
    ═══════════════════════════════════════════════════════ */
 
 /* Circular Progress Ring for Confidence Score */
-function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
+const CircularProgress = memo(function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const [offset, setOffset] = useState(circumference);
@@ -61,10 +61,10 @@ function CircularProgress({ score = 85, size = 200, strokeWidth = 10 }) {
       </div>
     </div>
   );
-}
+});
 
 /* Waveform visualization — Vocal Stability card */
-function WaveformViz() {
+const WaveformViz = memo(function WaveformViz() {
   const bars = [0.3, 0.5, 0.8, 0.6, 0.9, 0.4, 0.7, 0.85, 0.5, 0.65, 0.9, 0.35, 0.7, 0.55, 0.8, 0.4, 0.6, 0.75, 0.5, 0.85];
   return (
     <div className="waveform-viz">
@@ -80,7 +80,7 @@ function WaveformViz() {
       ))}
     </div>
   );
-}
+});
 
 /* Heatmap visualization — Visual Engagement card */
 const HEATMAP_DOTS = Array.from({ length: 24 }, (_, i) => {
@@ -93,7 +93,7 @@ const HEATMAP_DOTS = Array.from({ length: 24 }, (_, i) => {
   };
 });
 
-function HeatmapViz() {
+const HeatmapViz = memo(function HeatmapViz() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   return (
@@ -116,10 +116,10 @@ function HeatmapViz() {
       </svg>
     </div>
   );
-}
+});
 
 /* Filler word counter — Fluency Tracking card */
-function FluencyViz() {
+const FluencyViz = memo(function FluencyViz() {
   return (
     <div className="fluency-viz">
       <div className="fluency-stat">
@@ -138,10 +138,10 @@ function FluencyViz() {
       </div>
     </div>
   );
-}
+});
 
 /* Mini growth chart — progression section */
-function GrowthChart() {
+const GrowthChart = memo(function GrowthChart() {
   const data = [42, 48, 55, 52, 63, 68, 72, 78, 85];
   const max = 100;
   const w = 280;
@@ -166,12 +166,12 @@ function GrowthChart() {
       ))}
     </svg>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════
    FEATURE CARD
    ═══════════════════════════════════════════════════════ */
-function FeatureCard({ icon, title, description, children, delay = 0 }) {
+const FeatureCard = memo(function FeatureCard({ icon, title, description, children, delay = 0 }) {
   return (
     <div className="feature-card" style={{ transitionDelay: `${delay}s` }}>
       <div className="feature-card-visual">{children}</div>
@@ -182,19 +182,19 @@ function FeatureCard({ icon, title, description, children, delay = 0 }) {
       </div>
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════
    STAT PILL — Hero stats
    ═══════════════════════════════════════════════════════ */
-function StatPill({ value, label }) {
+const StatPill = memo(function StatPill({ value, label }) {
   return (
     <div className="stat-pill">
       <span className="stat-value">{value}</span>
       <span className="stat-label">{label}</span>
     </div>
   );
-}
+});
 
 /* ═══════════════════════════════════════════════════════
    LANDING PAGE
@@ -226,21 +226,16 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
+    // Throttle scroll updates with requestAnimationFrame to avoid layout thrashing
+    let raf;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+        raf = null;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    // Pre-mark sections already visible on mount (handles browser back-nav)
-    sectionRefs.forEach((r) => {
-      if (r.current) {
-        const rect = r.current.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.88) {
-          r.current.classList.add('in-view');
-        }
-      }
-    });
 
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((e) => {
@@ -251,7 +246,27 @@ export default function LandingPage() {
     sectionRefs.forEach((r) => {
       if (r.current) observer.observe(r.current);
     });
-    return () => observer.disconnect();
+
+    // Defer pre-marking of already-visible sections (back-nav case) to idle time
+    const preMarkJob = () => {
+      sectionRefs.forEach((r) => {
+        if (r.current) {
+          const rect = r.current.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.88) r.current.classList.add('in-view');
+        }
+      });
+    };
+    const idleHandle = 'requestIdleCallback' in window
+      ? window.requestIdleCallback(preMarkJob)
+      : setTimeout(preMarkJob, 200);
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
+      if ('cancelIdleCallback' in window) window.cancelIdleCallback(idleHandle);
+      else clearTimeout(idleHandle);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

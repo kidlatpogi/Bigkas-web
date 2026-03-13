@@ -13,28 +13,26 @@
 
 /* Root variables */
 :root {
-  /* Colors */
-  --color-primary: #4F46E5;
-  --color-primary-dark: #4338CA;
-  --color-primary-light: #818CF8;
-  
-  --color-secondary: #10B981;
-  --color-secondary-dark: #059669;
-  --color-secondary-light: #34D399;
-  
-  --color-accent: #F59E0B;
-  
+  /* Colors — Bigkas design tokens (primary: gold #FCBA04, dark: #010101) */
+  --color-primary: #FCBA04;
+  --color-primary-dark: #D59300;
+  --color-primary-light: #FFCF4D;
+
+  --color-secondary: #010101;
+  --color-secondary-dark: #000000;
+  --color-secondary-light: #1a1a1a;
+
   --color-background: #F5F5F5;
   --color-surface: #FFFFFF;
   --color-surface-hover: #F3F4F6;
-  
-  --color-text-primary: #111827;
+
+  --color-text-primary: #010101;
   --color-text-secondary: #6B7280;
   --color-text-muted: #9CA3AF;
-  
+
   --color-border: #E5E7EB;
   --color-divider: #D1D5DB;
-  
+
   --color-error: #EF4444;
   --color-warning: #F59E0B;
   --color-success: #10B981;
