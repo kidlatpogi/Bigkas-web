@@ -355,6 +355,80 @@
   margin-top: 2px;
 }
 
+/* ── Password field with visibility toggle ── */
+.pw-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pw-input-wrap .form-input {
+  flex: 1;
+  padding-right: 36px; /* room for eye icon */
+}
+
+.pw-toggle-btn {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  min-height: unset;
+  color: #9CA3AF;
+  line-height: 0;
+  transition: color 0.15s;
+}
+
+.pw-toggle-btn:hover {
+  color: #010101;
+}
+
+[data-theme="dark"] .pw-toggle-btn:hover {
+  color: #F0F0F0;
+}
+
+/* ── Password strength meter ── */
+.pw-strength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.pw-strength-bars {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.pw-strength-bar {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  transition: background 0.25s;
+}
+
+.pw-strength-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  min-width: 38px;
+  text-align: right;
+  transition: color 0.25s;
+}
+
+.pw-hint {
+  font-size: 11px;
+  color: #9CA3AF;
+  margin-top: 4px;
+}
+
+[data-theme="dark"] .pw-hint {
+  color: #6E6E6E;
+}
+
 /* ── Submit button — yellow outlined, rounded ── */
 .auth-submit-btn {
   width: 100%;

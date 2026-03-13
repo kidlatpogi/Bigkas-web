@@ -24,6 +24,23 @@ function RegisterPage() {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  /* Password strength — 0..4 */
+  const passwordStrength = (() => {
+    const p = formData.password;
+    if (!p) return 0;
+    let score = 0;
+    if (p.length >= 8) score++;
+    if (p.length >= 12) score++;
+    if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score++;
+    if (/\d/.test(p)) score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
+    return Math.min(score, 4);
+  })();
+  const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength];
+  const strengthColor = ['', '#EF4444', '#F59E0B', '#3B82F6', '#10B981'][passwordStrength];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -221,31 +238,78 @@ function RegisterPage() {
 
             <div className="form-group">
               <label htmlFor="password" className="form-label">PASSWORD</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className={`form-input ${errors.password ? 'form-input-error' : ''}`}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                disabled={isLoading}
-              />
+              <div className="pw-input-wrap">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  className={`form-input ${errors.password ? 'form-input-error' : ''}`}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="pw-toggle-btn"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={0}
+                >
+                  {showPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  )}
+                </button>
+              </div>
+              {formData.password && (
+                <div className="pw-strength">
+                  <div className="pw-strength-bars">
+                    {[1, 2, 3, 4].map((n) => (
+                      <div
+                        key={n}
+                        className="pw-strength-bar"
+                        style={{ background: n <= passwordStrength ? strengthColor : '#E5E7EB' }}
+                      />
+                    ))}
+                  </div>
+                  <span className="pw-strength-label" style={{ color: strengthColor }}>{strengthLabel}</span>
+                </div>
+              )}
+              <span className="pw-hint">Min. 8 characters with letters and numbers</span>
               {errors.password && <span className="form-error">{errors.password}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="confirmPassword" className="form-label">CONFIRM PASSWORD</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                className={`form-input ${errors.confirmPassword ? 'form-input-error' : ''}`}
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="••••••••"
-                disabled={isLoading}
-              />
+              <div className="pw-input-wrap">
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className={`form-input ${errors.confirmPassword ? 'form-input-error' : ''}`}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="pw-toggle-btn"
+                  aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+                  onClick={() => setShowConfirm((v) => !v)}
+                  tabIndex={0}
+                >
+                  {showConfirm ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  )}
+                </button>
+              </div>
               {errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
             </div>
 

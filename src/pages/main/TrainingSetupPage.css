@@ -178,6 +178,11 @@
   background: rgba(252, 186, 4, 0.05);
 }
 
+.focus-option:focus-visible {
+  outline: 2px solid #FCBA04;
+  outline-offset: 2px;
+}
+
 /* Custom radio circle */
 .focus-radio-circle {
   width: 22px;

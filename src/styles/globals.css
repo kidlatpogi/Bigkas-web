@@ -2,14 +2,7 @@
  * Global styles for Bigkas Web
  */
 
-/* CSS Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* CSS Reset lives in index.css — no duplicate here */
 
 /* Root variables */
 :root {
@@ -112,10 +105,6 @@ body {
   background-color: var(--color-background);
   min-height: 100vh;
   overflow-y: scroll;
-  /* Prevent horizontal scrolling on all devices */
-  overflow-x: hidden;
-  /* Smooth momentum scrolling on iOS */
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Focus styles */
@@ -156,17 +145,9 @@ select {
   min-height: 44px;
 }
 
-/* Images */
+/* Images — max-width set in index.css; only add height: auto here */
 img {
-  max-width: 100%;
   height: auto;
-  display: block;
-}
-
-/* Lists */
-ul,
-ol {
-  list-style: none;
 }
 
 /* Scrollbar styling — desktop only, hides on mobile to save space */
@@ -198,13 +179,6 @@ ol {
   }
 }
 
-/* Prevent iOS input zoom — must be >= 16px */
-@media (max-width: 768px) {
-  input, textarea, select {
-    font-size: 16px !important;
-  }
-}
-
 /* Dark mode link color */
 [data-theme="dark"] a {
   color: #FCBA04;
@@ -232,15 +206,22 @@ ol {
   }
 }
 
-/* Theme transition — smooth colour changes on all elements */
+/* Theme transition — scoped to layout shells and text-bearing elements only.
+   Applying to every DOM node (*) causes full-page repaint during theme switches. */
 html,
 body,
-* {
+.auth-page,
+.auth-brand-panel,
+.auth-form-panel,
+.landing,
+.main-content,
+.inner-page,
+.page-card,
+.bottom-nav,
+.navbar {
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              fill 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              stroke 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* During the circular reveal animation: disable all transitions so theme switches instantly under the overlay */

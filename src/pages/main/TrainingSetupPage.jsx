@@ -175,21 +175,40 @@ function TrainingSetupPage() {
 
       {/* Focus selection */}
       <p className="section-label" style={{ marginTop: 8 }}>Choose Your Focus</p>
-      <div className="focus-options">
+      <div className="focus-options" role="radiogroup" aria-label="Choose your focus">
         {FOCUS_OPTIONS.map((opt) => (
-          <label
+          <div
             key={opt.value}
+            role="radio"
+            aria-checked={focus === opt.value}
+            tabIndex={focus === opt.value ? 0 : -1}
             className={`focus-option ${focus === opt.value ? 'selected' : ''}`}
             onClick={() => setFocus(opt.value)}
+            onKeyDown={(e) => {
+              if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                setFocus(opt.value);
+              }
+              if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                const next = FOCUS_OPTIONS[(FOCUS_OPTIONS.indexOf(opt) + 1) % FOCUS_OPTIONS.length];
+                setFocus(next.value);
+              }
+              if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prev = FOCUS_OPTIONS[(FOCUS_OPTIONS.indexOf(opt) - 1 + FOCUS_OPTIONS.length) % FOCUS_OPTIONS.length];
+                setFocus(prev.value);
+              }
+            }}
           >
-            <div className="focus-radio-circle">
+            <div className="focus-radio-circle" aria-hidden="true">
               {focus === opt.value && <div className="focus-radio-dot" />}
             </div>
             <div className="focus-option-text">
               <p className="focus-label">{opt.label}</p>
               <p className="focus-desc">{opt.desc}</p>
             </div>
-          </label>
+          </div>
         ))}
       </div>
 
