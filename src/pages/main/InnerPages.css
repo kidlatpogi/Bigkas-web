@@ -153,7 +153,8 @@
   font-size: 15px;
   color: #010101;
   background: #FAFAFA;
-  outline: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   transition: border-color 0.15s, background 0.15s;
   box-sizing: border-box;
   font-family: inherit;
@@ -181,6 +182,12 @@
 .form-select:focus {
   border-color: #FCBA04;
   background: #FFFFFF;
+}
+
+.form-input:focus-visible,
+.form-textarea:focus-visible,
+.form-select:focus-visible {
+  outline-color: #8A5A00;
 }
 
 .form-input:disabled,
@@ -321,11 +328,15 @@
 .btn-link {
   background: none;
   border: none;
-  color: #FCBA04;
+  color: #8A5A00;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
+}
+
+[data-theme="dark"] .btn-link {
+  color: #FFC340;
 }
 
 /* ── Empty state ── */
@@ -393,6 +404,46 @@
   margin: 10px 0 0;
   font-size: 13px;
   color: #666;
+}
+
+.history-session-count {
+  font-size: 14px;
+  color: #888;
+}
+
+.history-search-wrap {
+  position: relative;
+}
+
+.history-search-input {
+  padding-right: 36px;
+}
+
+.history-search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #888;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-search-clear:hover {
+  color: #010101;
+  background: rgba(1, 1, 1, 0.06);
+}
+
+.history-load-more-wrap {
+  text-align: center;
+  margin-top: 24px;
 }
 
 /* ── Chevron row ── */
@@ -671,6 +722,12 @@
   cursor: not-allowed;
 }
 [data-theme="dark"] .history-results-count { color: rgba(255,255,255,0.5); }
+[data-theme="dark"] .history-session-count { color: rgba(255,255,255,0.5); }
+[data-theme="dark"] .history-search-clear { color: rgba(255,255,255,0.6); }
+[data-theme="dark"] .history-search-clear:hover {
+  color: #F0F0F0;
+  background: rgba(255,255,255,0.10);
+}
 [data-theme="dark"] .form-input::placeholder,
 [data-theme="dark"] .form-textarea::placeholder { color: rgba(255,255,255,0.3); }
 [data-theme="dark"] .char-count { color: rgba(255,255,255,0.4); }

@@ -135,6 +135,17 @@
   margin: 0;
 }
 
+.ts-status-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ts-status-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
 .form-hint {
   font-size: 13px;
   color: #888;

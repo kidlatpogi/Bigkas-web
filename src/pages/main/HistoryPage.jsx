@@ -66,7 +66,7 @@ function HistoryPage() {
         <div className="empty-state">
           <span className="empty-icon">📝</span>
           <p className="empty-title">No sessions yet</p>
-          <p className="empty-desc">Start practicing to see your history here.</p>
+              <span className="history-session-count">
           <button
             className="btn-primary"
             style={{ marginTop: 16 }}
@@ -75,14 +75,26 @@ function HistoryPage() {
             Start Practice
           </button>
         </div>
-      )}
-
-      {!isLoading && !error && sessions.length > 0 && (
-        <div className="page-card history-controls-card">
-          <div className="history-controls-grid">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="history-search" className="form-label">Search Session Text</label>
-              <input
+                    <div className="history-search-wrap">
+                      <input
+                        id="history-search"
+                        type="search"
+                        className="form-input history-search-input"
+                        placeholder="Search by script or spoken text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          className="history-search-clear"
+                          onClick={() => setSearchQuery('')}
+                          aria-label="Clear history search"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
                 id="history-search"
                 type="search"
                 className="form-input"
@@ -122,10 +134,10 @@ function HistoryPage() {
                   <option value="30d">Last 30 days</option>
                   <option value="90d">Last 90 days</option>
                 </select>
-              </div>
+              <div className="history-load-more-wrap">
             </div>
           </div>
-
+                  style={{ width: 'auto', padding: '10px 28px' }}
           <p className="history-results-count">
             Showing {filteredSessions.length} of {sessions.length} sessions
           </p>

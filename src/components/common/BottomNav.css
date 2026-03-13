@@ -29,8 +29,10 @@
 .bottom-nav-home {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -76,8 +78,10 @@
 .bottom-nav-item {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   width: 48px;
   height: 44px;
   border-radius: 22px;
@@ -85,6 +89,13 @@
   text-decoration: none;
   transition: color 0.2s, background 0.2s, transform 0.15s;
   flex-shrink: 0;
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.1px;
 }
 
 .bottom-nav-item:hover {
@@ -215,15 +226,19 @@
     bottom: 12px;
   }
   .bottom-nav-home {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
   .bottom-nav-pill {
-    height: 44px;
+    height: 48px;
     padding: 4px 6px;
   }
   .bottom-nav-item {
-    width: 40px;
-    height: 38px;
+    width: 42px;
+    height: 40px;
+  }
+
+  .bottom-nav-label {
+    font-size: 10px;
   }
 }

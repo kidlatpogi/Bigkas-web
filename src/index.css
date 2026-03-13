@@ -66,10 +66,19 @@ ul, ol {
 }
 
 .loading-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: clamp(24px, 5vw, 36px);
   font-weight: 800;
   color: #010101;
   letter-spacing: -1px;
+}
+
+.loading-logo-image {
+  width: clamp(26px, 5vw, 36px);
+  height: clamp(26px, 5vw, 36px);
+  object-fit: contain;
 }
 
 .loading-spinner {

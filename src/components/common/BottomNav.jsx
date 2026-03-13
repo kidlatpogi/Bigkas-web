@@ -52,6 +52,7 @@ export default function BottomNav() {
         aria-current={homeActive ? 'page' : undefined}
       >
         <HomeIcon size={26} aria-hidden="true" />
+        <span className="bottom-nav-label">Home</span>
       </NavLink>
 
       {/* ── Other tabs pill ────────────────────────────── */}
@@ -71,6 +72,7 @@ export default function BottomNav() {
               aria-current={active ? 'page' : undefined}
             >
               <TabIcon size={22} aria-hidden="true" />
+              <span className="bottom-nav-label">{tab.label}</span>
             </NavLink>
           );
         })}
