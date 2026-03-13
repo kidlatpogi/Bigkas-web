@@ -1,8 +1,8 @@
-﻿/*
-   Bigkas Landing — CSS
+/*
+   Bigkas Landing � CSS
    Design tokens from Bigkas-mobile repository:
-   Primary: #FCBA04  ·  Secondary: #010101  ·  Background: #F5F5F5
-   Border: #E2E2E2   ·  Surface: #FFFFFF
+   Primary: #FCBA04  �  Secondary: #010101  �  Background: #F5F5F5
+   Border: #E2E2E2   �  Surface: #FFFFFF
    Font: Inter 400/500/600/700
    Spacing: xs:4  sm:8  md:16  lg:24  xl:32  xxl:48  xxxl:64
    Border Radius: sm:4  md:8  lg:12  xl:16  full:9999
@@ -48,7 +48,7 @@
   overflow-x: hidden;
 }
 
-/* ── Utility classes ── */
+/* -- Utility classes -- */
 .accent-text {
   color: var(--primary);
 }
@@ -63,7 +63,7 @@
   margin-right: auto;
 }
 
-/* ── Section shell ── */
+/* -- Section shell -- */
 .section-wrap {
   max-width: 1120px;
   margin: 0 auto;
@@ -102,14 +102,14 @@
   line-height: 1.6;
   color: var(--text-secondary);
   margin-bottom: 16px;
-  text-align: justify;
+  text-align: left;
 }
 
 .section-body.center {
   text-align: center;
 }
 
-/* ── Nav-link and footer buttons styled as links ── */
+/* -- Nav-link and footer buttons styled as links -- */
 .nav-link-btn,
 .footer-link-btn {
   background: none;
@@ -136,7 +136,7 @@
   color: var(--primary);
 }
 
-/* ── Scroll-snap for section-to-section navigation ── */
+/* -- Scroll-snap for section-to-section navigation -- */
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
@@ -154,7 +154,7 @@ html {
   scroll-snap-stop: always;
 }
 
-/* ── Scroll-triggered animation base ── */
+/* -- Scroll-triggered animation base -- */
 .problem-section,
 .solution-section,
 .features-section,
@@ -176,9 +176,9 @@ html {
   transform: translateY(0);
 }
 
-/* ═══════════════════════════════════════════
-   NAV — sticky, white with border
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   NAV � sticky, white with border
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .landing-nav {
   position: fixed;
   top: 0;
@@ -289,12 +289,12 @@ html {
   font-size: 13px;
 }
 
-/* Mobile drawer — hidden on desktop */
+/* Mobile drawer � hidden on desktop */
 .nav-drawer {
   display: none;
 }
 
-/* Hamburger — 44px tap target */
+/* Hamburger � 44px tap target */
 .nav-hamburger {
   display: none;
   flex-direction: column;
@@ -339,9 +339,9 @@ html {
   color: var(--primary);
 }
 
-/* ═══════════════════════════════════════════
-   HERO — 100vh · Black card bg (matches mobile)
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   HERO � 100vh � Black card bg (matches mobile)
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .hero-section {
   min-height: 100vh;
   display: flex;
@@ -405,7 +405,7 @@ html {
   color: var(--text-secondary);
   margin-bottom: 32px;
   max-width: 520px;
-  text-align: justify;
+  text-align: left;
 }
 
 .hero-actions {
@@ -541,7 +541,7 @@ html {
   color: var(--text-muted);
 }
 
-/* Dashboard mockup — Black card like mobile hero */
+/* Dashboard mockup � Black card like mobile hero */
 .hero-dashboard {
   display: flex;
   justify-content: center;
@@ -699,15 +699,15 @@ html {
 }
 
 .scroll-text {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
 
-/* ═══════════════════════════════════════════
-   PROBLEM SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   PROBLEM SECTION � 100vh
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .problem-section {
   min-height: 100vh;
   display: flex;
@@ -761,9 +761,9 @@ html {
   background: var(--border);
 }
 
-/* ═══════════════════════════════════════════
-   SOLUTION SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   SOLUTION SECTION � 100vh
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .solution-section {
   min-height: 100vh;
   display: flex;
@@ -809,12 +809,12 @@ html {
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-secondary);
-  text-align: justify;
+  text-align: left;
 }
 
-/* ═══════════════════════════════════════════
-   FEATURES SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   FEATURES SECTION � 100vh
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .features-section {
   min-height: 100vh;
   display: flex;
@@ -887,7 +887,7 @@ html {
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-secondary);
-  text-align: justify;
+  text-align: left;
 }
 
 /* Feature metric row */
@@ -979,9 +979,9 @@ html {
   background: var(--border);
 }
 
-/* ═══════════════════════════════════════════
-   TRUST SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   TRUST SECTION � 100vh
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .trust-section {
   min-height: 100vh;
   display: flex;
@@ -1010,7 +1010,7 @@ html {
   font-size: 14px;
   line-height: 1.55;
   color: var(--text-secondary);
-  text-align: justify;
+  text-align: left;
 }
 
 .trust-card {
@@ -1072,9 +1072,9 @@ html {
   color: var(--text-primary);
 }
 
-/* ═══════════════════════════════════════════
-   GROWTH SECTION — 100vh
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   GROWTH SECTION � 100vh
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .growth-section {
   min-height: 100vh;
   display: flex;
@@ -1147,16 +1147,16 @@ html {
   font-size: 15px;
   line-height: 1.65;
   color: var(--text-secondary);
-  text-align: justify;
+  text-align: left;
 }
 
 .bridge-text strong {
   color: var(--primary);
 }
 
-/* ═══════════════════════════════════════════
-   CTA SECTION — 100vh · Black card (mobile hero style)
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   CTA SECTION � 100vh � Black card (mobile hero style)
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .cta-section {
   min-height: 100vh;
   display: flex;
@@ -1207,7 +1207,7 @@ html {
   color: rgba(255, 255, 255, 0.6);
   max-width: 520px;
   margin: 0 auto 32px;
-  text-align: justify;
+  text-align: left;
 }
 
 .btn-cta-main {
@@ -1240,9 +1240,9 @@ html {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* ═══════════════════════════════════════════
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
    FOOTER
-   ═══════════════════════════════════════════ */
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 .landing-footer {
   background: var(--white);
   border-top: 1px solid var(--border);
@@ -1312,9 +1312,9 @@ html {
   align-items: center;
 }
 
-/* ═══════════════════════════════════════════
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
    KEYFRAME ANIMATIONS
-   ═══════════════════════════════════════════ */
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -1373,9 +1373,9 @@ html {
   }
 }
 
-/* ═══════════════════════════════════════════
-   DARK MODE — Landing overrides
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   DARK MODE � Landing overrides
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 [data-theme="dark"] .landing {
   --bg: #0B0B0D;
   --surface: #1E1E1E;
@@ -1475,9 +1475,9 @@ html {
   background: rgba(252, 186, 4, 0.08);
 }
 
-/* ═══════════════════════════════════════════
-   RESPONSIVE — 1024 / 768 / 480
-   ═══════════════════════════════════════════ */
+/* -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�
+   RESPONSIVE � 1024 / 768 / 480
+   -�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-�-� */
 @media (max-width: 1024px) {
   .hero-inner {
     grid-template-columns: 1fr;
@@ -1504,11 +1504,13 @@ html {
   }
 
   .hero-dashboard {
-    order: -1;
+    order: 2;
+    margin-top: 8px;
   }
 
   .dashboard-card {
-    width: 300px;
+    width: 276px;
+    padding: 24px;
   }
 
   .problem-grid {
@@ -1542,7 +1544,7 @@ html {
     display: flex;
   }
 
-  /* ── Mobile drawer: collapsed by default ── */
+  /* -- Mobile drawer: collapsed by default -- */
   .nav-drawer {
     display: grid;
     grid-template-rows: 0fr;
@@ -1610,7 +1612,7 @@ html {
     width: 100%;
   }
 
-  /* ── Hamburger → X animation ── */
+  /* -- Hamburger ? X animation -- */
   .nav-hamburger span {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 opacity   0.2s ease;
@@ -1723,8 +1725,8 @@ html {
   }
 
   .dashboard-card {
-    width: 260px;
-    padding: 24px;
+    width: 232px;
+    padding: 18px;
   }
 
   .score-number {

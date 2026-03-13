@@ -41,6 +41,7 @@ import PracticePage from '../pages/main/PracticePage';
 // Components
 import BottomNav from '../components/common/BottomNav';
 import ThemeToggleBtn from '../components/common/ThemeToggleBtn';
+import bigkasLogo from '../assets/Temporary Logo.png';
 
 /**
  * Protected Route Wrapper
@@ -59,7 +60,10 @@ function ProtectedRoute() {
   if (isInitializing) {
     return (
       <div className="loading-screen">
-        <div className="loading-logo">Bigkas</div>
+        <div className="loading-logo">
+          <img src={bigkasLogo} alt="Bigkas" className="loading-logo-image" />
+          <span>Bigkas</span>
+        </div>
         <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
@@ -95,7 +99,10 @@ function NicknameRoute() {
   if (isInitializing) {
     return (
       <div className="loading-screen">
-        <div className="loading-logo">Bigkas</div>
+        <div className="loading-logo">
+          <img src={bigkasLogo} alt="Bigkas" className="loading-logo-image" />
+          <span>Bigkas</span>
+        </div>
         <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
@@ -117,7 +124,10 @@ function PublicRoute() {
   if (isInitializing) {
     return (
       <div className="loading-screen">
-        <div className="loading-logo">Bigkas</div>
+        <div className="loading-logo">
+          <img src={bigkasLogo} alt="Bigkas" className="loading-logo-image" />
+          <span>Bigkas</span>
+        </div>
         <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
@@ -127,7 +137,12 @@ function PublicRoute() {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <ThemeToggleBtn />
+      <Outlet />
+    </>
+  );
 }
 
 /**
@@ -140,7 +155,10 @@ function HomeRoute() {
   if (isInitializing) {
     return (
       <div className="loading-screen">
-        <div className="loading-logo">Bigkas</div>
+        <div className="loading-logo">
+          <img src={bigkasLogo} alt="Bigkas" className="loading-logo-image" />
+          <span>Bigkas</span>
+        </div>
         <div className="loading-spinner" aria-label="Loading" />
       </div>
     );
@@ -150,7 +168,12 @@ function HomeRoute() {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  return <LandingPage />;
+  return (
+    <>
+      <ThemeToggleBtn />
+      <LandingPage />
+    </>
+  );
 }
 
 /**

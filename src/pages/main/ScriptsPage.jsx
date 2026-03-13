@@ -33,8 +33,6 @@ function ScriptsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
-  const menuButtonRefs = useRef({});
 
   const [query, setQuery]         = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
@@ -83,6 +81,25 @@ function ScriptsPage() {
     }
   }, [scripts, glowId]);
 
+  useEffect(() => {
+    if (!menuOpenId) return undefined;
+
+    const closeMenu = () => setMenuOpenId(null);
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') closeMenu();
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', closeMenu);
+    window.addEventListener('scroll', closeMenu, true);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', closeMenu);
+      window.removeEventListener('scroll', closeMenu, true);
+    };
+  }, [menuOpenId]);
+
   // Filtered + sorted view of scripts
   const displayedScripts = useMemo(() => {
     let list = [...scripts];
@@ -117,13 +134,7 @@ function ScriptsPage() {
 
   const handleMenuOpen = (scriptId, event) => {
     event.stopPropagation();
-    const button = event.currentTarget;
-    const rect = button.getBoundingClientRect();
-    setMenuOpenId(scriptId);
-    setMenuPosition({
-      top: rect.bottom + 8,
-      right: window.innerWidth - rect.right,
-    });
+    setMenuOpenId((prev) => (prev === scriptId ? null : scriptId));
   };
 
   return (
@@ -235,18 +246,59 @@ function ScriptsPage() {
               <span className={`script-badge ${script.type === 'auto-generated' ? 'generated' : 'self'}`}>
                 {script.type === 'auto-generated' ? 'AI Generated' : 'Self-Authored'}
               </span>
-              <button
-                className="script-menu-btn"
-                onClick={(e) => handleMenuOpen(script.id, e)}
-                ref={(el) => { menuButtonRefs.current[script.id] = el; }}
-                aria-label="Script options"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <circle cx="12" cy="5" r="1.5"/>
-                  <circle cx="12" cy="12" r="1.5"/>
-                  <circle cx="12" cy="19" r="1.5"/>
-                </svg>
-              </button>
+              <div className="script-menu-anchor">
+                <button
+                  className="script-menu-btn"
+                  onClick={(e) => handleMenuOpen(script.id, e)}
+                  aria-label="Script options"
+                  aria-expanded={menuOpenId === script.id}
+                  aria-haspopup="menu"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="5" r="1.5"/>
+                    <circle cx="12" cy="12" r="1.5"/>
+                    <circle cx="12" cy="19" r="1.5"/>
+                  </svg>
+                </button>
+
+                {menuOpenId === script.id && (
+                  <div
+                    className="script-menu-box script-menu-box--anchored"
+                    role="menu"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      className="script-menu-item"
+                      onClick={() => {
+                        setMenuOpenId(null);
+                        navigate(buildRoute.scriptEditor(script.id));
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                      Edit
+                    </button>
+                    <button
+                      className="script-menu-item danger"
+                      onClick={() => {
+                        setMenuOpenId(null);
+                        handleDelete(script.id);
+                      }}
+                      disabled={deletingId === script.id}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                        <path d="M10 11v6M14 11v6"/>
+                        <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                      </svg>
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Body */}
@@ -268,49 +320,9 @@ function ScriptsPage() {
         </div>
       )}
 
-      {/* ── Script options modal (ellipsis menu) ── */}
+      {/* ── Script options overlay (closes open popover) ── */}
       {menuOpenId && (
-        <>
-          <div className="script-menu-overlay" onClick={() => setMenuOpenId(null)} />
-          <div
-            className="script-menu-box"
-            style={{
-              position: 'fixed',
-              top: `${menuPosition.top}px`,
-              right: `${menuPosition.right}px`,
-              zIndex: 1000,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Edit */}
-            <button
-              className="script-menu-item"
-              onClick={() => { setMenuOpenId(null); navigate(buildRoute.scriptEditor(menuOpenId)); }}
-            >
-              {/* Pencil icon */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-              Edit
-            </button>
-            {/* Delete */}
-            <button
-              className="script-menu-item danger"
-              onClick={() => { setMenuOpenId(null); handleDelete(menuOpenId); }}
-              disabled={deletingId === menuOpenId}
-            >
-              {/* Trash icon */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                <path d="M10 11v6M14 11v6"/>
-                <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
-              </svg>
-              Delete
-            </button>
-          </div>
-        </>
+        <div className="script-menu-overlay" onClick={() => setMenuOpenId(null)} />
       )}
 
       {/* Delete confirmation modal */}

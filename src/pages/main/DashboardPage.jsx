@@ -18,19 +18,7 @@ import './DashboardPage.css';
    Daily content helpers — mirrors DashboardScreen in Bigkas-mobile
    ───────────────────────────────────────────────────────────── */
 
-/** 10-tip curated list from the mobile repo */
-const TIPS = [
-  { title: 'Start with a hook', body: 'Open with a surprising fact, question, or story to grab attention in the first 30 seconds.' },
-  { title: 'Pace yourself', body: 'Speak slowly and clearly. Pausing between key points gives listeners time to absorb your message.' },
-  { title: 'Record yourself', body: 'Listening to recordings of your speech helps you catch filler words and improve cadence.' },
-  { title: 'Practice tongue twisters', body: 'Start each session with a quick tongue twister to warm up your mouth muscles and improve clarity.' },
-  { title: 'Focus on breathing', body: 'Deep diaphragmatic breathing before speaking reduces anxiety and gives your voice more power.' },
-  { title: 'Use simple words', body: 'Clear communication comes from choosing everyday words over complicated vocabulary.' },
-  { title: 'Make eye contact', body: 'Even when practicing alone, look into the camera or mirror to build the habit of engagement.' },
-  { title: 'Emphasise key words', body: 'Stressing important words in a sentence adds variety and keeps your listener engaged.' },
-  { title: 'Read aloud daily', body: 'Reading newspaper articles or books aloud for 10 minutes a day greatly improves fluency.' },
-  { title: 'Smile while speaking', body: 'A natural smile changes the shape of your mouth and makes your pronunciation warmer and clearer.' },
-];
+import TIPS from '../../assets/data/daily_tips.json';
 
 const FALLBACK_QUOTE = {
   text: 'Courage is what it takes to stand up and speak.',
@@ -203,10 +191,10 @@ export default function DashboardPage() {
   /* ── Lazily load all lesson sources and pick a daily featured entry ── */
   useEffect(() => {
     const SOURCES = [
-      { categoryId: 'frameworks',           file: () => import('../../assets/data/frameworks.json') },
-      { categoryId: 'tips_and_tricks',       file: () => import('../../assets/data/tips_and_tricks.json') },
-      { categoryId: 'communication_cheats',  file: () => import('../../assets/data/communication_cheats.json') },
-      { categoryId: 'communication_skills',  file: () => import('../../assets/data/communication_skills.json') },
+      { categoryId: 'frameworks', file: () => import('../../assets/data/frameworks.json') },
+      { categoryId: 'tips_and_tricks', file: () => import('../../assets/data/tips_and_tricks.json') },
+      { categoryId: 'communication_cheats', file: () => import('../../assets/data/communication_cheats.json') },
+      { categoryId: 'communication_skills', file: () => import('../../assets/data/communication_skills.json') },
     ];
 
     Promise.all(
@@ -300,7 +288,7 @@ export default function DashboardPage() {
         <div className="dash-stat-divider" />
         <div className="dash-stat">
           <IoStar size={24} color="#FCBA04" className="dash-stat-icon" aria-hidden="true" />
-          <span className="dash-stat-value">{averageScore}</span>
+          <span className="dash-stat-value">{String(averageScore).padStart(2, '0')}</span>
           <span className="dash-stat-label">AVG SCORE</span>
         </div>
         <div className="dash-stat-divider" />

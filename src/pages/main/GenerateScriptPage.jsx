@@ -9,7 +9,7 @@ import { ENV } from '../../config/env';
 import './InnerPages.css';
 import './GenerateScriptPage.css';
 
-const VIBES      = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
+const VIBES = ['Professional', 'Casual', 'Humorous', 'Inspirational'];
 const COOLDOWN_STORAGE_KEY = 'bigkas_generate_cooldown_end_time';
 
 function getInitialCooldownSeconds() {
@@ -36,18 +36,18 @@ function formatCooldown(seconds) {
 }
 
 function GenerateScriptPage() {
-  const navigate  = useNavigate();
-  const { user }  = useAuthContext();
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
 
-  const [prompt,     setPrompt]     = useState('');
-  const [vibe,       setVibe]       = useState('Professional');
-  const [duration,   setDuration]   = useState(3);
-  const [generated,  setGenerated]  = useState(null);   // { title, content }
-  const [editTitle,  setEditTitle]  = useState('');
-  const [editContent,setEditContent]= useState('');
+  const [prompt, setPrompt] = useState('');
+  const [vibe, setVibe] = useState('Professional');
+  const [duration, setDuration] = useState(3);
+  const [generated, setGenerated] = useState(null);   // { title, content }
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isSaving,   setIsSaving]   = useState(false);
-  const [error,      setError]      = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
   const [cooldownSeconds, setCooldownSeconds] = useState(() => getInitialCooldownSeconds());
   const [generationTokens, setGenerationTokens] = useState(10);
   const [regenerationTokens, setRegenerationTokens] = useState(10);
@@ -77,7 +77,7 @@ function GenerateScriptPage() {
     if (cooldownSeconds === 0 && user?.id) {
       fetchTokens();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cooldownSeconds]);
 
   // Cooldown countdown timer
@@ -105,7 +105,7 @@ function GenerateScriptPage() {
 
   const handleRandomTopic = async () => {
     try {
-      const { default: allTopics } = await import('../../assets/topics.json');
+      const { default: allTopics } = await import('../../assets/data/topics.json');
       const randomIndex = Math.floor(Math.random() * allTopics.length);
       setPrompt(allTopics[randomIndex]);
     } catch {
@@ -191,9 +191,9 @@ function GenerateScriptPage() {
     try {
       const { data: savedScript } = await createScript({
         userId: user.id,
-        title:   editTitle.trim() || generated.title,
+        title: editTitle.trim() || generated.title,
         content: editContent.trim(),
-        type:    'auto-generated',
+        type: 'auto-generated',
       });
       navigate(ROUTES.SCRIPTS, { state: { initialTab: 'auto-generated', newScriptId: savedScript?.id } });
     } catch {
@@ -209,9 +209,9 @@ function GenerateScriptPage() {
     try {
       const saved = await createScript({
         userId: user.id,
-        title:   editTitle.trim() || generated.title,
+        title: editTitle.trim() || generated.title,
         content: editContent.trim(),
-        type:    'auto-generated',
+        type: 'auto-generated',
       });
       navigate(ROUTES.TRAINING, { state: { script: saved, focus: 'scripted' } });
     } catch {

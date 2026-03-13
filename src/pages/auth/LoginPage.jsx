@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/useAuthContext';
 import { isValidEmail } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import googleLogo from '../../assets/Google-Logo.png';
 import BackButton from '../../components/common/BackButton';
-import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './AuthPages.css';
 
 const LOGIN_LOCKOUT_UNTIL_KEY = 'bigkas_login_lockout_until';
@@ -62,6 +62,7 @@ function LoginPage() {
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [lockoutSeconds, setLockoutSeconds] = useState(() => getStoredLockoutSeconds());
+  const [showPassword, setShowPassword] = useState(false);
 
   // Show the "Account created" banner from navigation state, auto-clear after 3s
   useEffect(() => {
@@ -217,10 +218,9 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <ThemeToggleBtn />
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
-        <BackButton onClick={() => navigate(ROUTES.HOME)} />
+        <BackButton className="auth-back-btn" onClick={() => navigate(ROUTES.HOME)} />
 
         <div className="auth-brand-content">
           <h1 className="auth-brand-name">BIGKAS</h1>
@@ -246,6 +246,7 @@ function LoginPage() {
 
       {/* ── Right form panel ── */}
       <div className="auth-form-panel">
+        <BackButton className="auth-mobile-back" onClick={() => navigate(ROUTES.HOME)} />
         <div className="auth-form-container">
           <h2 className="auth-form-title">LOG IN</h2>
 
@@ -309,16 +310,32 @@ function LoginPage() {
 
             <div className="form-group">
               <label htmlFor="password" className="form-label">PASSWORD</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className={`form-input ${errors.password ? 'form-input-error' : ''}`}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                disabled={isLoading || lockoutSeconds > 0}
-              />
+              <div className="pw-input-wrap">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  className={`form-input ${errors.password ? 'form-input-error' : ''}`}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  disabled={isLoading || lockoutSeconds > 0}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="pw-toggle-btn"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={0}
+                >
+                  {showPassword ? (
+                    <IoEyeOffOutline size={20} />
+                  ) : (
+                    <IoEyeOutline size={20} />
+                  )}
+                </button>
+              </div>
               {errors.password && <span className="form-error">{errors.password}</span>}
             </div>
 
@@ -346,8 +363,8 @@ function LoginPage() {
           </button>
 
           <div className="auth-footer">
-            <p className="auth-footer-label">ALREADY HAVE AN ACCOUNT?</p>
-            <Link to={ROUTES.REGISTER} className="auth-link">CREATE AN ACCOUNT</Link>
+            <p className="auth-footer-label">DON'T HAVE AN ACCOUNT?</p>
+            <Link to={ROUTES.REGISTER} className="auth-link">Create Account</Link>
           </div>
         </div>
       </div>

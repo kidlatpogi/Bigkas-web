@@ -83,13 +83,13 @@
 
 .progress-baseline {
   stroke: #FCBA04;
-  stroke-width: 0.85;
+  stroke-width: 3;
 }
 
 .progress-polyline {
   fill: none;
   stroke: #FCBA04;
-  stroke-width: 0.85;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -99,7 +99,7 @@
 }
 
 .progress-label {
-  font-size: 22px;
+  font-size: 13px;
   fill: #7a7a7a;
 }
 
@@ -142,16 +142,6 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
-}
-
-.btn-link {
-  background: none;
-  border: none;
-  color: #FCBA04;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
 }
 
 /* Session rows */
@@ -201,7 +191,7 @@
 
 @media (max-width: 480px) {
   .progress-chart-title {
-    font-size: 34px;
+    font-size: 18px;
   }
 
   .progress-chart-header {

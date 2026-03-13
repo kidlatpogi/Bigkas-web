@@ -31,8 +31,8 @@ const PAGE_SIZE = 6;
 
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Recently Added' },
-  { value: 'az',     label: 'A → Z' },
-  { value: 'za',     label: 'Z → A' },
+  { value: 'az', label: 'A → Z' },
+  { value: 'za', label: 'Z → A' },
 ];
 
 /* Per-category lazy cache */
@@ -196,12 +196,12 @@ export default function FrameworksPage() {
   });
   const [activeModal, setActiveModal] = useState(() => location.state?.lessonItem ?? null);
 
-  const [items, setItems]           = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [query, setQuery]           = useState('');
-  const [sortOrder, setSortOrder]   = useState('recent');
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('recent');
   const [authorFilter, setAuthorFilter] = useState('all');
-  const [page, setPage]             = useState(1);
+  const [page, setPage] = useState(1);
 
   /* Clear location state so manual refresh does not re-open the modal */
   useEffect(() => {
@@ -219,11 +219,11 @@ export default function FrameworksPage() {
         dataCache[c.id]
           ? Promise.resolve(dataCache[c.id])
           : c.file().then((mod) => {
-              const raw  = mod.default ?? mod;
-              const data = Array.isArray(raw) ? raw : Object.values(raw);
-              dataCache[c.id] = data;
-              return data;
-            }),
+            const raw = mod.default ?? mod;
+            const data = Array.isArray(raw) ? raw : Object.values(raw);
+            dataCache[c.id] = data;
+            return data;
+          }),
       );
 
       if (!dataCache['all']) {
@@ -250,11 +250,11 @@ export default function FrameworksPage() {
     const load = dataCache[activeTab]
       ? Promise.resolve(dataCache[activeTab])
       : cat.file().then((mod) => {
-          const raw = mod.default ?? mod;
-          const data = Array.isArray(raw) ? raw : Object.values(raw);
-          dataCache[activeTab] = data;
-          return data;
-        });
+        const raw = mod.default ?? mod;
+        const data = Array.isArray(raw) ? raw : Object.values(raw);
+        dataCache[activeTab] = data;
+        return data;
+      });
 
     // Show spinner and clear stale items only for non-cached loads (deferred = async setState)
     if (!dataCache[activeTab]) {
@@ -279,11 +279,11 @@ export default function FrameworksPage() {
     const q = query.trim().toLowerCase();
     let list = q
       ? items.filter(
-          (it) =>
-            it.name?.toLowerCase().includes(q) ||
-            it.author?.toLowerCase().includes(q) ||
-            it.summary?.toLowerCase().includes(q),
-        )
+        (it) =>
+          it.name?.toLowerCase().includes(q) ||
+          it.author?.toLowerCase().includes(q) ||
+          it.summary?.toLowerCase().includes(q),
+      )
       : [...items];
 
     if (authorFilter !== 'all') list = list.filter((it) => it.author === authorFilter);
@@ -296,9 +296,9 @@ export default function FrameworksPage() {
   }, [items, query, sortOrder, authorFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const openModal  = useCallback((item) => setActiveModal(item), []);
+  const openModal = useCallback((item) => setActiveModal(item), []);
   const closeModal = useCallback(() => setActiveModal(null), []);
 
   const switchTab = (id) => {
@@ -342,7 +342,7 @@ export default function FrameworksPage() {
 
         <div className="fh-sort-wrap">
           <svg className="fh-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+            <path d="M3 5h14M6 10h8M9 15h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
           </svg>
           <select
             className="fh-sort"
@@ -355,7 +355,7 @@ export default function FrameworksPage() {
             ))}
           </select>
           <svg className="fh-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
 
@@ -363,8 +363,8 @@ export default function FrameworksPage() {
         {authorOptions.length > 1 && (
           <div className="fh-sort-wrap">
             <svg className="fh-sort-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6"/>
-              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+              <circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
             <select
               className="fh-sort"
@@ -378,7 +378,7 @@ export default function FrameworksPage() {
               ))}
             </select>
             <svg className="fh-sort-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 7.5l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         )}

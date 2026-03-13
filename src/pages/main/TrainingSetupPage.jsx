@@ -17,6 +17,14 @@ function TrainingSetupPage() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
 
+  const handleSafeBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+    navigate(ROUTES.PRACTICE);
+  }, [navigate]);
+
   const [userScripts, setUserScripts]       = useState([]);
   const [selfScripts, setSelfScripts]       = useState([]);
   const [selectedScript, setSelectedScript] = useState(null);
@@ -96,7 +104,7 @@ function TrainingSetupPage() {
   return (
     <div className="inner-page training-setup-page">
       <div className="inner-page-header training-setup-header">
-        <BackButton onClick={() => navigate(-1)} />
+        <BackButton onClick={handleSafeBack} />
         <h1 className="inner-page-title">Training Setup</h1>
       </div>
 
@@ -109,10 +117,10 @@ function TrainingSetupPage() {
       </button>
 
       {/* ── Script selection ── */}
-      <p className="section-label" style={{ marginTop: 20 }}>Select Script</p>
+      <p className="section-label ts-select-script-label">Select Script</p>
 
       {/* FilterTabs — Self-Authored vs AI Generated */}
-      <div style={{ marginBottom: '16px' }}>
+      <div className="ts-filter-tabs-wrap">
         <FilterTabs
           tabs={[
             { label: 'Self-Authored', value: 'self' },
@@ -124,11 +132,15 @@ function TrainingSetupPage() {
       </div>
 
       {/* Script dropdown */}
-      <div className="form-group" style={{ marginTop: 12 }}>
+      <div className="form-group ts-script-select-group">
         {isLoading ? (
-          <p style={{ color: '#888', fontSize: 14 }}>Loading scripts…</p>
+          <div className="ts-status-row" role="status" aria-live="polite">
+            <span className="ts-status-icon" aria-hidden="true">⏳</span>
+            <p className="ts-loading-text">Loading scripts…</p>
+          </div>
         ) : noGeneratedScripts ? (
           <div className="ts-empty-state">
+            <span className="ts-status-icon" aria-hidden="true">🤖</span>
             <p className="ts-empty-text">You haven’t generated any AI scripts yet.</p>
             <button
               className="btn-primary training-generate-btn"
@@ -157,6 +169,12 @@ function TrainingSetupPage() {
         )}
       </div>
 
+      {focus === 'free' && (
+        <p className="form-hint" role="status" aria-live="polite">
+          Script selection is not required in Free Speech mode.
+        </p>
+      )}
+
       {/* Selected script preview */}
       {selectedScript && (
         <div className="page-card script-preview-card">
@@ -174,28 +192,47 @@ function TrainingSetupPage() {
       )}
 
       {/* Focus selection */}
-      <p className="section-label" style={{ marginTop: 8 }}>Choose Your Focus</p>
-      <div className="focus-options">
+      <p className="section-label ts-focus-label">Choose Your Focus</p>
+      <div className="focus-options" role="radiogroup" aria-label="Choose your focus">
         {FOCUS_OPTIONS.map((opt) => (
-          <label
+          <div
             key={opt.value}
+            role="radio"
+            aria-checked={focus === opt.value}
+            tabIndex={focus === opt.value ? 0 : -1}
             className={`focus-option ${focus === opt.value ? 'selected' : ''}`}
             onClick={() => setFocus(opt.value)}
+            onKeyDown={(e) => {
+              if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                setFocus(opt.value);
+              }
+              if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                const next = FOCUS_OPTIONS[(FOCUS_OPTIONS.indexOf(opt) + 1) % FOCUS_OPTIONS.length];
+                setFocus(next.value);
+              }
+              if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prev = FOCUS_OPTIONS[(FOCUS_OPTIONS.indexOf(opt) - 1 + FOCUS_OPTIONS.length) % FOCUS_OPTIONS.length];
+                setFocus(prev.value);
+              }
+            }}
           >
-            <div className="focus-radio-circle">
+            <div className="focus-radio-circle" aria-hidden="true">
               {focus === opt.value && <div className="focus-radio-dot" />}
             </div>
             <div className="focus-option-text">
               <p className="focus-label">{opt.label}</p>
               <p className="focus-desc">{opt.desc}</p>
             </div>
-          </label>
+          </div>
         ))}
       </div>
 
       {/* Actions */}
-      <div className="btn-row" style={{ marginTop: 32 }}>
-        <button className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
+      <div className="btn-row ts-action-row">
+        <button className="btn-secondary" onClick={handleSafeBack}>Cancel</button>
         <button
           className="btn-primary"
           onClick={handleStart}
