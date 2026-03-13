@@ -127,7 +127,12 @@ function PublicRoute() {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <ThemeToggleBtn />
+      <Outlet />
+    </>
+  );
 }
 
 /**
@@ -150,7 +155,12 @@ function HomeRoute() {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  return <LandingPage />;
+  return (
+    <>
+      <ThemeToggleBtn />
+      <LandingPage />
+    </>
+  );
 }
 
 /**

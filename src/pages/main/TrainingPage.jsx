@@ -136,6 +136,40 @@ function TrainingPage() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [highlightIdx, autoScroll]);
 
+  /* ── Waveform animation loop (shared by startRecording + resume) ── */
+  const startWaveformLoop = useCallback(() => {
+    const tick = () => {
+      if (!analyserRef.current) return;
+      const data = new Uint8Array(analyserRef.current.frequencyBinCount);
+      analyserRef.current.getByteFrequencyData(data);
+      const avg = data.reduce((a, b) => a + b, 0) / data.length / 255;
+      waveHistRef.current = [...waveHistRef.current.slice(1), avg];
+      setWaveformBars([...waveHistRef.current]);
+
+      if (avg < SILENCE_THRESHOLD) {
+        if (!silenceStartRef.current) {
+          silenceStartRef.current = Date.now();
+        } else if (Date.now() - silenceStartRef.current >= SILENCE_TRIGGER_MS) {
+          silenceStartRef.current = null;
+          const fw = frameworksRef.current;
+          if (Array.isArray(fw) && fw.length) {
+            const pick = fw[Math.floor(Math.random() * fw.length)];
+            setHintContent(`💡 Stuck? Try the ${pick.name}: "${pick.steps[0]}"`);
+            setShowHint(true);
+            clearTimeout(hintDismissRef.current);
+            hintDismissRef.current = setTimeout(() => setShowHint(false), 5000);
+          }
+        }
+      } else {
+        silenceStartRef.current = null;
+      }
+
+      animRef.current = requestAnimationFrame(tick);
+    };
+
+    tick();
+  }, []);
+
   /* ── Start recording ── */
   const startRecording = useCallback(async () => {
     try {
@@ -159,36 +193,7 @@ function TrainingPage() {
       analyser.fftSize = 256;
       analyserRef.current = analyser;
       src.connect(analyser);
-      const data = new Uint8Array(analyser.frequencyBinCount);
-
-      const tick = () => {
-        analyser.getByteFrequencyData(data);
-        const avg = data.reduce((a, b) => a + b, 0) / data.length / 255;
-        waveHistRef.current = [...waveHistRef.current.slice(1), avg];
-        setWaveformBars([...waveHistRef.current]);
-
-        /* Silence detection — only fires while actively recording */
-        if (avg < SILENCE_THRESHOLD) {
-          if (!silenceStartRef.current) {
-            silenceStartRef.current = Date.now();
-          } else if (Date.now() - silenceStartRef.current >= SILENCE_TRIGGER_MS) {
-            silenceStartRef.current = null;
-            const fw = frameworksRef.current;
-            if (Array.isArray(fw) && fw.length) {
-              const pick = fw[Math.floor(Math.random() * fw.length)];
-              setHintContent(`💡 Stuck? Try the ${pick.name}: “${pick.steps[0]}”`);
-              setShowHint(true);
-              clearTimeout(hintDismissRef.current);
-              hintDismissRef.current = setTimeout(() => setShowHint(false), 5000);
-            }
-          }
-        } else {
-          silenceStartRef.current = null;
-        }
-
-        animRef.current = requestAnimationFrame(tick);
-      };
-      tick();
+      startWaveformLoop();
 
       /* MediaRecorder */
       const recorder = new MediaRecorder(stream, { mimeType: getSupportedMime() });
@@ -218,7 +223,7 @@ function TrainingPage() {
       setErrorMsg('Camera / microphone access denied. Please allow access and try again.');
       setStatus('error');
     }
-  }, [focus, scriptWords, wpm]);
+  }, [focus, scriptWords, startWaveformLoop, wpm]);
 
   /* ── Countdown → start ── */
   const startCountdown = useCallback(() => {
@@ -284,35 +289,7 @@ function TrainingPage() {
     } else if (mediaRef.current?.state === 'paused') {
       mediaRef.current.resume();
       timerRef.current = setInterval(() => setElapsedSec((s) => s + 1), 1000);
-      const tick = () => {
-        if (!analyserRef.current) return;
-        const data = new Uint8Array(analyserRef.current.frequencyBinCount);
-        analyserRef.current.getByteFrequencyData(data);
-        const avg = data.reduce((a, b) => a + b, 0) / data.length / 255;
-        waveHistRef.current = [...waveHistRef.current.slice(1), avg];
-        setWaveformBars([...waveHistRef.current]);
-
-        if (avg < SILENCE_THRESHOLD) {
-          if (!silenceStartRef.current) {
-            silenceStartRef.current = Date.now();
-          } else if (Date.now() - silenceStartRef.current >= SILENCE_TRIGGER_MS) {
-            silenceStartRef.current = null;
-            const fw = frameworksRef.current;
-            if (Array.isArray(fw) && fw.length) {
-              const pick = fw[Math.floor(Math.random() * fw.length)];
-              setHintContent(`💡 Stuck? Try the ${pick.name}: “${pick.steps[0]}”`);
-              setShowHint(true);
-              clearTimeout(hintDismissRef.current);
-              hintDismissRef.current = setTimeout(() => setShowHint(false), 5000);
-            }
-          }
-        } else {
-          silenceStartRef.current = null;
-        }
-
-        animRef.current = requestAnimationFrame(tick);
-      };
-      tick();
+      startWaveformLoop();
       setStatus('recording');
     }
   };

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
-import { buildRoute, getScoreTier } from '../../utils/constants';
+import { buildRoute, getScoreTier, ROUTES } from '../../utils/constants';
 import { formatDate, formatDuration } from '../../utils/formatters';
 import './InnerPages.css';
 
@@ -38,7 +38,7 @@ function HistoryPage() {
           <button
             className="btn-primary"
             style={{ marginTop: 16 }}
-            onClick={() => navigate('/scripts')}
+            onClick={() => navigate(ROUTES.SCRIPTS)}
           >
             Start Practice
           </button>

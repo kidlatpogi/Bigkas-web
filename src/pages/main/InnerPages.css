@@ -318,6 +318,16 @@
   flex: 1;
 }
 
+.btn-link {
+  background: none;
+  border: none;
+  color: #FCBA04;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
 /* ── Empty state ── */
 .empty-state {
   display: flex;

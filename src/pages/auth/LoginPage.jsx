@@ -5,7 +5,6 @@ import { isValidEmail } from '../../utils/validators';
 import { ROUTES } from '../../utils/constants';
 import googleLogo from '../../assets/Google-Logo.png';
 import BackButton from '../../components/common/BackButton';
-import ThemeToggleBtn from '../../components/common/ThemeToggleBtn';
 import './AuthPages.css';
 
 const LOGIN_LOCKOUT_UNTIL_KEY = 'bigkas_login_lockout_until';
@@ -218,10 +217,9 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <ThemeToggleBtn />
       {/* ── Left branding panel ── */}
       <div className="auth-brand-panel">
-        <BackButton onClick={() => navigate(ROUTES.HOME)} />
+        <BackButton className="auth-back-btn" onClick={() => navigate(ROUTES.HOME)} />
 
         <div className="auth-brand-content">
           <h1 className="auth-brand-name">BIGKAS</h1>
