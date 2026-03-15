@@ -7,7 +7,6 @@ import './InnerPages.css';
 import './ProgressPage.css';
 
 const TIME_RANGES = ['Week', 'Month', 'Year'];
-const PROGRESS_FETCH_LIMIT = 200;
 const CHART_WIDTH = 1000;
 const CHART_HEIGHT = 210;
 const CHART_LEFT = 70;
@@ -18,13 +17,13 @@ const CHART_LABEL_Y = 204;
 
 function ProgressPage() {
   const navigate = useNavigate();
-  const { sessions, fetchSessions, isLoading } = useSessionContext();
+  const { sessions, fetchAllSessions, isLoading } = useSessionContext();
 
   const [range, setRange] = useState('Week');
 
   useEffect(() => {
-    fetchSessions(1, true, PROGRESS_FETCH_LIMIT);
-  }, [fetchSessions]);
+    fetchAllSessions();
+  }, [fetchAllSessions]);
 
   const hasAnySessions = sessions.length > 0;
 

@@ -100,6 +100,67 @@ export function SessionProvider({ children }) {
     return { success: true };
   }, [getUserId]);
 
+  const fetchAllSessions = useCallback(async () => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0, pageSize: PAGE_SIZE } });
+      return { success: true, sessions: [] };
+    }
+
+    const uid = await getUserId();
+    if (!uid) return { success: false, error: 'Not authenticated' };
+
+    dispatch({ type: 'SET_LOADING', payload: true });
+    const allSessions = [];
+    let page = 1;
+    const batchSize = 200;
+
+    try {
+      while (true) {
+        const from = (page - 1) * batchSize;
+        const { data, error, count } = await supabase
+          .from('sessions')
+          .select('*', { count: page === 1 ? 'exact' : undefined })
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false })
+          .range(from, from + batchSize - 1);
+
+        if (error) {
+          if (isSessionsTableMissing(error)) {
+            dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0, pageSize: batchSize } });
+            dispatch({ type: 'SET_LOADING', payload: false });
+            return { success: true, sessions: [] };
+          }
+          dispatch({ type: 'SET_ERROR', payload: error.message });
+          dispatch({ type: 'SET_LOADING', payload: false });
+          return { success: false, error: error.message };
+        }
+
+        const normalizedBatch = (data ?? []).map(normalizeSessionRow);
+        allSessions.push(...normalizedBatch);
+
+        if (normalizedBatch.length < batchSize) {
+          dispatch({
+            type: 'SET_SESSIONS',
+            payload: {
+              sessions: allSessions,
+              page,
+              total: count ?? allSessions.length,
+              pageSize: batchSize,
+            },
+          });
+          dispatch({ type: 'SET_LOADING', payload: false });
+          return { success: true, sessions: allSessions };
+        }
+
+        page += 1;
+      }
+    } catch (err) {
+      dispatch({ type: 'SET_ERROR', payload: err.message || 'Failed to load sessions.' });
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return { success: false, error: err.message || 'Failed to load sessions.' };
+    }
+  }, [getUserId]);
+
   const loadMoreSessions = useCallback(async () => {
     if (!state.pagination.hasMore || state.isLoading) return;
     await fetchSessions(state.pagination.page + 1, false, state.pagination.pageSize || PAGE_SIZE);
@@ -248,6 +309,7 @@ export function SessionProvider({ children }) {
   const value = {
     ...state,
     fetchSessions,
+    fetchAllSessions,
     loadMoreSessions,
     fetchSessionById,
     analyseAndSave,
