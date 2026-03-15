@@ -114,6 +114,7 @@ function TrainingPage() {
   const hintDismissRef   = useRef(null);
   const frameworksRef    = useRef([]);
   const autoStartTriggeredRef = useRef(false);
+  const countdownAudioCtxRef = useRef(null);
 
   /* Hint toast state */
   const [showHint, setShowHint]       = useState(false);
@@ -139,7 +140,44 @@ function TrainingPage() {
       clearInterval(wpmTimerRef.current);
       cancelAnimationFrame(animRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      if (countdownAudioCtxRef.current) {
+        countdownAudioCtxRef.current.close().catch(() => {});
+        countdownAudioCtxRef.current = null;
+      }
     };
+  }, []);
+
+  const playCountdownCue = useCallback((type = 'tick') => {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+
+    if (!countdownAudioCtxRef.current || countdownAudioCtxRef.current.state === 'closed') {
+      countdownAudioCtxRef.current = new AudioCtx();
+    }
+
+    const ctx = countdownAudioCtxRef.current;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+
+    const now = ctx.currentTime;
+    const isStart = type === 'start';
+    const duration = isStart ? 0.22 : 0.12;
+    const freq = isStart ? 940 : 720;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(isStart ? 0.2 : 0.14, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
   }, []);
 
   /* ── Auto-scroll teleprompter to highlighted word ── */
@@ -276,15 +314,17 @@ function TrainingPage() {
     setCountdown(3);
     setHighlightIdx(-1);
     let c = 3;
+    playCountdownCue('tick');
     countRef.current = setInterval(() => {
       c -= 1;
       setCountdown(c);
+      playCountdownCue(c <= 0 ? 'start' : 'tick');
       if (c <= 0) {
         clearInterval(countRef.current);
         startRecording();
       }
     }, 1000);
-  }, [startRecording]);
+  }, [playCountdownCue, startRecording]);
 
   /* ── Auto-start when launched from Start actions ── */
   useEffect(() => {

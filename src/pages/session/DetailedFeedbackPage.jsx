@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { ROUTES } from '../../utils/constants';
-import { formatDate, formatDuration } from '../../utils/formatters';
+import { formatDuration } from '../../utils/formatters';
 import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
@@ -23,21 +23,6 @@ function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, value));
 }
 
-function getSessionModeLabel(session) {
-  const raw = String(
-    session?.session_mode
-    ?? session?.mode
-    ?? session?.session_type
-    ?? session?.script_type
-    ?? '',
-  ).toLowerCase();
-
-  if (raw.includes('practice')) return 'Practice';
-  if (raw.includes('train')) return 'Training';
-  if (raw.includes('free') || raw.includes('script') || raw.includes('ai') || raw.includes('self')) return 'Training';
-  return 'Training';
-}
-
 function DetailedFeedbackPage() {
   const navigate = useNavigate();
   const { sessionId } = useParams();
@@ -53,8 +38,6 @@ function DetailedFeedbackPage() {
   }, [fetchSessionById, session, sessionId]);
 
   const durationSec = Math.max(1, Math.round(session?.duration_sec ?? session?.duration ?? 1));
-  const practicedText = session?.target_text || session?.transcript || 'No recorded text available.';
-  const modeLabel = getSessionModeLabel(session);
   const total = toPct(session?.confidence_score ?? session?.score, 0);
 
   const categories = useMemo(() => {
@@ -161,32 +144,6 @@ function DetailedFeedbackPage() {
       <div className="inner-page-header centered-header">
         <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Detailed Feedback</h1>
-      </div>
-
-      <div className="page-card feedback-session-info-card">
-        <p className="feedback-flow-label">Session Overview</p>
-        <div className="feedback-session-info-grid">
-          <div className="feedback-session-info-item">
-            <span>Date</span>
-            <strong>{formatDate(session.created_at)}</strong>
-          </div>
-          <div className="feedback-session-info-item">
-            <span>Duration</span>
-            <strong>{formatDuration(durationSec)}</strong>
-          </div>
-          <div className="feedback-session-info-item">
-            <span>Mode</span>
-            <strong>{modeLabel}</strong>
-          </div>
-          <div className="feedback-session-info-item">
-            <span>Difficulty</span>
-            <strong>{session?.difficulty ? String(session.difficulty) : 'N/A'}</strong>
-          </div>
-        </div>
-        <div className="feedback-practiced-text">
-          <p>Practiced Text</p>
-          <div>{practicedText}</div>
-        </div>
       </div>
 
       <div className="page-card feedback-flow-card">
