@@ -284,6 +284,30 @@ body:has(.tp-page) {
   letter-spacing: 0.02em;
 }
 
+.tp-record-tooltip {
+  margin-top: 4px;
+  position: relative;
+  background: rgba(1, 1, 1, 0.92);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  animation: tp-tooltip-fade-in 0.22s ease;
+}
+
+.tp-record-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid rgba(1, 1, 1, 0.92);
+}
+
 /* Small circular button (Pause / Restart) */
 .tp-ctrl-btn {
   width: 48px;
@@ -359,6 +383,17 @@ body:has(.tp-page) {
 @keyframes tp-record-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255,59,48,0.5); }
   50%       { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
+}
+
+@keyframes tp-tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Right column — Teleprompter ── */
@@ -737,6 +772,8 @@ body:has(.tp-page) {
 [data-theme="dark"] .tp-wpm-value { color: #F0F0F0; }
 [data-theme="dark"] .tp-scroll-speed-row { border-color: #2A2A2A; }
 [data-theme="dark"] .tp-ctrl-label { color: rgba(240,240,240,0.5); }
+[data-theme="dark"] .tp-record-tooltip { background: rgba(252, 186, 4, 0.95); color: #010101; }
+[data-theme="dark"] .tp-record-tooltip::before { border-bottom-color: rgba(252, 186, 4, 0.95); }
 
 [data-theme="dark"] .tp-modal { background: #1A1A1A; }
 [data-theme="dark"] .tp-modal-title { color: #F0F0F0; }

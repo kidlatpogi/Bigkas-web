@@ -460,6 +460,11 @@ function TrainingPage() {
                   <div className={`tp-record-dot${isActive ? ' tp-record-dot--active' : ''}`} />
                 </div>
               </button>
+              {status === 'idle' && !autoStartCountdown && (
+                <div className="tp-record-tooltip" role="status" aria-live="polite">
+                  Click Record to start
+                </div>
+              )}
               <span className="tp-ctrl-label">{isActive ? 'Stop' : 'Record'}</span>
             </div>
 
