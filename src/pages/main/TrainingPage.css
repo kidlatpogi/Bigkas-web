@@ -598,6 +598,103 @@ body:has(.tp-page) {
   text-align: center;
 }
 
+/* ── Permission Denied Overlay ── */
+.tp-permission-overlay {
+  background: rgba(0,0,0,0.65);
+}
+
+.tp-permission-box {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 380px;
+  width: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.tp-permission-icon {
+  font-size: 52px;
+  line-height: 1;
+}
+
+.tp-permission-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #010101;
+  margin: 0;
+}
+
+.tp-permission-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tp-permission-steps {
+  text-align: left;
+  width: 100%;
+  padding: 14px 16px;
+  background: #F5F5F5;
+  border-radius: 12px;
+  margin: 4px 0;
+  font-size: 13.5px;
+  color: #333;
+  line-height: 1.9;
+  list-style-position: inside;
+}
+
+.tp-permission-steps strong {
+  color: #010101;
+}
+
+.tp-permission-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.tp-permission-retry {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  background: #FCBA04;
+  color: #010101;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.tp-permission-retry:hover { opacity: 0.88; }
+
+.tp-permission-back {
+  width: 100%;
+  padding: 11px;
+  border-radius: 14px;
+  border: 1.5px solid #E0E0E0;
+  background: transparent;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.tp-permission-back:hover { border-color: #AAAAAA; }
+
+[data-theme="dark"] .tp-permission-box { background: #1E1E1E; }
+[data-theme="dark"] .tp-permission-title { color: #F0F0F0; }
+[data-theme="dark"] .tp-permission-desc { color: #999; }
+[data-theme="dark"] .tp-permission-steps { background: #2A2A2A; color: #CCC; }
+[data-theme="dark"] .tp-permission-steps strong { color: #F0F0F0; }
+[data-theme="dark"] .tp-permission-back { border-color: #2E2E2E; color: #AAA; }
+
 .tp-empty-icon { font-size: 48px; }
 
 .tp-empty-title {

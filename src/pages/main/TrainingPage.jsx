@@ -220,10 +220,14 @@ function TrainingPage() {
           else clearInterval(wpmTimerRef.current);
         }, msPerWord);
       }
-    } catch {
-      setErrorMsg('Camera / microphone access denied. Please allow access and try again.');
-      setStatus('error');
-    }
+      } catch (err) {
+        if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+          setStatus('permission-denied');
+        } else {
+          setErrorMsg('Could not access your microphone or camera. Please check your device and try again.');
+          setStatus('error');
+        }
+      }
   }, [focus, scriptWords, startWaveformLoop, wpm]);
 
   /* ── Countdown → start ── */
@@ -558,6 +562,41 @@ function TrainingPage() {
       )}
 
       {/* ── Settings Modal ── */}
+        {/* ── Permission Denied Overlay ── */}
+        {status === 'permission-denied' && (
+          <div className="tp-overlay tp-permission-overlay">
+            <div className="tp-permission-box">
+              <div className="tp-permission-icon" aria-hidden="true">🎙️</div>
+              <h2 className="tp-permission-title">
+                {focus === 'scripted' ? 'Microphone & Camera Required' : 'Microphone Required'}
+              </h2>
+              <p className="tp-permission-desc">
+                Bigkas needs access to your {focus === 'scripted' ? 'microphone and camera' : 'microphone'} to record your session.
+              </p>
+              <ol className="tp-permission-steps">
+                <li>Click the <strong>lock 🔒</strong> icon in your browser&rsquo;s address bar</li>
+                <li>Set <strong>Microphone{focus === 'scripted' ? ' and Camera' : ''}</strong> to <strong>Allow</strong></li>
+                <li>Tap <strong>Try Again</strong> below</li>
+              </ol>
+              <div className="tp-permission-actions">
+                <button
+                  className="tp-permission-retry"
+                  onClick={() => {
+                    autoStartTriggeredRef.current = false;
+                    startCountdown();
+                  }}
+                >
+                  Try Again
+                </button>
+                <button className="tp-permission-back" onClick={() => navigate(-1)}>
+                  Go Back
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Settings Modal ── */}
       {showSettings && (
         <div className="tp-modal-backdrop" onClick={() => setShowSettings(false)}>
           <div className="tp-modal" onClick={(e) => e.stopPropagation()}>
