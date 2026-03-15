@@ -62,6 +62,7 @@ function TrainingPage() {
   const script    = state?.script    || null;
   const focus     = state?.focus     || 'scripted';
   const freeTopic = state?.freeTopic || '';
+  const autoStartCountdown = state?.autoStartCountdown === true;
 
   /* Recording state */
   const [status, setStatus]         = useState('idle'); // idle | countdown | recording | paused | analysing | error
@@ -238,8 +239,9 @@ function TrainingPage() {
     }, 1000);
   }, [startRecording]);
 
-  /* ── Auto-start each session: 3..2..1..Start → record ── */
+  /* ── Auto-start only when arriving via Start actions ── */
   useEffect(() => {
+    if (!autoStartCountdown) return;
     if (autoStartTriggeredRef.current) return;
     if (status !== 'idle') return;
 
@@ -249,7 +251,7 @@ function TrainingPage() {
     }, 300);
 
     return () => clearTimeout(autoStartTimer);
-  }, [startCountdown, status]);
+  }, [autoStartCountdown, startCountdown, status]);
 
   /* ── Stop → analyse ── */
   const stopRecording = () => {

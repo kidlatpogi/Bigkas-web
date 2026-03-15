@@ -149,6 +149,7 @@ export default function PracticePage() {
         script: previewScript,
         focus: 'scripted',
         entryPoint: 'practice',
+        autoStartCountdown: true,
       },
     });
   };
@@ -183,6 +184,7 @@ export default function PracticePage() {
         freeSpeechContext: randomTopic.body,
         focus: 'free',
         entryPoint: 'practice',
+        autoStartCountdown: true,
       },
     });
   };
