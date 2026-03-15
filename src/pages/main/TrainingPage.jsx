@@ -4,6 +4,7 @@ import { LuRotateCcw } from 'react-icons/lu';
 import { useSessionContext } from '../../context/useSessionContext';
 import { buildRoute } from '../../utils/constants';
 import BackButton from '../../components/common/BackButton';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import './TrainingPage.css';
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
@@ -81,6 +82,7 @@ function TrainingPage() {
   const [countdown, setCountdown]   = useState(3);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [errorMsg, setErrorMsg]     = useState('');
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   /* Settings modal */
   const [showSettings, setShowSettings] = useState(false);
@@ -440,12 +442,32 @@ function TrainingPage() {
   const isPaused    = status === 'paused';
   const isActive    = isRecording || isPaused;
 
+  const handleBackPress = useCallback(() => {
+    if (isActive) {
+      setShowExitConfirm(true);
+      return;
+    }
+    navigate(-1);
+  }, [isActive, navigate]);
+
+  useEffect(() => {
+    if (!isActive) return undefined;
+
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isActive]);
+
   /* ── Guard: no script in scripted mode ── */
   if (!script && focus !== 'free') {
     return (
       <div className="tp-page">
         <div className="tp-header">
-          <BackButton onClick={() => navigate(-1)} />
+          <BackButton onClick={handleBackPress} />
           <span className="tp-header-title">Training</span>
           <div className="tp-header-spacer" />
         </div>
@@ -466,7 +488,7 @@ function TrainingPage() {
     <div className="tp-page">
       {/* ── Dark Header ── */}
       <div className="tp-header">
-        <BackButton onClick={() => navigate(-1)} />
+        <BackButton onClick={handleBackPress} />
         <span className="tp-header-title">{title}</span>
         {focus === 'scripted' ? (
           <button className="tp-settings-btn" onClick={() => setShowSettings(true)} aria-label="Settings">
@@ -758,6 +780,21 @@ function TrainingPage() {
           </button>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={showExitConfirm}
+        title="Quit session?"
+        message="You have an ongoing recording. If you leave now, this recording will be discarded."
+        confirmLabel="Quit"
+        cancelLabel="Stay"
+        type="warning"
+        onCancel={() => setShowExitConfirm(false)}
+        onConfirm={() => {
+          handleRestart();
+          setShowExitConfirm(false);
+          navigate(-1);
+        }}
+      />
     </div>
   );
 }

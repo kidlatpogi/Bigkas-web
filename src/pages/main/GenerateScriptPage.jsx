@@ -207,13 +207,20 @@ function GenerateScriptPage() {
     if (!user?.id) return;
     setIsSaving(true);
     try {
-      const saved = await createScript({
+      const { data: savedScript, error: saveError } = await createScript({
         userId: user.id,
         title: editTitle.trim() || generated.title,
         content: editContent.trim(),
         type: 'auto-generated',
       });
-      navigate(`${ROUTES.TRAINING}?autostart=1`, { state: { script: saved, focus: 'scripted', autoStartCountdown: true } });
+
+      if (saveError || !savedScript) {
+        throw saveError || new Error('Failed to save script.');
+      }
+
+      navigate(`${ROUTES.TRAINING}?autostart=1`, {
+        state: { script: savedScript, focus: 'scripted', autoStartCountdown: true },
+      });
     } catch {
       setError('Failed to save script.');
     } finally {
