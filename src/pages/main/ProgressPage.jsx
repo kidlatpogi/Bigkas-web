@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
+import { useAuthContext } from '../../context/useAuthContext';
 import { ROUTES, buildRoute, getScoreTier } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import './InnerPages.css';
@@ -18,12 +19,15 @@ const CHART_LABEL_Y = 204;
 function ProgressPage() {
   const navigate = useNavigate();
   const { sessions, fetchAllSessions, isLoading } = useSessionContext();
+  const { user, isInitializing } = useAuthContext();
 
   const [range, setRange] = useState('Week');
 
   useEffect(() => {
+    if (isInitializing) return;
+    if (!user) return;
     fetchAllSessions();
-  }, [fetchAllSessions]);
+  }, [fetchAllSessions, isInitializing, user]);
 
   const hasAnySessions = sessions.length > 0;
 

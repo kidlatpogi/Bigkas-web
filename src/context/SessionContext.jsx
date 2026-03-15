@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { ENV } from '../config/env';
 
 const PAGE_SIZE = 10;
+const LOCAL_SESSIONS_KEY = 'bigkas_local_sessions_v1';
 
 const initialState = {
   sessions:       [],
@@ -46,6 +47,28 @@ function normalizeSessionRow(session) {
   };
 }
 
+function readLocalSessions() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SESSIONS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(normalizeSessionRow).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalSessions(sessions) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(LOCAL_SESSIONS_KEY, JSON.stringify(sessions));
+  } catch {
+    // Ignore localStorage write errors.
+  }
+}
+
 function isSessionsTableMissing(error) {
   if (!error) return false;
   const message = error.message?.toLowerCase() || '';
@@ -70,8 +93,20 @@ export function SessionProvider({ children }) {
   /* ── Fetch paginated sessions ── */
   const fetchSessions = useCallback(async (page = 1, refresh = false, pageSize = PAGE_SIZE) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-      dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0 } });
-      return { success: true };
+      const allLocal = readLocalSessions();
+      const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : PAGE_SIZE;
+      const from = (page - 1) * safePageSize;
+      const paged = allLocal.slice(from, from + safePageSize);
+      dispatch({
+        type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS',
+        payload: {
+          sessions: paged,
+          page,
+          total: allLocal.length,
+          pageSize: safePageSize,
+        },
+      });
+      return { success: true, sessions: paged };
     }
 
     const uid = await getUserId();
@@ -102,8 +137,9 @@ export function SessionProvider({ children }) {
 
   const fetchAllSessions = useCallback(async () => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-      dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0, pageSize: PAGE_SIZE } });
-      return { success: true, sessions: [] };
+      const local = readLocalSessions();
+      dispatch({ type: 'SET_SESSIONS', payload: { sessions: local, page: 1, total: local.length, pageSize: PAGE_SIZE } });
+      return { success: true, sessions: local };
     }
 
     const uid = await getUserId();
@@ -237,6 +273,8 @@ export function SessionProvider({ children }) {
           ...sessionRow,
           created_at: new Date().toISOString(),
         });
+        const nextLocal = [localSession, ...readLocalSessions()];
+        writeLocalSessions(nextLocal);
         dispatch({ type: 'ADD_SESSION', payload: localSession });
         return { success: true, session: localSession, analysisResult, data: localSession };
       }
@@ -249,6 +287,8 @@ export function SessionProvider({ children }) {
             ...sessionRow,
             created_at: new Date().toISOString(),
           });
+          const nextLocal = [localSession, ...readLocalSessions()];
+          writeLocalSessions(nextLocal);
           dispatch({ type: 'ADD_SESSION', payload: localSession });
           return { success: true, session: localSession, analysisResult, data: localSession };
         }
@@ -288,6 +328,8 @@ export function SessionProvider({ children }) {
   /* ── Delete session ── */
   const deleteSession = useCallback(async (sessionId) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      const filtered = readLocalSessions().filter((s) => s.id !== sessionId);
+      writeLocalSessions(filtered);
       dispatch({ type: 'REMOVE_SESSION', payload: sessionId });
       return { success: true };
     }
