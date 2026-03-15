@@ -196,8 +196,18 @@ function TrainingPage() {
       src.connect(analyser);
       startWaveformLoop();
 
-      /* MediaRecorder */
-      const recorder = new MediaRecorder(stream, { mimeType: getSupportedMime() });
+      /* MediaRecorder records audio only; the camera stream is only for preview. */
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length === 0) {
+        throw new Error('No microphone track available for recording.');
+      }
+
+      const recordingStream = new MediaStream(audioTracks);
+      const recorderMime = getSupportedMime();
+      const recorder = recorderMime
+        ? new MediaRecorder(recordingStream, { mimeType: recorderMime })
+        : new MediaRecorder(recordingStream);
+
       mediaRef.current = recorder;
       chunksRef.current = [];
       recorder.ondataavailable = (e) => {
@@ -220,14 +230,16 @@ function TrainingPage() {
           else clearInterval(wpmTimerRef.current);
         }, msPerWord);
       }
-      } catch (err) {
-        if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
-          setStatus('permission-denied');
-        } else {
-          setErrorMsg('Could not access your microphone or camera. Please check your device and try again.');
-          setStatus('error');
-        }
+
+      setErrorMsg('');
+    } catch (err) {
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        setStatus('permission-denied');
+      } else {
+        setErrorMsg('Could not start audio recording. Please check your microphone and try again.');
+        setStatus('error');
       }
+    }
   }, [focus, scriptWords, startWaveformLoop, wpm]);
 
   /* ── Countdown → start ── */
@@ -275,7 +287,7 @@ function TrainingPage() {
     if (!recorder || recorder.state === 'inactive') return;
 
     recorder.onstop = async () => {
-      const mime = getSupportedMime();
+      const mime = recorder.mimeType || getSupportedMime() || 'audio/webm';
       const blob = new Blob(chunksRef.current, { type: mime });
       streamRef.current?.getTracks().forEach((t) => t.stop());
       setStatus('analysing');
