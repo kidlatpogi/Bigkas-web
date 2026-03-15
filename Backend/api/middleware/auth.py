@@ -134,6 +134,28 @@ async def get_current_user(
     if token_alg == "RS256":
         payload = _decode_rs256_with_jwks(token, kid)
 
+        # Do not fall back to HS256 for RS256 tokens.
+        # If JWKS verification fails, this is a deployment/config issue
+        # (e.g., wrong SUPABASE_URL, networking, or stale key rotation).
+        if payload is None:
+            logger.warning(
+                "JWT RS256 verification failed (kid=%s). Check SUPABASE_URL/JWKS availability.",
+                kid,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired RS256 token.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+    if token_alg and token_alg not in {"RS256", "HS256"}:
+        logger.warning("Unsupported JWT alg in token header: %s", token_alg)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Unsupported token algorithm: {token_alg}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     # Fallback: local/dev HS256 secret verification.
     if payload is None:
         try:
