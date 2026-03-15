@@ -201,7 +201,7 @@ function DetailedFeedbackPage() {
         ))}
       </div>
 
-      <div className="page-card" style={{ textAlign: 'center', marginBottom: 12 }}>
+      <div className="page-card" style={{ textAlign: 'center', marginTop: 12, marginBottom: 12 }}>
         <p style={{ margin: 0, fontSize: 14, color: '#666' }}>Speaking Confidence Score</p>
         <p style={{ margin: '4px 0 0', fontSize: 34, fontWeight: 800 }}>{total}/100</p>
       </div>
