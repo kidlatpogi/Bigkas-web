@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -7,17 +7,19 @@ WORKDIR /app
 # - ffmpeg: Audio format conversion and processing
 # - libsm6, libxext6: Required by opencv for image processing
 # - libgomp1: OpenMP support for mediapipe
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libsndfile1 \
     ffmpeg \
     libsm6 \
     libxext6 \
     libgomp1 \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir --prefer-binary --extra-index-url https://download.pytorch.org/whl/cpu torch==2.5.1 \
     && pip install --no-cache-dir --prefer-binary -r requirements.txt
 
 # Copy application code
