@@ -210,6 +210,35 @@
   color: #010101;
 }
 
+.result-collapse-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.result-collapse-chevron {
+  font-size: 18px;
+  line-height: 1;
+  color: #666;
+  transform: rotate(-90deg);
+  transition: transform 0.2s ease;
+}
+
+.result-collapse-chevron.open {
+  transform: rotate(0deg);
+}
+
+.result-collapse-body {
+  margin-top: 10px;
+}
+
 /* ── Flow chart ── */
 .flow-chart {
   display: flex;

@@ -26,6 +26,21 @@ function AllSessionsPage() {
     fetchSessions(1, true);
   }, [fetchSessions]);
 
+  const getSessionMode = (session) => {
+    const raw = String(
+      session?.session_mode
+      ?? session?.mode
+      ?? session?.session_type
+      ?? session?.script_type
+      ?? '',
+    ).toLowerCase();
+
+    if (raw.includes('practice')) return 'Practice';
+    if (raw.includes('train')) return 'Training';
+    if (raw.includes('free') || raw.includes('script') || raw.includes('ai') || raw.includes('self')) return 'Training';
+    return 'Training';
+  };
+
   const filterSession = (s) => {
     const d = new Date(s.created_at);
     const now = new Date();
@@ -91,6 +106,9 @@ function AllSessionsPage() {
                   {s.duration_sec ? ` · ${formatDuration(s.duration_sec)}` : ''}
                 </p>
               </div>
+              <span className={`session-mode-tag ${getSessionMode(s).toLowerCase()}`}>
+                {getSessionMode(s)}
+              </span>
               <span
                 className="score-badge"
                 style={{ background: tier.color + '22', color: tier.color }}

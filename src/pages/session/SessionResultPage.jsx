@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getScoreTier, buildRoute, ROUTES } from '../../utils/constants';
 import { formatDate, formatDuration } from '../../utils/formatters';
@@ -35,6 +36,7 @@ function SessionResultPage() {
   const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
   const modeLabel = getSessionModeLabel(result);
   const practicedText = result.target_text || result.transcript || 'No recorded text available.';
+  const [isSessionInfoOpen, setIsSessionInfoOpen] = useState(true);
 
   const pillars = [
     { key: 'facial', label: 'Facial Expression', value: result.facial_expression_score },
@@ -123,30 +125,44 @@ function SessionResultPage() {
 
       {/* Extra session information */}
       <div className="page-card" style={{ marginBottom: 16 }}>
-        <p className="section-label" style={{ marginBottom: 8 }}>Session Information</p>
-        {result.created_at && (
-          <div className="info-row">
-            <span className="info-row-key">Date</span>
-            <span className="info-row-val">{formatDate(result.created_at)}</span>
+        <button
+          className="result-collapse-toggle"
+          onClick={() => setIsSessionInfoOpen((open) => !open)}
+          type="button"
+          aria-expanded={isSessionInfoOpen}
+          aria-controls="session-information-body"
+        >
+          <span className="section-label" style={{ marginBottom: 0 }}>Session Information</span>
+          <span className={`result-collapse-chevron${isSessionInfoOpen ? ' open' : ''}`}>⌄</span>
+        </button>
+
+        {isSessionInfoOpen && (
+          <div id="session-information-body" className="result-collapse-body">
+            {result.created_at && (
+              <div className="info-row">
+                <span className="info-row-key">Date</span>
+                <span className="info-row-val">{formatDate(result.created_at)}</span>
+              </div>
+            )}
+            <div className="info-row">
+              <span className="info-row-key">Duration</span>
+              <span className="info-row-val">{formatDuration(durationSec || 0)}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-row-key">Mode</span>
+              <span className="info-row-val">{modeLabel}</span>
+            </div>
+            <div className="info-row" style={{ borderBottom: 'none' }}>
+              <span className="info-row-key">Difficulty</span>
+              <span className="info-row-val" style={{ textTransform: 'capitalize' }}>
+                {result?.difficulty ? String(result.difficulty) : 'N/A'}
+              </span>
+            </div>
+
+            <p className="detail-section-title" style={{ marginTop: 14 }}>Practiced Text</p>
+            <p className="practiced-text">{practicedText}</p>
           </div>
         )}
-        <div className="info-row">
-          <span className="info-row-key">Duration</span>
-          <span className="info-row-val">{formatDuration(durationSec || 0)}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-row-key">Mode</span>
-          <span className="info-row-val">{modeLabel}</span>
-        </div>
-        <div className="info-row" style={{ borderBottom: 'none' }}>
-          <span className="info-row-key">Difficulty</span>
-          <span className="info-row-val" style={{ textTransform: 'capitalize' }}>
-            {result?.difficulty ? String(result.difficulty) : 'N/A'}
-          </span>
-        </div>
-
-        <p className="detail-section-title" style={{ marginTop: 14 }}>Practiced Text</p>
-        <p className="practiced-text">{practicedText}</p>
       </div>
 
       {/* View detailed feedback row */}

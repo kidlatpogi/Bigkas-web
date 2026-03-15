@@ -79,6 +79,10 @@
   flex-wrap: wrap;
 }
 
+.progress-mode-selector--outside {
+  margin: 4px 0 12px;
+}
+
 .progress-mode-btn {
   border: 1px solid #e2e2e2;
   background: #fff;

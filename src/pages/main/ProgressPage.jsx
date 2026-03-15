@@ -211,6 +211,19 @@ function ProgressPage() {
         <h1 className="inner-page-title">Progress</h1>
       </div>
 
+      <div className="progress-mode-selector progress-mode-selector--outside" role="tablist" aria-label="Filter by session type">
+        {SESSION_MODES.map((mode) => (
+          <button
+            key={mode}
+            className={`progress-mode-btn${modeFilter === mode ? ' active' : ''}`}
+            onClick={() => setModeFilter(mode)}
+            type="button"
+          >
+            {mode}
+          </button>
+        ))}
+      </div>
+
       {/* Performance trend card */}
       <div className="page-card progress-trend-card">
         <div className="progress-trend-header">
@@ -233,19 +246,6 @@ function ProgressPage() {
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="progress-mode-selector" role="tablist" aria-label="Filter by session type">
-          {SESSION_MODES.map((mode) => (
-            <button
-              key={mode}
-              className={`progress-mode-btn${modeFilter === mode ? ' active' : ''}`}
-              onClick={() => setModeFilter(mode)}
-              type="button"
-            >
-              {mode}
-            </button>
-          ))}
         </div>
 
         <div className="progress-line-chart">

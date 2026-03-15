@@ -837,7 +837,38 @@
   text-align: center;
 }
 
+.session-mode-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.session-mode-tag.training {
+  background: rgba(252, 186, 4, 0.22);
+  color: #8a5a00;
+}
+
+.session-mode-tag.practice {
+  background: rgba(21, 184, 166, 0.2);
+  color: #0f7268;
+}
+
 [data-theme="dark"] .paged-nav { background: #0B0B0D; border-color: #2A2A2A; }
 [data-theme="dark"] .paged-btn { background: #1E1E1E; color: #F0F0F0; border-color: #2A2A2A; }
 [data-theme="dark"] .paged-btn:hover:not(:disabled) { border-color: #FCBA04; background: rgba(252, 186, 4, 0.06); }
 [data-theme="dark"] .paged-info { color: #F0F0F0; }
+
+[data-theme="dark"] .session-mode-tag.training {
+  background: rgba(252, 186, 4, 0.28);
+  color: #ffcf57;
+}
+
+[data-theme="dark"] .session-mode-tag.practice {
+  background: rgba(21, 184, 166, 0.28);
+  color: #58d8ca;
+}
