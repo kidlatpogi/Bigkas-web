@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useSessionContext } from '../../context/useSessionContext';
 import { getScoreTier, buildRoute, ROUTES } from '../../utils/constants';
 import { formatDate, formatDuration } from '../../utils/formatters';
 import BackButton from '../../components/common/BackButton';
@@ -25,9 +26,39 @@ function SessionResultPage() {
   const navigate = useNavigate();
   const { sessionId } = useParams();
   const { state } = useLocation();
+  const { currentSession, fetchSessionById, isLoading } = useSessionContext();
 
-  // Result data is passed via navigation state from TrainingPage/analyseAndSave
-  const result = state || {};
+  useEffect(() => {
+    if (state) return;
+    fetchSessionById(sessionId);
+  }, [fetchSessionById, sessionId, state]);
+
+  const result = useMemo(() => {
+    if (state) return state;
+    if (String(currentSession?.id || '') === String(sessionId || '')) {
+      return currentSession;
+    }
+    return null;
+  }, [currentSession, sessionId, state]);
+
+  const [isSessionInfoOpen, setIsSessionInfoOpen] = useState(false);
+
+  if (!result && isLoading) {
+    return <div className="inner-page"><div className="page-loading">Loading...</div></div>;
+  }
+
+  if (!result) {
+    return (
+      <div className="inner-page">
+        <div className="empty-state">
+          <span className="empty-icon">&#9888;&#65039;</span>
+          <p className="empty-title">Session not found</p>
+          <button className="btn-primary" onClick={() => navigate(ROUTES.DASHBOARD)}>Go Home</button>
+        </div>
+      </div>
+    );
+  }
+
   const score  = result.confidence_score ?? 0;
   const tier   = getScoreTier(score);
   const scoreDisplay = Number.isInteger(score) ? `${score}` : Number(score).toFixed(2);
@@ -36,7 +67,8 @@ function SessionResultPage() {
   const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
   const modeLabel = getSessionModeLabel(result);
   const practicedText = result.target_text || result.transcript || 'No recorded text available.';
-  const [isSessionInfoOpen, setIsSessionInfoOpen] = useState(true);
+  const audioUrl = result.audio_url || null;
+  const videoUrl = result.video_url || result.video_storage_url || null;
 
   const pillars = [
     { key: 'facial', label: 'Facial Expression', value: result.facial_expression_score },
@@ -123,6 +155,24 @@ function SessionResultPage() {
         </div>
       )}
 
+      {(audioUrl || videoUrl) && (
+        <div className="page-card" style={{ marginBottom: 16 }}>
+          <p className="section-label" style={{ marginBottom: 10 }}>Session Recordings</p>
+          {videoUrl ? (
+            <div className="session-video-wrap" style={{ marginBottom: audioUrl ? 10 : 0 }}>
+              <video className="session-video" controls preload="metadata" src={videoUrl}>
+                Your browser does not support video playback.
+              </video>
+            </div>
+          ) : null}
+          {audioUrl ? (
+            <audio className="session-audio" controls preload="metadata" src={audioUrl}>
+              Your browser does not support audio playback.
+            </audio>
+          ) : null}
+        </div>
+      )}
+
       {/* Extra session information */}
       <div className="page-card" style={{ marginBottom: 16 }}>
         <button
@@ -133,7 +183,7 @@ function SessionResultPage() {
           aria-controls="session-information-body"
         >
           <span className="section-label" style={{ marginBottom: 0 }}>Session Information</span>
-          <span className={`result-collapse-chevron${isSessionInfoOpen ? ' open' : ''}`}>⌄</span>
+          <span className={`result-collapse-chevron${isSessionInfoOpen ? ' open' : ''}`}>▼</span>
         </button>
 
         {isSessionInfoOpen && (
@@ -151,12 +201,6 @@ function SessionResultPage() {
             <div className="info-row">
               <span className="info-row-key">Mode</span>
               <span className="info-row-val">{modeLabel}</span>
-            </div>
-            <div className="info-row" style={{ borderBottom: 'none' }}>
-              <span className="info-row-key">Difficulty</span>
-              <span className="info-row-val" style={{ textTransform: 'capitalize' }}>
-                {result?.difficulty ? String(result.difficulty) : 'N/A'}
-              </span>
             </div>
 
             <p className="detail-section-title" style={{ marginTop: 14 }}>Practiced Text</p>

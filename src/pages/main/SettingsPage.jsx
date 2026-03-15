@@ -12,6 +12,7 @@ import {
   IoChevronForward,
 } from 'react-icons/io5';
 import { useAuthContext } from '../../context/useAuthContext';
+import { useSessionContext } from '../../context/useSessionContext';
 import { ROUTES } from '../../utils/constants';
 import './InnerPages.css';
 import './SettingsPage.css';
@@ -22,6 +23,7 @@ const THEME_TOGGLE_HIDDEN_KEY = 'bigkas-hide-theme-toggle';
 function SettingsPage() {
   const navigate = useNavigate();
   const { logout, user } = useAuthContext();
+  const { clearSessionMedia } = useSessionContext();
 
   /* ── Enumerate real devices when available ── */
   const [microphones, setMicrophones] = useState([]);
@@ -32,6 +34,10 @@ function SettingsPage() {
     () => localStorage.getItem(THEME_TOGGLE_HIDDEN_KEY) === '1'
   );
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showClearMediaModal, setShowClearMediaModal] = useState(false);
+  const [isClearingMedia, setIsClearingMedia] = useState(false);
+  const [clearMediaMessage, setClearMediaMessage] = useState('');
+  const [clearMediaStatus, setClearMediaStatus] = useState('');
 
   useEffect(() => {
     const enumerate = async () => {
@@ -63,6 +69,28 @@ function SettingsPage() {
   };
 
   const handleLogout = () => { setShowLogoutModal(true); };
+
+  const handleClearMedia = async () => {
+    setIsClearingMedia(true);
+    setClearMediaMessage('');
+    setClearMediaStatus('');
+    const result = await clearSessionMedia();
+    setIsClearingMedia(false);
+    if (result?.success) {
+      setShowClearMediaModal(false);
+      const clearedCount = Number(result?.clearedFiles || 0);
+      setClearMediaMessage(
+        clearedCount > 0
+          ? `Successfully cleared recordings (${clearedCount} file${clearedCount > 1 ? 's' : ''}).`
+          : 'Successfully cleared recordings.'
+      );
+      setClearMediaStatus('success');
+      return;
+    }
+
+    setClearMediaMessage(result?.error || 'Failed to clear recordings. Please try again.');
+    setClearMediaStatus('error');
+  };
 
   const displayName  = user?.nickname || user?.name || 'My Profile';
   const displayEmail  = user?.email || '';
@@ -205,6 +233,31 @@ function SettingsPage() {
         </button>
       </div>
 
+      {/* ── Data section ── */}
+      <p className="stg-section-label">DATA</p>
+      <div className="stg-card">
+        <button className="stg-row" onClick={() => setShowClearMediaModal(true)}>
+          <span className="stg-row-icon stg-icon-danger">
+            <IoCameraOutline size={20} />
+          </span>
+          <div className="stg-row-body">
+            <span className="stg-row-title">Clear Recordings</span>
+            <span className="stg-row-sub">Remove all saved audio/video files from cloud storage</span>
+          </div>
+          <IoChevronForward size={17} className="stg-chevron" />
+        </button>
+      </div>
+
+      {clearMediaMessage ? (
+        <p
+          className={`stg-inline-message ${clearMediaStatus === 'success' ? 'stg-inline-message--success' : ''} ${clearMediaStatus === 'error' ? 'stg-inline-message--error' : ''}`.trim()}
+          role="status"
+          aria-live="polite"
+        >
+          {clearMediaMessage}
+        </p>
+      ) : null}
+
       {/* ── Log out ── */}
       <button className="stg-btn-logout" onClick={handleLogout}>
         <IoLogOutOutline size={20} />
@@ -220,6 +273,17 @@ function SettingsPage() {
         type="danger"
         onCancel={() => setShowLogoutModal(false)}
         onConfirm={async () => { setShowLogoutModal(false); await logout(); }}
+      />
+
+      <ConfirmationModal
+        isOpen={showClearMediaModal}
+        title="Clear recordings?"
+        message="This will permanently delete all your stored audio/video recordings from cloud storage. Session scores and text feedback will remain."
+        confirmLabel={isClearingMedia ? 'Clearing...' : 'Clear'}
+        cancelLabel="Cancel"
+        type="danger"
+        onCancel={() => { if (!isClearingMedia) setShowClearMediaModal(false); }}
+        onConfirm={() => { if (!isClearingMedia) handleClearMedia(); }}
       />
     </div>
   );

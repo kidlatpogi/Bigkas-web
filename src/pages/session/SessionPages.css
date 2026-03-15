@@ -413,6 +413,19 @@
   margin-top: var(--spacing-md);
 }
 
+.session-video-wrap {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #121212;
+}
+
+.session-video {
+  width: 100%;
+  display: block;
+  max-height: 420px;
+}
+
 .session-actions {
   display: flex;
   gap: var(--spacing-md);

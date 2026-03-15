@@ -24,6 +24,18 @@ function reducer(state, action) {
     case 'SET_CURRENT':     return { ...state, currentSession: action.payload };
     case 'ADD_SESSION':     return { ...state, sessions: [action.payload, ...state.sessions] };
     case 'REMOVE_SESSION':  return { ...state, sessions: state.sessions.filter((s) => s.id !== action.payload) };
+    case 'CLEAR_MEDIA_URLS':
+      return {
+        ...state,
+        sessions: state.sessions.map((s) => ({
+          ...s,
+          audio_url: null,
+          video_storage_url: null,
+        })),
+        currentSession: state.currentSession
+          ? { ...state.currentSession, audio_url: null, video_storage_url: null }
+          : state.currentSession,
+      };
     case 'SET_ERROR':       return { ...state, error: action.payload, isLoading: false };
     case 'CLEAR_ERROR':     return { ...state, error: null };
     case 'RESET':           return initialState;
@@ -44,6 +56,8 @@ function normalizeSessionRow(session) {
     ...session,
     confidence_score: session.confidence_score ?? session.score ?? 0,
     duration_sec: session.duration_sec ?? session.duration ?? 0,
+    video_url: session.video_url ?? session.video_storage_url ?? null,
+    video_storage_url: session.video_storage_url ?? session.video_url ?? null,
     recommendations: Array.isArray(session.recommendations) ? session.recommendations : [],
   };
 }
@@ -58,6 +72,12 @@ function isSessionsTableMissing(error) {
     message.includes('relation') ||
     message.includes('not found')
   );
+}
+
+function isMissingVideoUrlColumn(error) {
+  if (!error) return false;
+  const msg = (error.message || '').toLowerCase();
+  return error.code === '42703' || msg.includes('video_url') || msg.includes('column') && msg.includes('does not exist');
 }
 
 function getFileExtension(blobType, fallback = 'webm') {
@@ -77,6 +97,25 @@ function toNumeric(value, fallback = 0) {
   const num = Number(value);
   if (!Number.isFinite(num)) return fallback;
   return num;
+}
+
+function chunkArray(items, size) {
+  if (!Array.isArray(items) || size <= 0) return [];
+  const chunks = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
+function toSessionRecordingStoragePath(publicUrl) {
+  if (!publicUrl || typeof publicUrl !== 'string') return null;
+  const marker = `/storage/v1/object/public/${SESSION_MEDIA_BUCKET}/`;
+  const markerIdx = publicUrl.indexOf(marker);
+  if (markerIdx < 0) return null;
+  const encodedPath = publicUrl.slice(markerIdx + marker.length);
+  if (!encodedPath) return null;
+  return decodeURIComponent(encodedPath);
 }
 
 async function uploadSessionMediaBlob({ userId, blob, kind }) {
@@ -99,6 +138,33 @@ async function uploadSessionMediaBlob({ userId, blob, kind }) {
 
   const { data } = supabase.storage.from(SESSION_MEDIA_BUCKET).getPublicUrl(filePath);
   return data?.publicUrl ?? null;
+}
+
+async function listUserStoragePaths(userId, kind) {
+  const prefix = `${userId}/${kind}`;
+  const allPaths = [];
+  let offset = 0;
+  const limit = 100;
+
+  while (true) {
+    const { data, error } = await supabase.storage
+      .from(SESSION_MEDIA_BUCKET)
+      .list(prefix, { limit, offset, sortBy: { column: 'name', order: 'asc' } });
+
+    if (error) {
+      throw new Error(error.message || `Failed to list ${kind} recordings.`);
+    }
+
+    const files = Array.isArray(data) ? data.filter((item) => item?.name) : [];
+    for (const file of files) {
+      allPaths.push(`${prefix}/${file.name}`);
+    }
+
+    if (files.length < limit) break;
+    offset += limit;
+  }
+
+  return allPaths;
 }
 
 export function SessionProvider({ children }) {
@@ -250,7 +316,7 @@ export function SessionProvider({ children }) {
   }, [state.sessions]);
 
   /* ── Analyse & save session (calls Python backend) ── */
-  const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
+  const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech' }) => {
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_ANALYSING', payload: true });
@@ -264,7 +330,6 @@ export function SessionProvider({ children }) {
       }
       formData.append('target_text', targetText);
       formData.append('script_type', scriptType);
-      formData.append('difficulty', difficulty);
       const res = await fetch(`${apiUrl}/api/analysis/analyze`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authSession?.access_token}` },
@@ -291,7 +356,6 @@ export function SessionProvider({ children }) {
         user_id:       uid,
         target_text:   targetText,
         script_type:   scriptType,
-        difficulty,
         score:         toNumeric(analysisResult.confidence_score, 0),
         acoustic_score: toNumeric(analysisResult.acoustic_score, 0),
         fluency_score:  toNumeric(analysisResult.fluency_score, 0),
@@ -306,6 +370,7 @@ export function SessionProvider({ children }) {
         pronunciation_score: analysisResult.pronunciation_score == null ? null : toInt(analysisResult.pronunciation_score, 0),
         recommendations: analysisResult.recommendations ?? [],
         transcript: analysisResult.transcript ?? '',
+        audio_url: audioStorageUrl,
       };
 
       if (!ENV.ENABLE_SESSION_PERSISTENCE) {
@@ -321,16 +386,21 @@ export function SessionProvider({ children }) {
       }
 
       let persistedSession = saved;
-      if (audioStorageUrl) {
-        const { data: updatedSession, error: updateErr } = await supabase
+
+      if (videoStorageUrl) {
+        const { data: updatedSessionWithVideo, error: videoUpdateErr } = await supabase
           .from('sessions')
-          .update({ audio_url: audioStorageUrl })
+          .update({ video_url: videoStorageUrl })
           .eq('id', saved.id)
           .select()
           .single();
 
-        if (!updateErr && updatedSession) {
-          persistedSession = updatedSession;
+        if (videoUpdateErr) {
+          if (!isMissingVideoUrlColumn(videoUpdateErr)) {
+            throw new Error(videoUpdateErr.message);
+          }
+        } else if (updatedSessionWithVideo) {
+          persistedSession = updatedSessionWithVideo;
         }
       }
 
@@ -356,7 +426,8 @@ export function SessionProvider({ children }) {
           duration_sec: analysisResult.duration_sec ?? normalizedSaved.duration ?? 0,
           summary: analysisResult.summary ?? normalizedSaved.feedback ?? '',
           audio_url: normalizedSaved.audio_url ?? audioStorageUrl,
-          video_storage_url: videoStorageUrl,
+          video_url: normalizedSaved.video_url ?? videoStorageUrl,
+          video_storage_url: normalizedSaved.video_storage_url ?? videoStorageUrl,
         },
       };
     } catch (err) {
@@ -386,6 +457,101 @@ export function SessionProvider({ children }) {
     return { success: true };
   }, []);
 
+  const clearSessionMedia = useCallback(async () => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      return {
+        success: false,
+        error: 'Session persistence is disabled. Enable database persistence to clear session media.',
+      };
+    }
+
+    const uid = await getUserId();
+    if (!uid) return { success: false, error: 'Not authenticated' };
+
+    dispatch({ type: 'SET_LOADING', payload: true });
+
+    try {
+      const { data: sessionRows, error: sessionReadErr } = await supabase
+        .from('sessions')
+        .select('audio_url,video_url')
+        .eq('user_id', uid)
+        .or('audio_url.not.is.null,video_url.not.is.null');
+
+      let safeSessionRows = sessionRows;
+      if (sessionReadErr) {
+        if (isMissingVideoUrlColumn(sessionReadErr)) {
+          const { data: fallbackRows, error: fallbackErr } = await supabase
+            .from('sessions')
+            .select('audio_url')
+            .eq('user_id', uid)
+            .not('audio_url', 'is', null);
+
+          if (fallbackErr && !isSessionsTableMissing(fallbackErr)) {
+            throw new Error(fallbackErr.message);
+          }
+          safeSessionRows = fallbackRows;
+        } else if (!isSessionsTableMissing(sessionReadErr)) {
+          throw new Error(sessionReadErr.message);
+        }
+      }
+
+      const dbAudioPaths = (safeSessionRows ?? [])
+        .map((row) => toSessionRecordingStoragePath(row.audio_url))
+        .filter(Boolean);
+      const dbVideoPaths = (safeSessionRows ?? [])
+        .map((row) => toSessionRecordingStoragePath(row.video_url))
+        .filter(Boolean);
+
+      const [audioPaths, videoPaths] = await Promise.all([
+        listUserStoragePaths(uid, 'audio').catch(() => []),
+        listUserStoragePaths(uid, 'video').catch(() => []),
+      ]);
+
+      const allPaths = Array.from(new Set([...dbAudioPaths, ...dbVideoPaths, ...audioPaths, ...videoPaths]));
+
+      for (const batch of chunkArray(allPaths, 100)) {
+        const { error: removeErr } = await supabase.storage
+          .from(SESSION_MEDIA_BUCKET)
+          .remove(batch);
+
+        if (removeErr) {
+          throw new Error(removeErr.message || 'Failed to remove one or more recording files.');
+        }
+      }
+
+      const { error: clearDbErr } = await supabase
+        .from('sessions')
+        .update({ audio_url: null, video_url: null })
+        .eq('user_id', uid)
+        .or('audio_url.not.is.null,video_url.not.is.null');
+
+      if (clearDbErr) {
+        if (isMissingVideoUrlColumn(clearDbErr)) {
+          const { error: fallbackClearErr } = await supabase
+            .from('sessions')
+            .update({ audio_url: null })
+            .eq('user_id', uid)
+            .not('audio_url', 'is', null);
+
+          if (fallbackClearErr && !isSessionsTableMissing(fallbackClearErr)) {
+            throw new Error(fallbackClearErr.message);
+          }
+        } else if (!isSessionsTableMissing(clearDbErr)) {
+          throw new Error(clearDbErr.message);
+        }
+      }
+
+      dispatch({ type: 'CLEAR_MEDIA_URLS' });
+      return { success: true, clearedFiles: allPaths.length };
+    } catch (err) {
+      const message = err.message || 'Failed to clear session media.';
+      dispatch({ type: 'SET_ERROR', payload: message });
+      return { success: false, error: message };
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, [getUserId]);
+
   const clearCurrentSession = useCallback(() => dispatch({ type: 'SET_CURRENT', payload: null }), []);
   const clearError          = useCallback(() => dispatch({ type: 'CLEAR_ERROR' }), []);
   const reset               = useCallback(() => dispatch({ type: 'RESET' }), []);
@@ -398,6 +564,7 @@ export function SessionProvider({ children }) {
     fetchSessionById,
     analyseAndSave,
     deleteSession,
+    clearSessionMedia,
     clearCurrentSession,
     clearError,
     reset,
