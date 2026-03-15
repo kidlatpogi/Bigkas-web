@@ -1,9 +1,24 @@
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getScoreTier, buildRoute, ROUTES } from '../../utils/constants';
-import { formatDuration } from '../../utils/formatters';
+import { formatDate, formatDuration } from '../../utils/formatters';
 import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
+
+function getSessionModeLabel(session) {
+  const raw = String(
+    session?.session_mode
+    ?? session?.mode
+    ?? session?.session_type
+    ?? session?.script_type
+    ?? '',
+  ).toLowerCase();
+
+  if (raw.includes('practice')) return 'Practice';
+  if (raw.includes('train')) return 'Training';
+  if (raw.includes('free') || raw.includes('script') || raw.includes('ai') || raw.includes('self')) return 'Training';
+  return 'Training';
+}
 
 function SessionResultPage() {
   const navigate = useNavigate();
@@ -18,6 +33,8 @@ function SessionResultPage() {
 
   const durationSec = result.duration_sec ?? 0;
   const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
+  const modeLabel = getSessionModeLabel(result);
+  const practicedText = result.target_text || result.transcript || 'No recorded text available.';
 
   const pillars = [
     { key: 'facial', label: 'Facial Expression', value: result.facial_expression_score },
@@ -104,15 +121,33 @@ function SessionResultPage() {
         </div>
       )}
 
-      {/* Duration */}
-      {durationSec > 0 && (
-        <div className="page-card" style={{ marginBottom: 16 }}>
-          <div className="info-row" style={{ borderBottom: 'none', padding: 0 }}>
-            <span className="info-row-key">Session Duration</span>
-            <span className="info-row-val">{formatDuration(durationSec)}</span>
+      {/* Extra session information */}
+      <div className="page-card" style={{ marginBottom: 16 }}>
+        <p className="section-label" style={{ marginBottom: 8 }}>Session Information</p>
+        {result.created_at && (
+          <div className="info-row">
+            <span className="info-row-key">Date</span>
+            <span className="info-row-val">{formatDate(result.created_at)}</span>
           </div>
+        )}
+        <div className="info-row">
+          <span className="info-row-key">Duration</span>
+          <span className="info-row-val">{formatDuration(durationSec || 0)}</span>
         </div>
-      )}
+        <div className="info-row">
+          <span className="info-row-key">Mode</span>
+          <span className="info-row-val">{modeLabel}</span>
+        </div>
+        <div className="info-row" style={{ borderBottom: 'none' }}>
+          <span className="info-row-key">Difficulty</span>
+          <span className="info-row-val" style={{ textTransform: 'capitalize' }}>
+            {result?.difficulty ? String(result.difficulty) : 'N/A'}
+          </span>
+        </div>
+
+        <p className="detail-section-title" style={{ marginTop: 14 }}>Practiced Text</p>
+        <p className="practiced-text">{practicedText}</p>
+      </div>
 
       {/* View detailed feedback row */}
       <div
