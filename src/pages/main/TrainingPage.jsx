@@ -11,6 +11,15 @@ function getSupportedMime() {
   const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
   return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
 }
+function getSupportedVideoMime() {
+  const types = [
+    'video/webm;codecs=vp8,opus',
+    'video/webm;codecs=vp9,opus',
+    'video/webm',
+    'video/mp4',
+  ];
+  return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+}
 
 function formatTime(sec) {
   const h = Math.floor(sec / 3600).toString().padStart(2, '0');
@@ -93,6 +102,9 @@ function TrainingPage() {
   const countRef    = useRef(null);
   const mediaRef    = useRef(null);
   const chunksRef   = useRef([]);
+  const visualMediaRef = useRef(null);
+  const visualChunksRef = useRef([]);
+  const visualMimeRef = useRef('');
   const streamRef   = useRef(null);
   const analyserRef = useRef(null);
   const animRef     = useRef(null);
@@ -215,6 +227,22 @@ function TrainingPage() {
       };
       recorder.start(200);
 
+      if (focus === 'scripted' && stream.getVideoTracks().length > 0) {
+        const videoMime = getSupportedVideoMime();
+        const videoRecorder = videoMime
+          ? new MediaRecorder(stream, { mimeType: videoMime })
+          : new MediaRecorder(stream);
+
+        visualMediaRef.current = videoRecorder;
+        visualChunksRef.current = [];
+        visualMimeRef.current = videoRecorder.mimeType || videoMime || 'video/webm';
+
+        videoRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) visualChunksRef.current.push(e.data);
+        };
+        videoRecorder.start(400);
+      }
+
       setStatus('recording');
       setElapsedSec(0);
       timerRef.current = setInterval(() => setElapsedSec((s) => s + 1), 1000);
@@ -289,11 +317,27 @@ function TrainingPage() {
     recorder.onstop = async () => {
       const mime = recorder.mimeType || getSupportedMime() || 'audio/webm';
       const blob = new Blob(chunksRef.current, { type: mime });
+
+      let videoBlob = null;
+      const videoRecorder = visualMediaRef.current;
+      if (videoRecorder && videoRecorder.state !== 'inactive') {
+        await new Promise((resolve) => {
+          videoRecorder.onstop = () => resolve();
+          videoRecorder.stop();
+        });
+      }
+      if (visualChunksRef.current.length > 0) {
+        videoBlob = new Blob(visualChunksRef.current, {
+          type: visualMimeRef.current || 'video/webm',
+        });
+      }
+
       streamRef.current?.getTracks().forEach((t) => t.stop());
       setStatus('analysing');
       try {
         const result = await analyseAndSave({
           audioBlob:  blob,
+          videoBlob,
           targetText: focus === 'scripted' ? (script?.content || '') : (freeTopic || 'Free speech session'),
           scriptType: focus,
           difficulty: 'medium',
@@ -335,6 +379,7 @@ function TrainingPage() {
     clearInterval(wpmTimerRef.current);
     cancelAnimationFrame(animRef.current);
     if (mediaRef.current && mediaRef.current.state !== 'inactive') mediaRef.current.stop();
+    if (visualMediaRef.current && visualMediaRef.current.state !== 'inactive') visualMediaRef.current.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     if (videoRef.current) videoRef.current.srcObject = null;
     waveHistRef.current = Array(50).fill(0);
@@ -346,6 +391,9 @@ function TrainingPage() {
     setElapsedSec(0);
     setHighlightIdx(-1);
     chunksRef.current = [];
+    visualMediaRef.current = null;
+    visualChunksRef.current = [];
+    visualMimeRef.current = '';
   };
 
   const isRecording = status === 'recording';

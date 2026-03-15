@@ -360,6 +360,248 @@
   }
 }
 
+/* Detailed Feedback (Figma-inspired) */
+.feedback-figma-page {
+  max-width: 860px;
+}
+
+.feedback-flow-card {
+  margin-bottom: 14px;
+}
+
+.feedback-flow-label {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #606266;
+}
+
+.feedback-flow-title {
+  margin: 2px 0 10px;
+  font-size: 30px;
+  font-weight: 800;
+  color: #010101;
+  text-transform: uppercase;
+}
+
+.feedback-timeline {
+  height: 190px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  align-items: end;
+  border-bottom: 1px solid #cacbd0;
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+}
+
+.feedback-col {
+  position: relative;
+  height: 100%;
+}
+
+.feedback-col-bg {
+  position: absolute;
+  inset: 0;
+  background: #f1f2f6;
+}
+
+.feedback-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 4px solid transparent;
+}
+
+.feedback-bar-eye {
+  bottom: 0;
+  background: rgba(255, 146, 138, 0.18);
+  border-top-color: #ff928a;
+}
+
+.feedback-bar-gesture {
+  bottom: 0;
+  background: rgba(251, 175, 0, 0.18);
+  border-top-color: #fbaf00;
+}
+
+.feedback-bar-voice {
+  bottom: 0;
+  background: rgba(60, 195, 223, 0.18);
+  border-top-color: #3cc3df;
+}
+
+.feedback-time {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #666;
+}
+
+.feedback-legend-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.feedback-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-eye { background: #ff928a; }
+.dot-gesture { background: #fbaf00; }
+.dot-voice { background: #3cc3df; }
+
+.feedback-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.feedback-score-card {
+  border: 1px solid #ececec;
+}
+
+.feedback-score-card.eye { border-color: #ff928a; }
+.feedback-score-card.gesture { border-color: #fbaf00; }
+.feedback-score-card.voice { border-color: #3cc3df; }
+.feedback-score-card.wide { margin-bottom: 10px; }
+
+.feedback-score-title {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #222;
+}
+
+.feedback-score-main {
+  margin: 6px 0 2px;
+  font-size: 35px;
+  font-weight: 800;
+  color: #111;
+}
+
+.feedback-score-main.word {
+  font-size: 34px;
+}
+
+.feedback-score-sub {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #6a6a6a;
+}
+
+.feedback-score-track {
+  height: 8px;
+  background: #d9d9d9;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.feedback-score-card.eye .feedback-score-track > div { background: #ff928a; }
+.feedback-score-card.gesture .feedback-score-track > div { background: #fbaf00; }
+.feedback-score-card.voice .feedback-score-track > div { background: #3cc3df; }
+
+.feedback-score-track > div {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.feedback-score-note {
+  margin: 0;
+  font-size: 11px;
+  color: #6a6a6a;
+}
+
+.feedback-tips-list {
+  display: grid;
+  gap: 10px;
+}
+
+.feedback-tip-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.feedback-tip-card.eye {
+  border-color: #ffb5af;
+  background: #fff6f5;
+}
+
+.feedback-tip-card.voice {
+  border-color: #8bd8ea;
+  background: #f2fbfe;
+}
+
+.feedback-tip-card.gesture {
+  border-color: #f6c55f;
+  background: #fff9eb;
+}
+
+.feedback-tip-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.feedback-tip-top h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.feedback-tip-top span {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.feedback-tip-card p {
+  margin: 7px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #555;
+}
+
+@media (max-width: 700px) {
+  .feedback-flow-title {
+    font-size: 24px;
+  }
+
+  .feedback-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feedback-score-main,
+  .feedback-score-main.word {
+    font-size: 28px;
+  }
+
+  .feedback-tip-top h3 {
+    font-size: 16px;
+  }
+}
+
 .metric-label {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);

@@ -15,20 +15,19 @@ function SessionResultPage() {
   const score  = result.confidence_score ?? 0;
   const tier   = getScoreTier(score);
 
-  // Derived metrics
-  const acousticScore  = result.acoustic_score  ?? Math.round(score * 0.95);
-  const wpm            = result.wpm             ?? 120;
-  const durationSec    = result.duration_sec    ?? 0;
+  const durationSec = result.duration_sec ?? 0;
+  const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
 
-  // Simulated pitch bars
-  const pitchBars = Array.from({ length: 20 }, (_, index) => {
-    const variance = (Math.sin((index + 1) * (score + 17)) + 1) / 2; // 0..1 deterministic
-    return Math.max(12, Math.round((score / 100) * 48 * (0.6 + variance * 0.6)));
+  const pillars = [
+    { key: 'facial', label: 'Facial Expression', value: result.facial_expression_score },
+    { key: 'gesture', label: 'Gestures', value: result.gesture_score },
+    { key: 'jitter', label: 'Jitter', value: result.jitter_score },
+    { key: 'shimmer', label: 'Shimmer', value: result.shimmer_score },
+    { key: 'pronunciation', label: 'Pronunciation', value: result.pronunciation_score },
+  ].map((p) => {
+    const scoreVal = Number.isFinite(p.value) ? p.value : 0;
+    return { ...p, score: Math.max(0, Math.min(100, Math.round(scoreVal))) };
   });
-
-  const pitchTier = getScoreTier(acousticScore);
-  const paceTier  = wpm >= 120 && wpm <= 160 ? { label: 'Good', color: '#34C759' }
-                  : { label: 'Needs Work', color: '#FF9500' };
 
   return (
     <div className="inner-page">
@@ -55,40 +54,37 @@ function SessionResultPage() {
         </p>
       </div>
 
-      {/* Pitch stability card */}
+      {/* Five scoring pillars */}
       <div className="page-card" style={{ marginBottom: 16 }}>
-        <div className="metric-card-top">
-          <span className="metric-label">Pitch Stability</span>
-          <span className="score-badge" style={{ background: pitchTier.color + '22', color: pitchTier.color }}>
-            {pitchTier.label}
-          </span>
-        </div>
-        <div className="pitch-bars">
-          {pitchBars.map((h, i) => (
-            <div key={i} className="pitch-bar" style={{ height: h, background: pitchTier.color }} />
-          ))}
-        </div>
+        <p className="section-label" style={{ marginBottom: 10 }}>Scoring Pillars</p>
+        {pillars.map((p) => {
+          const t = getScoreTier(p.score);
+          return (
+            <div key={p.key} style={{ marginBottom: 10 }}>
+              <div className="metric-card-top" style={{ marginBottom: 6 }}>
+                <span className="metric-label" style={{ fontSize: 14 }}>{p.label}</span>
+                <span className="score-badge" style={{ background: t.color + '22', color: t.color }}>
+                  {p.score}/100
+                </span>
+              </div>
+              <div className="progress-track" style={{ marginBottom: 0 }}>
+                <div className="progress-track-fill" style={{ width: `${p.score}%`, background: t.color }} />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Speaking pace card */}
-      <div className="page-card" style={{ marginBottom: 16 }}>
-        <div className="metric-card-top">
-          <span className="metric-label">Speaking Pace</span>
-          <span className="score-badge" style={{ background: paceTier.color + '22', color: paceTier.color }}>
-            {paceTier.label}
-          </span>
+      {recommendations.length > 0 && (
+        <div className="page-card" style={{ marginBottom: 16 }}>
+          <p className="section-label" style={{ marginBottom: 8 }}>Recommendations</p>
+          {recommendations.map((text, idx) => (
+            <p key={`${text}-${idx}`} style={{ margin: '0 0 8px', color: '#555', fontSize: 14 }}>
+              {idx + 1}. {text}
+            </p>
+          ))}
         </div>
-        <p style={{ fontSize: 24, fontWeight: 800, color: '#010101', margin: '6px 0 4px' }}>
-          {wpm} <span style={{ fontSize: 14, fontWeight: 400, color: '#888' }}>wpm</span>
-        </p>
-        <div className="progress-track" style={{ margin: '6px 0' }}>
-          <div
-            className="progress-track-fill"
-            style={{ width: `${Math.min(100, (wpm / 180) * 100)}%`, background: paceTier.color }}
-          />
-        </div>
-        <p style={{ fontSize: 12, color: '#888', margin: 0 }}>Ideal range: 120–160 wpm</p>
-      </div>
+      )}
 
       {/* Duration */}
       {durationSec > 0 && (

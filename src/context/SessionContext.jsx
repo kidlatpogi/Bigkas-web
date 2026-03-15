@@ -113,7 +113,7 @@ export function SessionProvider({ children }) {
   }, []);
 
   /* ── Analyse & save session (calls Python backend) ── */
-  const analyseAndSave = useCallback(async ({ audioBlob, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
+  const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_ANALYSING', payload: true });
@@ -122,10 +122,13 @@ export function SessionProvider({ children }) {
       const { data: { session: authSession } } = await supabase.auth.getSession();
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
+      if (videoBlob) {
+        formData.append('video', videoBlob, 'recording-video.webm');
+      }
       formData.append('target_text', targetText);
       formData.append('script_type', scriptType);
       formData.append('difficulty', difficulty);
-      const res = await fetch(`${apiUrl}/api/v1/analysis/analyze`, {
+      const res = await fetch(`${apiUrl}/api/analysis/analyze`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authSession?.access_token}` },
         body: formData,
@@ -144,6 +147,14 @@ export function SessionProvider({ children }) {
         visual_score:   analysisResult.visual_score   ?? null,
         feedback:       analysisResult.summary         ?? '',
         duration:       analysisResult.duration_sec    ?? 0,
+        confidence_score: analysisResult.confidence_score ?? 0,
+        facial_expression_score: analysisResult.facial_expression_score ?? null,
+        gesture_score: analysisResult.gesture_score ?? null,
+        jitter_score: analysisResult.jitter_score ?? null,
+        shimmer_score: analysisResult.shimmer_score ?? null,
+        pronunciation_score: analysisResult.pronunciation_score ?? null,
+        recommendations: analysisResult.recommendations ?? [],
+        transcript: analysisResult.transcript ?? '',
       };
 
       if (!ENV.ENABLE_SESSION_PERSISTENCE) {
@@ -153,7 +164,7 @@ export function SessionProvider({ children }) {
           created_at: new Date().toISOString(),
         };
         dispatch({ type: 'ADD_SESSION', payload: localSession });
-        return { success: true, session: localSession, analysisResult };
+        return { success: true, session: localSession, analysisResult, data: localSession };
       }
 
       const { data: saved, error: saveErr } = await supabase.from('sessions').insert(sessionRow).select().single();
@@ -165,12 +176,32 @@ export function SessionProvider({ children }) {
             created_at: new Date().toISOString(),
           };
           dispatch({ type: 'ADD_SESSION', payload: localSession });
-          return { success: true, session: localSession, analysisResult };
+          return { success: true, session: localSession, analysisResult, data: localSession };
         }
         throw new Error(saveErr.message);
       }
       dispatch({ type: 'ADD_SESSION', payload: saved });
-      return { success: true, session: saved, analysisResult };
+      return {
+        success: true,
+        session: saved,
+        analysisResult,
+        data: {
+          ...saved,
+          confidence_score: analysisResult.confidence_score ?? saved.score ?? 0,
+          acoustic_score: analysisResult.acoustic_score ?? saved.acoustic_score ?? 0,
+          fluency_score: analysisResult.fluency_score ?? saved.fluency_score ?? 0,
+          visual_score: analysisResult.visual_score ?? saved.visual_score ?? null,
+          facial_expression_score: analysisResult.facial_expression_score ?? null,
+          gesture_score: analysisResult.gesture_score ?? null,
+          jitter_score: analysisResult.jitter_score ?? null,
+          shimmer_score: analysisResult.shimmer_score ?? null,
+          pronunciation_score: analysisResult.pronunciation_score ?? null,
+          recommendations: analysisResult.recommendations ?? [],
+          transcript: analysisResult.transcript ?? '',
+          duration_sec: analysisResult.duration_sec ?? saved.duration ?? 0,
+          summary: analysisResult.summary ?? saved.feedback ?? '',
+        },
+      };
     } catch (err) {
       dispatch({ type: 'SET_ERROR', payload: err.message });
       return { success: false, error: err.message };
