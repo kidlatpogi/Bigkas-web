@@ -10,15 +10,15 @@ const initialState = {
   isLoading:      false,
   isAnalysing:    false,
   error:          null,
-  pagination:     { page: 1, total: 0, hasMore: true },
+  pagination:     { page: 1, total: 0, hasMore: true, pageSize: PAGE_SIZE },
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case 'SET_LOADING':      return { ...state, isLoading: action.payload };
     case 'SET_ANALYSING':   return { ...state, isAnalysing: action.payload };
-    case 'SET_SESSIONS':    return { ...state, sessions: action.payload.sessions, pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === PAGE_SIZE } };
-    case 'APPEND_SESSIONS': return { ...state, sessions: [...state.sessions, ...action.payload.sessions], pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === PAGE_SIZE } };
+    case 'SET_SESSIONS':    return { ...state, sessions: action.payload.sessions, pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === action.payload.pageSize, pageSize: action.payload.pageSize } };
+    case 'APPEND_SESSIONS': return { ...state, sessions: [...state.sessions, ...action.payload.sessions], pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === action.payload.pageSize, pageSize: action.payload.pageSize } };
     case 'SET_CURRENT':     return { ...state, currentSession: action.payload };
     case 'ADD_SESSION':     return { ...state, sessions: [action.payload, ...state.sessions] };
     case 'REMOVE_SESSION':  return { ...state, sessions: state.sessions.filter((s) => s.id !== action.payload) };
@@ -68,7 +68,7 @@ export function SessionProvider({ children }) {
   }, []);
 
   /* ── Fetch paginated sessions ── */
-  const fetchSessions = useCallback(async (page = 1, refresh = false) => {
+  const fetchSessions = useCallback(async (page = 1, refresh = false, pageSize = PAGE_SIZE) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
       dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0 } });
       return { success: true };
@@ -77,13 +77,14 @@ export function SessionProvider({ children }) {
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_LOADING', payload: true });
-    const from = (page - 1) * PAGE_SIZE;
+    const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : PAGE_SIZE;
+    const from = (page - 1) * safePageSize;
     const { data, error, count } = await supabase
       .from('sessions')
       .select('*', { count: 'exact' })
       .eq('user_id', uid)
       .order('created_at', { ascending: false })
-      .range(from, from + PAGE_SIZE - 1);
+      .range(from, from + safePageSize - 1);
     dispatch({ type: 'SET_LOADING', payload: false });
     if (error) {
       if (isSessionsTableMissing(error)) {
@@ -94,14 +95,14 @@ export function SessionProvider({ children }) {
       return { success: false, error: error.message };
     }
     const normalized = (data ?? []).map(normalizeSessionRow);
-    const next = { sessions: normalized, page, total: count ?? 0 };
+    const next = { sessions: normalized, page, total: count ?? 0, pageSize: safePageSize };
     dispatch({ type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS', payload: next });
     return { success: true };
   }, [getUserId]);
 
   const loadMoreSessions = useCallback(async () => {
     if (!state.pagination.hasMore || state.isLoading) return;
-    await fetchSessions(state.pagination.page + 1);
+    await fetchSessions(state.pagination.page + 1, false, state.pagination.pageSize || PAGE_SIZE);
   }, [fetchSessions, state.pagination, state.isLoading]);
 
   /* ── Fetch single session ── */

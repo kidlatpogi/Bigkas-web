@@ -7,6 +7,7 @@ import './InnerPages.css';
 import './ProgressPage.css';
 
 const TIME_RANGES = ['Week', 'Month', 'Year'];
+const PROGRESS_FETCH_LIMIT = 200;
 const CHART_WIDTH = 1000;
 const CHART_HEIGHT = 210;
 const CHART_LEFT = 70;
@@ -22,7 +23,7 @@ function ProgressPage() {
   const [range, setRange] = useState('Week');
 
   useEffect(() => {
-    fetchSessions(1, true);
+    fetchSessions(1, true, PROGRESS_FETCH_LIMIT);
   }, [fetchSessions]);
 
   const hasAnySessions = sessions.length > 0;
@@ -156,6 +157,29 @@ function ProgressPage() {
 
   const recentSessions = [...sessions].slice(0, 5);
 
+  const pillarStats = useMemo(() => {
+    const source = filteredSessions.length > 0 ? filteredSessions : sessions;
+    const config = [
+      { key: 'facial_expression_score', label: 'Facial Expression', color: '#21C26A' },
+      { key: 'gesture_score', label: 'Gestures', color: '#15B8A6' },
+      { key: 'jitter_score', label: 'Jitter', color: '#FCBA04' },
+      { key: 'shimmer_score', label: 'Shimmer', color: '#F59E0B' },
+      { key: 'pronunciation_score', label: 'Pronunciation', color: '#EF4444' },
+    ];
+
+    return config.map((pillar) => {
+      const values = source
+        .map((s) => Number(s[pillar.key]))
+        .filter((v) => Number.isFinite(v));
+
+      const avg = values.length
+        ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+        : 0;
+
+      return { ...pillar, value: avg };
+    });
+  }, [filteredSessions, sessions]);
+
   return (
     <div className="inner-page">
       <div className="inner-page-header">
@@ -218,6 +242,28 @@ function ProgressPage() {
             <p className="stat-desc">vs last {range.toLowerCase()}</p>
           </div>
         )}
+      </div>
+
+      <div className="page-card progress-pillars-card">
+        <div className="progress-pillars-header">
+          <p className="section-label" style={{ marginBottom: 0 }}>Progress by Pillar</p>
+          <span className="progress-pillars-caption">
+            {filteredSessions.length > 0 ? `Based on ${filteredSessions.length} session${filteredSessions.length === 1 ? '' : 's'}` : 'No data yet'}
+          </span>
+        </div>
+        <div className="progress-pillars-list">
+          {pillarStats.map((pillar) => (
+            <div key={pillar.key} className="progress-pillars-item">
+              <div className="progress-pillars-item-top">
+                <span className="progress-pillars-label">{pillar.label}</span>
+                <span className="progress-pillars-value" style={{ color: pillar.color }}>{pillar.value}/100</span>
+              </div>
+              <div className="progress-pillars-track">
+                <div className="progress-pillars-fill" style={{ width: `${pillar.value}%`, background: pillar.color }} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Recent sessions */}
