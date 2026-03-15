@@ -245,16 +245,19 @@ function TrainingPage() {
   /* ── Auto-start when launched from Start actions ── */
   useEffect(() => {
     if (!shouldAutoStart) return;
-    if (autoStartTriggeredRef.current) return;
-    if (status !== 'idle') return;
 
-    autoStartTriggeredRef.current = true;
+    // Guard is checked inside the callback so React StrictMode's
+    // cleanup-and-remount cycle doesn't permanently consume the flag
+    // before the timer actually fires.
     const autoStartTimer = setTimeout(() => {
+      if (autoStartTriggeredRef.current) return;
+      autoStartTriggeredRef.current = true;
       startCountdown();
     }, 300);
 
     return () => clearTimeout(autoStartTimer);
-  }, [shouldAutoStart, startCountdown, status]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldAutoStart]);
 
   /* ── Stop → analyse ── */
   const stopRecording = () => {
