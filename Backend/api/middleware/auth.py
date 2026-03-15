@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 security = HTTPBearer(auto_error=False)
 _jwks_cache: Optional[dict] = None
+ASYMMETRIC_JWT_ALGORITHMS = {"RS256", "RS384", "RS512", "ES256", "ES384", "ES512"}
 
 
 def _supabase_jwks_url() -> Optional[str]:
@@ -51,7 +52,11 @@ def _get_supabase_jwks(force_refresh: bool = False) -> Optional[dict]:
     return None
 
 
-def _decode_rs256_with_jwks(token: str, kid: Optional[str]) -> Optional[dict]:
+def _decode_asymmetric_with_jwks(
+    token: str,
+    kid: Optional[str],
+    algorithm: str,
+) -> Optional[dict]:
     jwks = _get_supabase_jwks()
     if not jwks:
         return None
@@ -67,7 +72,7 @@ def _decode_rs256_with_jwks(token: str, kid: Optional[str]) -> Optional[dict]:
                 return jwt.decode(
                     token,
                     key,
-                    algorithms=["RS256"],
+                    algorithms=[algorithm],
                     options={"verify_aud": False},
                 )
             except JWTError:
@@ -79,7 +84,7 @@ def _decode_rs256_with_jwks(token: str, kid: Optional[str]) -> Optional[dict]:
             return jwt.decode(
                 token,
                 key,
-                algorithms=["RS256"],
+                algorithms=[algorithm],
                 options={"verify_aud": False},
             )
         except JWTError:
@@ -94,7 +99,7 @@ def _decode_rs256_with_jwks(token: str, kid: Optional[str]) -> Optional[dict]:
             return jwt.decode(
                 token,
                 key,
-                algorithms=["RS256"],
+                algorithms=[algorithm],
                 options={"verify_aud": False},
             )
         except JWTError:
@@ -135,26 +140,31 @@ async def get_current_user(
     payload = None
     logger.debug("JWT auth start: alg=%s kid=%s", token_alg, kid)
 
-    # Supabase hosted projects commonly issue RS256 JWTs.
-    if token_alg == "RS256":
-        logger.debug("JWT RS256 path selected; attempting JWKS verification.")
-        payload = _decode_rs256_with_jwks(token, kid)
+    # Supabase hosted projects issue asymmetric JWTs (RS256/ES256).
+    if token_alg in ASYMMETRIC_JWT_ALGORITHMS:
+        logger.debug(
+            "JWT asymmetric path selected; alg=%s kid=%s. Attempting JWKS verification.",
+            token_alg,
+            kid,
+        )
+        payload = _decode_asymmetric_with_jwks(token, kid, token_alg)
 
-        # Do not fall back to HS256 for RS256 tokens.
+        # Do not fall back to HS256 for asymmetric tokens.
         # If JWKS verification fails, this is a deployment/config issue
         # (e.g., wrong SUPABASE_URL, networking, or stale key rotation).
         if payload is None:
             logger.warning(
-                "JWT RS256 verification failed (kid=%s). Check SUPABASE_URL/JWKS availability.",
+                "JWT asymmetric verification failed (alg=%s kid=%s). Check SUPABASE_URL/JWKS availability.",
+                token_alg,
                 kid,
             )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid or expired RS256 token.",
+                detail=f"Invalid or expired {token_alg} token.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    if token_alg and token_alg not in {"RS256", "HS256"}:
+    if token_alg and token_alg not in ASYMMETRIC_JWT_ALGORITHMS.union({"HS256"}):
         logger.warning("Unsupported JWT alg in token header: %s", token_alg)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
