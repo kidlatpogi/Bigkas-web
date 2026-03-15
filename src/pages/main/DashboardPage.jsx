@@ -100,12 +100,26 @@ function getDailyTip(dateKey) { return TIPS[getDailyIndex(dateKey) % TIPS.length
    ───────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user, isInitializing } = useAuthContext();
   const { sessions, fetchSessions } = useSessions();
   const [avatarError, setAvatarError] = useState(false);
   const [quote, setQuote] = useState(FALLBACK_QUOTE);
   const [dateKey, setDateKey] = useState(() => getLocalDateKey());
   const [featuredLesson, setFeaturedLesson] = useState(null);
+
+  const getSessionDate = (session) => {
+    const rawDate = session?.created_at ?? session?.createdAt;
+    const parsed = new Date(rawDate);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const getSessionScore = (session) => {
+    const raw = Number(session?.confidence_score ?? session?.score ?? 0);
+    if (!Number.isFinite(raw)) return 0;
+    // Some rows store score as 0..1 while confidence_score is 0..100.
+    const normalized = raw <= 1 ? raw * 100 : raw;
+    return Math.max(0, Math.min(100, normalized));
+  };
 
   /* ── Daily content (mobile-synced quote source + deterministic tip) ── */
   const tip = useMemo(() => getDailyTip(dateKey), [dateKey]);
@@ -124,7 +138,9 @@ export default function DashboardPage() {
     if (!sessions?.length) return 0;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     return sessions.filter((s) => {
-      const d = new Date(s.createdAt || s.created_at); d.setHours(0, 0, 0, 0);
+      const d = getSessionDate(s);
+      if (!d) return false;
+      d.setHours(0, 0, 0, 0);
       return d.getTime() === today.getTime();
     }).length;
   }, [sessions]);
@@ -132,8 +148,8 @@ export default function DashboardPage() {
   /** @type {number} averageScore — average pronunciation score (0-100) */
   const averageScore = useMemo(() => {
     if (!sessions?.length) return 0;
-    const total = sessions.reduce((sum, s) => sum + (s.score || 0), 0);
-    return Math.round((total / sessions.length) * 100);
+    const total = sessions.reduce((sum, s) => sum + getSessionScore(s), 0);
+    return Math.round(total / sessions.length);
   }, [sessions]);
 
   /**
@@ -142,17 +158,21 @@ export default function DashboardPage() {
    */
   const streakCount = useMemo(() => {
     if (!sessions?.length) return 0;
+
     const dateSet = new Set(
-      sessions.map((s) => {
-        const d = new Date(s.createdAt || s.created_at);
-        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-      })
+      sessions
+        .map((s) => getSessionDate(s))
+        .filter(Boolean)
+        .map((d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`)
     );
+
+    // Product rule: streak must include today; if user misses one day, reset to 0.
     let streak = 0;
     const cursor = new Date();
     cursor.setHours(0, 0, 0, 0);
     const todayKey = `${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`;
-    if (!dateSet.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
+    if (!dateSet.has(todayKey)) return 0;
+
     while (true) {
       const key = `${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`;
       if (dateSet.has(key)) { streak++; cursor.setDate(cursor.getDate() - 1); }
@@ -163,8 +183,10 @@ export default function DashboardPage() {
 
   /* ── Load sessions on mount (once) ── */
   useEffect(() => {
-    fetchSessions?.();
-  }, [fetchSessions]);
+    if (isInitializing) return;
+    if (!user?.id) return;
+    fetchSessions?.(1, true);
+  }, [fetchSessions, isInitializing, user?.id]);
 
   useEffect(() => {
     const syncDateKey = () => {
