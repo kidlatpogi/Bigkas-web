@@ -62,7 +62,7 @@ function TrainingPage() {
   const script    = state?.script    || null;
   const focus     = state?.focus     || 'scripted';
   const freeTopic = state?.freeTopic || '';
-  const autoStartCountdown = state?.autoStartCountdown === true;
+  const shouldAutoStart = state?.autoStartCountdown === true;
 
   /* Recording state */
   const [status, setStatus]         = useState('idle'); // idle | countdown | recording | paused | analysing | error
@@ -239,9 +239,9 @@ function TrainingPage() {
     }, 1000);
   }, [startRecording]);
 
-  /* ── Auto-start only when arriving via Start actions ── */
+  /* ── Auto-start based on Settings preference ── */
   useEffect(() => {
-    if (!autoStartCountdown) return;
+    if (!shouldAutoStart) return;
     if (autoStartTriggeredRef.current) return;
     if (status !== 'idle') return;
 
@@ -251,7 +251,7 @@ function TrainingPage() {
     }, 300);
 
     return () => clearTimeout(autoStartTimer);
-  }, [autoStartCountdown, startCountdown, status]);
+  }, [shouldAutoStart, startCountdown, status]);
 
   /* ── Stop → analyse ── */
   const stopRecording = () => {
@@ -452,7 +452,7 @@ function TrainingPage() {
             {/* Record / Stop */}
             <div className="tp-ctrl-col">
               <button
-                className={`tp-record-btn${isActive ? ' tp-record-btn--active' : ''}`}
+                className={`tp-record-btn${isActive ? ' tp-record-btn--active' : ''}${status === 'idle' && !shouldAutoStart ? ' tp-record-btn--hint' : ''}`}
                 onClick={isActive ? stopRecording : startCountdown}
                 aria-label={isActive ? 'Stop and analyse' : 'Start recording'}
               >
@@ -460,7 +460,7 @@ function TrainingPage() {
                   <div className={`tp-record-dot${isActive ? ' tp-record-dot--active' : ''}`} />
                 </div>
               </button>
-              {status === 'idle' && !autoStartCountdown && (
+              {status === 'idle' && !shouldAutoStart && (
                 <div className="tp-record-tooltip" role="status" aria-live="polite">
                   Click Record to start
                 </div>

@@ -294,7 +294,7 @@ body:has(.tp-page) {
   padding: 6px 10px;
   border-radius: 8px;
   white-space: nowrap;
-  animation: tp-tooltip-fade-in 0.22s ease;
+  animation: tp-tooltip-fade-in 0.22s ease, tp-tooltip-breathe 2.2s ease-in-out infinite 0.22s;
 }
 
 .tp-record-tooltip::before {
@@ -353,6 +353,11 @@ body:has(.tp-page) {
   border-color: #FF3B30;
 }
 
+.tp-record-btn--hint {
+  border-color: rgba(252, 186, 4, 0.85);
+  animation: tp-record-breathe 2s ease-in-out infinite;
+}
+
 .tp-record-btn:hover { transform: scale(1.04); }
 
 .tp-record-inner {
@@ -393,6 +398,28 @@ body:has(.tp-page) {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes tp-tooltip-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(252, 186, 4, 0);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 6px rgba(252, 186, 4, 0.16);
+  }
+}
+
+@keyframes tp-record-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(252, 186, 4, 0.18);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 26px rgba(252, 186, 4, 0.44);
   }
 }
 
@@ -774,6 +801,10 @@ body:has(.tp-page) {
 [data-theme="dark"] .tp-ctrl-label { color: rgba(240,240,240,0.5); }
 [data-theme="dark"] .tp-record-tooltip { background: rgba(252, 186, 4, 0.95); color: #010101; }
 [data-theme="dark"] .tp-record-tooltip::before { border-bottom-color: rgba(252, 186, 4, 0.95); }
+[data-theme="dark"] .tp-record-btn--hint {
+  border-color: rgba(252, 186, 4, 0.95);
+  box-shadow: 0 6px 24px rgba(252, 186, 4, 0.34);
+}
 
 [data-theme="dark"] .tp-modal { background: #1A1A1A; }
 [data-theme="dark"] .tp-modal-title { color: #F0F0F0; }
