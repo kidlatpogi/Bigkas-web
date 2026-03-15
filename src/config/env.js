@@ -11,9 +11,7 @@ export const ENV = {
   SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
   SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
-  ENABLE_SESSION_PERSISTENCE:
-    (import.meta.env.PROD && import.meta.env.VITE_ENABLE_SESSION_PERSISTENCE !== 'false') ||
-    import.meta.env.VITE_ENABLE_SESSION_PERSISTENCE === 'true',
+  ENABLE_SESSION_PERSISTENCE: import.meta.env.VITE_ENABLE_SESSION_PERSISTENCE !== 'false',
   ENABLE_DAILY_QUOTE_FETCH:
     (import.meta.env.PROD && import.meta.env.VITE_ENABLE_DAILY_QUOTE_FETCH !== 'false') ||
     import.meta.env.VITE_ENABLE_DAILY_QUOTE_FETCH === 'true',

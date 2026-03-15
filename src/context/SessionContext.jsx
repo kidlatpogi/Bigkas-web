@@ -1,9 +1,9 @@
-import { createContext, useCallback, useReducer } from 'react';
+import { createContext, useCallback, useEffect, useReducer } from 'react';
 import { supabase } from '../lib/supabase';
 import { ENV } from '../config/env';
 
 const PAGE_SIZE = 10;
-const LOCAL_SESSIONS_KEY = 'bigkas_local_sessions_v1';
+const LEGACY_LOCAL_SESSIONS_KEY = 'bigkas_local_sessions_v1';
 const SESSION_MEDIA_BUCKET = 'session-recordings';
 
 const initialState = {
@@ -46,28 +46,6 @@ function normalizeSessionRow(session) {
     duration_sec: session.duration_sec ?? session.duration ?? 0,
     recommendations: Array.isArray(session.recommendations) ? session.recommendations : [],
   };
-}
-
-function readLocalSessions() {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(LOCAL_SESSIONS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.map(normalizeSessionRow).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  } catch {
-    return [];
-  }
-}
-
-function writeLocalSessions(sessions) {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(LOCAL_SESSIONS_KEY, JSON.stringify(sessions));
-  } catch {
-    // Ignore localStorage write errors.
-  }
 }
 
 function isSessionsTableMissing(error) {
@@ -126,6 +104,12 @@ async function uploadSessionMediaBlob({ userId, blob, kind }) {
 export function SessionProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // Prevent stale local-only records from being shown after switching to DB-only persistence.
+    window.localStorage.removeItem(LEGACY_LOCAL_SESSIONS_KEY);
+  }, []);
+
   /* ── Helpers ── */
   const getUserId = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -135,20 +119,10 @@ export function SessionProvider({ children }) {
   /* ── Fetch paginated sessions ── */
   const fetchSessions = useCallback(async (page = 1, refresh = false, pageSize = PAGE_SIZE) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-      const allLocal = readLocalSessions();
-      const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : PAGE_SIZE;
-      const from = (page - 1) * safePageSize;
-      const paged = allLocal.slice(from, from + safePageSize);
-      dispatch({
-        type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS',
-        payload: {
-          sessions: paged,
-          page,
-          total: allLocal.length,
-          pageSize: safePageSize,
-        },
-      });
-      return { success: true, sessions: paged };
+      return {
+        success: false,
+        error: 'Session persistence is disabled. Enable database persistence to load sessions.',
+      };
     }
 
     const uid = await getUserId();
@@ -179,9 +153,10 @@ export function SessionProvider({ children }) {
 
   const fetchAllSessions = useCallback(async () => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-      const local = readLocalSessions();
-      dispatch({ type: 'SET_SESSIONS', payload: { sessions: local, page: 1, total: local.length, pageSize: PAGE_SIZE } });
-      return { success: true, sessions: local };
+      return {
+        success: false,
+        error: 'Session persistence is disabled. Enable database persistence to load sessions.',
+      };
     }
 
     const uid = await getUserId();
@@ -253,15 +228,12 @@ export function SessionProvider({ children }) {
       return { success: true, session: inMemoryMatch };
     }
 
-    const localMatch = readLocalSessions().find((s) => String(s.id) === normalizedId);
-    if (localMatch) {
-      dispatch({ type: 'SET_CURRENT', payload: localMatch });
-      return { success: true, session: localMatch };
-    }
-
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
       dispatch({ type: 'SET_CURRENT', payload: null });
-      return { success: false, error: 'Session persistence is disabled' };
+      return {
+        success: false,
+        error: 'Session persistence is disabled. Enable database persistence to load sessions.',
+      };
     }
 
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -304,14 +276,13 @@ export function SessionProvider({ children }) {
       let audioStorageUrl = null;
       let videoStorageUrl = null;
       if (ENV.ENABLE_SESSION_PERSISTENCE) {
-        try {
-          audioStorageUrl = await uploadSessionMediaBlob({ userId: uid, blob: audioBlob, kind: 'audio' });
-          if (videoBlob) {
-            videoStorageUrl = await uploadSessionMediaBlob({ userId: uid, blob: videoBlob, kind: 'video' });
-          }
-        } catch (uploadErr) {
-          // Keep analysis/session save working even if storage bucket upload fails.
-          console.warn('[Bigkas] Session media upload skipped:', uploadErr?.message || uploadErr);
+        audioStorageUrl = await uploadSessionMediaBlob({ userId: uid, blob: audioBlob, kind: 'audio' });
+        if (!audioStorageUrl) {
+          throw new Error('Failed to upload session audio to storage bucket.');
+        }
+
+        if (videoBlob) {
+          videoStorageUrl = await uploadSessionMediaBlob({ userId: uid, blob: videoBlob, kind: 'video' });
         }
       }
 
@@ -338,15 +309,7 @@ export function SessionProvider({ children }) {
       };
 
       if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-        const localSession = normalizeSessionRow({
-          id: `local-${Date.now()}`,
-          ...sessionRow,
-          created_at: new Date().toISOString(),
-        });
-        const nextLocal = [localSession, ...readLocalSessions()];
-        writeLocalSessions(nextLocal);
-        dispatch({ type: 'ADD_SESSION', payload: localSession });
-        return { success: true, session: localSession, analysisResult, data: localSession };
+        throw new Error('Session persistence is disabled. Enable database persistence to save sessions.');
       }
 
       const { data: saved, error: saveErr } = await supabase.from('sessions').insert(sessionRow).select().single();
@@ -407,10 +370,10 @@ export function SessionProvider({ children }) {
   /* ── Delete session ── */
   const deleteSession = useCallback(async (sessionId) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-      const filtered = readLocalSessions().filter((s) => s.id !== sessionId);
-      writeLocalSessions(filtered);
-      dispatch({ type: 'REMOVE_SESSION', payload: sessionId });
-      return { success: true };
+      return {
+        success: false,
+        error: 'Session persistence is disabled. Enable database persistence to delete sessions.',
+      };
     }
 
     const { error } = await supabase.from('sessions').delete().eq('id', sessionId);
