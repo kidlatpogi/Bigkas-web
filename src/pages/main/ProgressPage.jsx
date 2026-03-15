@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
+import { useAuthContext } from '../../context/useAuthContext';
 import { ROUTES, buildRoute, getScoreTier } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import './InnerPages.css';
 import './ProgressPage.css';
 
 const TIME_RANGES = ['Week', 'Month', 'Year'];
+const SESSION_MODES = ['All', 'Training', 'Practice'];
 const CHART_WIDTH = 1000;
 const CHART_HEIGHT = 210;
 const CHART_LEFT = 70;
@@ -17,15 +19,39 @@ const CHART_LABEL_Y = 204;
 
 function ProgressPage() {
   const navigate = useNavigate();
-  const { sessions, fetchSessions, isLoading } = useSessionContext();
+  const { sessions, fetchAllSessions, isLoading } = useSessionContext();
+  const { user, isInitializing } = useAuthContext();
 
   const [range, setRange] = useState('Week');
+  const [modeFilter, setModeFilter] = useState('All');
+
+  const getSessionMode = (session) => {
+    const raw = String(
+      session?.session_mode
+      ?? session?.mode
+      ?? session?.session_type
+      ?? session?.script_type
+      ?? '',
+    ).toLowerCase();
+
+    if (raw.includes('practice')) return 'Practice';
+    if (raw.includes('train')) return 'Training';
+    if (raw.includes('free') || raw.includes('script') || raw.includes('ai') || raw.includes('self')) return 'Training';
+    return 'Training';
+  };
 
   useEffect(() => {
-    fetchSessions(1, true);
-  }, [fetchSessions]);
+    if (isInitializing) return;
+    if (!user) return;
+    fetchAllSessions();
+  }, [fetchAllSessions, isInitializing, user]);
 
-  const hasAnySessions = sessions.length > 0;
+  const scopedSessions = useMemo(() => {
+    if (modeFilter === 'All') return sessions;
+    return sessions.filter((session) => getSessionMode(session) === modeFilter);
+  }, [modeFilter, sessions]);
+
+  const hasAnySessions = scopedSessions.length > 0;
 
   const chartData = useMemo(() => {
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -39,7 +65,7 @@ function ProgressPage() {
         day.setDate(day.getDate() - i);
         day.setHours(0, 0, 0, 0);
 
-        const daySessions = sessions.filter((session) => {
+        const daySessions = scopedSessions.filter((session) => {
           const sessionDate = new Date(session.created_at);
           sessionDate.setHours(0, 0, 0, 0);
           return sessionDate.getTime() === day.getTime();
@@ -65,7 +91,7 @@ function ProgressPage() {
         weekStart.setHours(0, 0, 0, 0);
         weekEnd.setHours(23, 59, 59, 999);
 
-        const weekSessions = sessions.filter((session) => {
+        const weekSessions = scopedSessions.filter((session) => {
           const sessionDate = new Date(session.created_at);
           return sessionDate >= weekStart && sessionDate <= weekEnd;
         });
@@ -85,7 +111,7 @@ function ProgressPage() {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - monthOffset, 1);
       const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0, 23, 59, 59, 999);
 
-      const monthSessions = sessions.filter((session) => {
+      const monthSessions = scopedSessions.filter((session) => {
         const sessionDate = new Date(session.created_at);
         return sessionDate >= monthStart && sessionDate <= monthEnd;
       });
@@ -98,7 +124,7 @@ function ProgressPage() {
     }
 
     return result;
-  }, [range, sessions]);
+  }, [range, scopedSessions]);
 
   const chartPoints = useMemo(() => {
     if (!chartData.length) return [];
@@ -124,7 +150,7 @@ function ProgressPage() {
 
   // Filter sessions for chart based on range
   const now = new Date();
-  const filteredSessions = sessions.filter((s) => {
+  const filteredSessions = scopedSessions.filter((s) => {
     const d = new Date(s.created_at);
     if (range === 'Week')  return (now - d) / 86400000 <= 7;
     if (range === 'Month') return (now - d) / 86400000 <= 30;
@@ -141,7 +167,7 @@ function ProgressPage() {
   const days = daysMap[range];
   prevNow.setDate(prevNow.getDate() - days);
 
-  const prevSessions = sessions.filter((s) => {
+  const prevSessions = scopedSessions.filter((s) => {
     const d = new Date(s.created_at);
     const prev2 = new Date(prevNow);
     prev2.setDate(prev2.getDate() - days);
@@ -154,12 +180,48 @@ function ProgressPage() {
 
   const improvement = avgScore !== null && prevAvg !== null ? avgScore - prevAvg : null;
 
-  const recentSessions = [...sessions].slice(0, 5);
+  const recentSessions = [...scopedSessions].slice(0, 5);
+
+  const pillarStats = useMemo(() => {
+    const source = filteredSessions.length > 0 ? filteredSessions : scopedSessions;
+    const config = [
+      { key: 'facial_expression_score', label: 'Facial Expression', color: '#21C26A' },
+      { key: 'gesture_score', label: 'Gestures', color: '#15B8A6' },
+      { key: 'jitter_score', label: 'Jitter', color: '#FCBA04' },
+      { key: 'shimmer_score', label: 'Shimmer', color: '#F59E0B' },
+      { key: 'pronunciation_score', label: 'Pronunciation', color: '#EF4444' },
+    ];
+
+    return config.map((pillar) => {
+      const values = source
+        .map((s) => Number(s[pillar.key]))
+        .filter((v) => Number.isFinite(v));
+
+      const avg = values.length
+        ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+        : 0;
+
+      return { ...pillar, value: avg };
+    });
+  }, [filteredSessions, scopedSessions]);
 
   return (
     <div className="inner-page">
       <div className="inner-page-header">
         <h1 className="inner-page-title">Progress</h1>
+      </div>
+
+      <div className="progress-mode-selector progress-mode-selector--outside" role="tablist" aria-label="Filter by session type">
+        {SESSION_MODES.map((mode) => (
+          <button
+            key={mode}
+            className={`progress-mode-btn${modeFilter === mode ? ' active' : ''}`}
+            onClick={() => setModeFilter(mode)}
+            type="button"
+          >
+            {mode}
+          </button>
+        ))}
       </div>
 
       {/* Performance trend card */}
@@ -204,7 +266,11 @@ function ProgressPage() {
       <div className="progress-stats-row">
         <div className="stat-block">
           <p className={`stat-num${!hasAnySessions ? ' stat-primary' : ''}`}>{hasAnySessions ? filteredSessions.length : 0}</p>
-          <p className="stat-desc">{hasAnySessions ? `Sessions this ${range.toLowerCase()}` : 'NO DATA YET'}</p>
+          <p className="stat-desc">
+            {hasAnySessions
+              ? `${modeFilter === 'All' ? 'Sessions' : modeFilter} this ${range.toLowerCase()}`
+              : 'NO DATA YET'}
+          </p>
         </div>
         <div className="stat-block">
           <p className="stat-num">{avgScore ?? '-'}</p>
@@ -218,6 +284,28 @@ function ProgressPage() {
             <p className="stat-desc">vs last {range.toLowerCase()}</p>
           </div>
         )}
+      </div>
+
+      <div className="page-card progress-pillars-card">
+        <div className="progress-pillars-header">
+          <p className="section-label" style={{ marginBottom: 0 }}>Progress by Pillar</p>
+          <span className="progress-pillars-caption">
+            {filteredSessions.length > 0 ? `Based on ${filteredSessions.length} session${filteredSessions.length === 1 ? '' : 's'}` : 'No data yet'}
+          </span>
+        </div>
+        <div className="progress-pillars-list">
+          {pillarStats.map((pillar) => (
+            <div key={pillar.key} className="progress-pillars-item">
+              <div className="progress-pillars-item-top">
+                <span className="progress-pillars-label">{pillar.label}</span>
+                <span className="progress-pillars-value" style={{ color: pillar.color }}>{pillar.value}/100</span>
+              </div>
+              <div className="progress-pillars-track">
+                <div className="progress-pillars-fill" style={{ width: `${pillar.value}%`, background: pillar.color }} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Recent sessions */}
@@ -245,7 +333,7 @@ function ProgressPage() {
             <div
               key={s.id}
               className="session-row"
-              onClick={() => navigate(buildRoute.sessionDetail(s.id))}
+              onClick={() => navigate(buildRoute.sessionResult(s.id), { state: s })}
             >
               <div className="session-row-info">
                 <p className="session-row-text">
@@ -253,6 +341,9 @@ function ProgressPage() {
                 </p>
                 <p className="session-row-date">{formatDate(s.created_at)}</p>
               </div>
+              <span className={`progress-session-tag ${getSessionMode(s).toLowerCase()}`}>
+                {getSessionMode(s)}
+              </span>
               <span
                 className="score-badge"
                 style={{ background: tier.color + '22', color: tier.color }}

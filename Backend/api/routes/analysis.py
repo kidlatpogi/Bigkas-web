@@ -29,14 +29,17 @@ from api.middleware.auth import get_current_user
 from models.schemas import (
     AcousticMetricsResponse,
     AnalysisResponse,
+    AnalysisV1Response,
     ConfidenceScoreResponse,
     ErrorResponse,
     FluencyMetricsResponse,
+    PronunciationMetricsResponse,
     VisualMetricsResponse,
 )
 from services.acoustic_analysis import analyse_acoustics
 from services.confidence_scorer import compute_confidence_score
 from services.disfluency_analysis import analyse_fluency
+from services.pronunciation_analysis import analyse_pronunciation
 from services.visual_analysis import analyse_video_frames
 from utils.audio_utils import AudioValidationError, preprocess
 from utils.constants import ALLOWED_AUDIO_TYPES, MAX_DURATION_SEC
@@ -282,4 +285,144 @@ async def analyse_full_endpoint(
         fluency=fluency_resp,
         visual=visual_resp,
         duration_sec=duration,
+    )
+
+
+def _extract_sampled_video_frames(video_bytes: bytes) -> list[np.ndarray]:
+    """Decode video bytes and sample ~2 FPS for MediaPipe analysis."""
+    if not video_bytes:
+        return []
+
+    frames: list[np.ndarray] = []
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+        tmp.write(video_bytes)
+        tmp_path = tmp.name
+
+    cap = cv2.VideoCapture(tmp_path)
+    fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+    sample_interval = max(1, int(fps / 2))
+    frame_idx = 0
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        if frame_idx % sample_interval == 0:
+            frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        frame_idx += 1
+
+    cap.release()
+    return frames
+
+
+@router.post(
+    "/analyze",
+    response_model=AnalysisV1Response,
+    responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}},
+    summary="Legacy-compatible multimodal analysis endpoint",
+)
+async def analyze_v1_endpoint(
+    audio: UploadFile = File(..., description="Audio recording"),
+    video: Optional[UploadFile] = File(None, description="Optional video recording"),
+    target_text: str = Form("", description="Expected script text"),
+    script_type: str = Form("scripted", description="scripted or free"),
+    difficulty: str = Form("medium", description="unused compatibility field"),
+    user: dict = Depends(get_current_user),
+):
+    """Analyzes five pillars and returns 0-100 composite score expected by frontend."""
+    audio_bytes = await audio.read()
+    if not audio_bytes:
+        raise HTTPException(status_code=400, detail="Audio file is empty.")
+
+    try:
+        y, sr = preprocess(audio_bytes)
+    except AudioValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+    acoustic_result = analyse_acoustics(y, sr)
+    fluency_result = analyse_fluency(y, sr)
+
+    # Run Whisper using a temporary audio file path.
+    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp_audio:
+        tmp_audio.write(audio_bytes)
+        tmp_audio_path = tmp_audio.name
+    pronunciation_result = analyse_pronunciation(tmp_audio_path, target_text=target_text)
+
+    visual_result = None
+    if video is not None:
+        video_bytes = await video.read()
+        frames = _extract_sampled_video_frames(video_bytes)
+        if frames:
+            visual_result = analyse_video_frames(frames)
+
+    # Core pillar scores (0-100)
+    jitter_score = 50.0
+    shimmer_score = 50.0
+    if acoustic_result.success and acoustic_result.metrics:
+        jitter_score = float(acoustic_result.metrics.jitter_score)
+        shimmer_score = float(acoustic_result.metrics.shimmer_score)
+
+    pronunciation_score = 50.0
+    transcript = ""
+    if pronunciation_result.success and pronunciation_result.metrics:
+        pronunciation_score = float(pronunciation_result.metrics.pronunciation_score)
+        transcript = pronunciation_result.metrics.transcript
+
+    # MediaPipe-derived visual pillars
+    facial_expression_score = 50.0
+    gesture_score = 50.0
+    visual_score = 50.0
+    if visual_result and visual_result.success and visual_result.metrics:
+        facial_expression_score = float(visual_result.metrics.eye_contact_score)
+        gesture_score = float(visual_result.metrics.head_stability_score)
+        visual_score = float(visual_result.metrics.visual_engagement_score)
+
+    fluency_score = 50.0
+    if fluency_result.success and fluency_result.metrics:
+        fluency_score = float(fluency_result.metrics.fluency_score)
+
+    # Required formula: mean of five pillars
+    confidence_score = round(
+        (
+            facial_expression_score
+            + gesture_score
+            + jitter_score
+            + shimmer_score
+            + pronunciation_score
+        ) / 5.0,
+        2,
+    )
+
+    acoustic_score = round((jitter_score + shimmer_score) / 2.0, 2)
+    duration_sec = acoustic_result.metrics.duration_sec if (acoustic_result.success and acoustic_result.metrics) else None
+
+    rec_pairs = [
+        ("Facial Expression", facial_expression_score, "Improve eye contact and reduce facial tension."),
+        ("Body Gestures", gesture_score, "Practice open posture and natural head movement."),
+        ("Jitter", jitter_score, "Use breathing exercises to stabilize vocal fold vibration."),
+        ("Shimmer", shimmer_score, "Project your voice with steady airflow and support."),
+        ("Pronunciation", pronunciation_score, "Slow down and articulate consonants and vowels clearly."),
+    ]
+    recommendations = [tip for _, _, tip in sorted(rec_pairs, key=lambda x: x[1])[:2]]
+
+    summary = (
+        f"Your speaking confidence is {confidence_score}/100. "
+        f"Top improvement focus: {', '.join(name for name, _, _ in sorted(rec_pairs, key=lambda x: x[1])[:2])}."
+    )
+
+    return AnalysisV1Response(
+        success=True,
+        confidence_score=confidence_score,
+        facial_expression_score=round(facial_expression_score, 2),
+        gesture_score=round(gesture_score, 2),
+        jitter_score=round(jitter_score, 2),
+        shimmer_score=round(shimmer_score, 2),
+        pronunciation_score=round(pronunciation_score, 2),
+        acoustic_score=acoustic_score,
+        fluency_score=round(fluency_score, 2),
+        visual_score=round(visual_score, 2),
+        duration_sec=round(duration_sec, 2) if duration_sec is not None else None,
+        summary=summary,
+        transcript=transcript,
+        recommendations=recommendations,
     )

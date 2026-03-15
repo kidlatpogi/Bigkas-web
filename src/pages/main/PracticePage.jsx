@@ -144,11 +144,12 @@ export default function PracticePage() {
   const handleStartPractice = () => {
     if (!previewScript) return;
     setShowPreview(false);
-    navigate(ROUTES.TRAINING, {
+    navigate(`${ROUTES.TRAINING}?autostart=1`, {
       state: {
         script: previewScript,
         focus: 'scripted',
         entryPoint: 'practice',
+        autoStartCountdown: true,
       },
     });
   };
@@ -177,12 +178,13 @@ export default function PracticePage() {
   /* Start randomiser practice */
   const handleStartRandomTopic = () => {
     if (!randomTopic) return;
-    navigate(ROUTES.TRAINING, {
+    navigate(`${ROUTES.TRAINING}?autostart=1`, {
       state: {
         freeTopic: randomTopic.title,
         freeSpeechContext: randomTopic.body,
         focus: 'free',
         entryPoint: 'practice',
+        autoStartCountdown: true,
       },
     });
   };

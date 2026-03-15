@@ -1,9 +1,25 @@
+import { useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getScoreTier, buildRoute, ROUTES } from '../../utils/constants';
-import { formatDuration } from '../../utils/formatters';
+import { formatDate, formatDuration } from '../../utils/formatters';
 import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
+
+function getSessionModeLabel(session) {
+  const raw = String(
+    session?.session_mode
+    ?? session?.mode
+    ?? session?.session_type
+    ?? session?.script_type
+    ?? '',
+  ).toLowerCase();
+
+  if (raw.includes('practice')) return 'Practice';
+  if (raw.includes('train')) return 'Training';
+  if (raw.includes('free') || raw.includes('script') || raw.includes('ai') || raw.includes('self')) return 'Training';
+  return 'Training';
+}
 
 function SessionResultPage() {
   const navigate = useNavigate();
@@ -14,39 +30,59 @@ function SessionResultPage() {
   const result = state || {};
   const score  = result.confidence_score ?? 0;
   const tier   = getScoreTier(score);
+  const scoreDisplay = Number.isInteger(score) ? `${score}` : Number(score).toFixed(2);
 
-  // Derived metrics
-  const acousticScore  = result.acoustic_score  ?? Math.round(score * 0.95);
-  const wpm            = result.wpm             ?? 120;
-  const durationSec    = result.duration_sec    ?? 0;
+  const durationSec = result.duration_sec ?? 0;
+  const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
+  const modeLabel = getSessionModeLabel(result);
+  const practicedText = result.target_text || result.transcript || 'No recorded text available.';
+  const [isSessionInfoOpen, setIsSessionInfoOpen] = useState(true);
 
-  // Simulated pitch bars
-  const pitchBars = Array.from({ length: 20 }, (_, index) => {
-    const variance = (Math.sin((index + 1) * (score + 17)) + 1) / 2; // 0..1 deterministic
-    return Math.max(12, Math.round((score / 100) * 48 * (0.6 + variance * 0.6)));
+  const pillars = [
+    { key: 'facial', label: 'Facial Expression', value: result.facial_expression_score },
+    { key: 'gesture', label: 'Gestures', value: result.gesture_score },
+    { key: 'jitter', label: 'Jitter', value: result.jitter_score },
+    { key: 'shimmer', label: 'Shimmer', value: result.shimmer_score },
+    { key: 'pronunciation', label: 'Pronunciation', value: result.pronunciation_score },
+  ].map((p) => {
+    const scoreVal = Number.isFinite(p.value) ? p.value : 0;
+    return { ...p, score: Math.max(0, Math.min(100, Math.round(scoreVal))) };
   });
 
-  const pitchTier = getScoreTier(acousticScore);
-  const paceTier  = wpm >= 120 && wpm <= 160 ? { label: 'Good', color: '#34C759' }
-                  : { label: 'Needs Work', color: '#FF9500' };
+  const pillarColors = {
+    facial: '#21C26A',
+    gesture: '#15B8A6',
+    jitter: '#FCBA04',
+    shimmer: '#F59E0B',
+    pronunciation: '#EF4444',
+  };
 
   return (
     <div className="inner-page">
       {/* Header */}
-      <div className="inner-page-header">
+      <div className="inner-page-header centered-header">
         <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Analysis Result</h1>
       </div>
 
       {/* Overall score */}
-      <div className="page-card" style={{ textAlign: 'center', marginBottom: 16 }}>
-        <div className="score-circle" style={{ borderColor: tier.color }}>
-          <span className="score-circle-num">{score}</span>
-          <span className="score-circle-label">/100</span>
+      <div className="page-card result-hero-card">
+        <p className="result-hero-kicker">Speaking Confidence Score</p>
+        <div className="result-hero-score-row">
+          <p className="result-hero-score">
+            {scoreDisplay}
+            <span>/100</span>
+          </p>
+          <span className="result-hero-tier" style={{ background: `${tier.color}1A`, color: tier.color }}>
+            {tier.label}
+          </span>
         </div>
-        <p style={{ fontSize: 16, fontWeight: 700, color: tier.color, margin: '8px 0 4px' }}>
-          {tier.label}
-        </p>
+        <div className="result-hero-track">
+          <div
+            className="result-hero-track-fill"
+            style={{ width: `${Math.max(0, Math.min(100, Number(score) || 0))}%`, background: tier.color }}
+          />
+        </div>
         <p className="result-summary">
           {score >= 85 ? 'Outstanding! Your speech was clear and fluent.'
           : score >= 65 ? 'Good job! A few areas to polish for even better results.'
@@ -55,50 +91,79 @@ function SessionResultPage() {
         </p>
       </div>
 
-      {/* Pitch stability card */}
-      <div className="page-card" style={{ marginBottom: 16 }}>
-        <div className="metric-card-top">
-          <span className="metric-label">Pitch Stability</span>
-          <span className="score-badge" style={{ background: pitchTier.color + '22', color: pitchTier.color }}>
-            {pitchTier.label}
-          </span>
-        </div>
-        <div className="pitch-bars">
-          {pitchBars.map((h, i) => (
-            <div key={i} className="pitch-bar" style={{ height: h, background: pitchTier.color }} />
+      {/* Five scoring pillars */}
+      <div className="page-card result-pillars-card" style={{ marginBottom: 16 }}>
+        <p className="section-label" style={{ marginBottom: 10 }}>Scoring Pillars</p>
+        {pillars.map((p) => {
+          const color = pillarColors[p.key] || '#FCBA04';
+          return (
+            <div key={p.key} className="result-pillar-item">
+              <div className="metric-card-top result-pillar-head" style={{ marginBottom: 6 }}>
+                <span className="metric-label" style={{ fontSize: 14 }}>{p.label}</span>
+                <span className="score-badge result-pillar-score" style={{ background: `${color}1F`, color }}>
+                  {p.score}/100
+                </span>
+              </div>
+              <div className="progress-track result-pillar-track" style={{ marginBottom: 0 }}>
+                <div className="progress-track-fill" style={{ width: `${p.score}%`, background: color }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {recommendations.length > 0 && (
+        <div className="page-card" style={{ marginBottom: 16 }}>
+          <p className="section-label" style={{ marginBottom: 8 }}>Recommendations</p>
+          {recommendations.map((text, idx) => (
+            <p key={`${text}-${idx}`} style={{ margin: '0 0 8px', color: '#555', fontSize: 14 }}>
+              {idx + 1}. {text}
+            </p>
           ))}
         </div>
-      </div>
-
-      {/* Speaking pace card */}
-      <div className="page-card" style={{ marginBottom: 16 }}>
-        <div className="metric-card-top">
-          <span className="metric-label">Speaking Pace</span>
-          <span className="score-badge" style={{ background: paceTier.color + '22', color: paceTier.color }}>
-            {paceTier.label}
-          </span>
-        </div>
-        <p style={{ fontSize: 24, fontWeight: 800, color: '#010101', margin: '6px 0 4px' }}>
-          {wpm} <span style={{ fontSize: 14, fontWeight: 400, color: '#888' }}>wpm</span>
-        </p>
-        <div className="progress-track" style={{ margin: '6px 0' }}>
-          <div
-            className="progress-track-fill"
-            style={{ width: `${Math.min(100, (wpm / 180) * 100)}%`, background: paceTier.color }}
-          />
-        </div>
-        <p style={{ fontSize: 12, color: '#888', margin: 0 }}>Ideal range: 120–160 wpm</p>
-      </div>
-
-      {/* Duration */}
-      {durationSec > 0 && (
-        <div className="page-card" style={{ marginBottom: 16 }}>
-          <div className="info-row" style={{ borderBottom: 'none', padding: 0 }}>
-            <span className="info-row-key">Session Duration</span>
-            <span className="info-row-val">{formatDuration(durationSec)}</span>
-          </div>
-        </div>
       )}
+
+      {/* Extra session information */}
+      <div className="page-card" style={{ marginBottom: 16 }}>
+        <button
+          className="result-collapse-toggle"
+          onClick={() => setIsSessionInfoOpen((open) => !open)}
+          type="button"
+          aria-expanded={isSessionInfoOpen}
+          aria-controls="session-information-body"
+        >
+          <span className="section-label" style={{ marginBottom: 0 }}>Session Information</span>
+          <span className={`result-collapse-chevron${isSessionInfoOpen ? ' open' : ''}`}>⌄</span>
+        </button>
+
+        {isSessionInfoOpen && (
+          <div id="session-information-body" className="result-collapse-body">
+            {result.created_at && (
+              <div className="info-row">
+                <span className="info-row-key">Date</span>
+                <span className="info-row-val">{formatDate(result.created_at)}</span>
+              </div>
+            )}
+            <div className="info-row">
+              <span className="info-row-key">Duration</span>
+              <span className="info-row-val">{formatDuration(durationSec || 0)}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-row-key">Mode</span>
+              <span className="info-row-val">{modeLabel}</span>
+            </div>
+            <div className="info-row" style={{ borderBottom: 'none' }}>
+              <span className="info-row-key">Difficulty</span>
+              <span className="info-row-val" style={{ textTransform: 'capitalize' }}>
+                {result?.difficulty ? String(result.difficulty) : 'N/A'}
+              </span>
+            </div>
+
+            <p className="detail-section-title" style={{ marginTop: 14 }}>Practiced Text</p>
+            <p className="practiced-text">{practicedText}</p>
+          </div>
+        )}
+      </div>
 
       {/* View detailed feedback row */}
       <div
@@ -111,10 +176,10 @@ function SessionResultPage() {
 
       {/* Actions */}
       <div className="btn-row" style={{ marginTop: 24 }}>
-        <button className="btn-secondary" onClick={() => navigate(ROUTES.TRAINING_SETUP)}>
-          Train Again
+        <button className="btn-secondary" onClick={() => navigate(ROUTES.DASHBOARD)}>
+          Back to Dashboard
         </button>
-        <button className="btn-primary" onClick={() => navigate(ROUTES.SCRIPTS)}>
+        <button className="btn-primary" onClick={() => navigate(ROUTES.TRAINING_SETUP)}>
           Practice Again
         </button>
       </div>

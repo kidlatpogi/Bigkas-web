@@ -155,11 +155,12 @@ function HistoryPage() {
         {filteredSessions.map((s) => {
           const score = s.confidence_score ?? 0;
           const tier = getScoreTier(score);
+          const durationSec = s.duration_sec ?? s.duration ?? 0;
           return (
             <div
               key={s.id}
               className="session-row"
-              onClick={() => navigate(buildRoute.sessionDetail(s.id))}
+              onClick={() => navigate(buildRoute.sessionResult(s.id), { state: s })}
             >
               <div className="session-row-info">
                 <p className="session-row-text">
@@ -167,7 +168,7 @@ function HistoryPage() {
                 </p>
                 <p className="session-row-date">
                   {formatDate(s.created_at)}
-                  {s.duration_sec ? ` - ${formatDuration(s.duration_sec)}` : ''}
+                  {durationSec ? ` - ${formatDuration(durationSec)}` : ''}
                 </p>
               </div>
               <span

@@ -26,6 +26,21 @@ function AllSessionsPage() {
     fetchSessions(1, true);
   }, [fetchSessions]);
 
+  const getSessionMode = (session) => {
+    const raw = String(
+      session?.session_mode
+      ?? session?.mode
+      ?? session?.session_type
+      ?? session?.script_type
+      ?? '',
+    ).toLowerCase();
+
+    if (raw.includes('practice')) return 'Practice';
+    if (raw.includes('train')) return 'Training';
+    if (raw.includes('free') || raw.includes('script') || raw.includes('ai') || raw.includes('self')) return 'Training';
+    return 'Training';
+  };
+
   const filterSession = (s) => {
     const d = new Date(s.created_at);
     const now = new Date();
@@ -53,11 +68,13 @@ function AllSessionsPage() {
       </div>
 
       {/* Filter tabs */}
-      <FilterTabs
-        tabs={FILTER_TABS}
-        active={filter}
-        onChange={(val) => { setFilter(val); setPage(1); }}
-      />
+      <div style={{ marginTop: 8, marginBottom: 12 }}>
+        <FilterTabs
+          tabs={FILTER_TABS}
+          active={filter}
+          onChange={(val) => { setFilter(val); setPage(1); }}
+        />
+      </div>
 
       {isLoading && sessions.length === 0 && (
         <div className="page-loading">Loading…</div>
@@ -78,7 +95,7 @@ function AllSessionsPage() {
             <div
               key={s.id}
               className="session-row"
-              onClick={() => navigate(buildRoute.sessionDetail(s.id))}
+              onClick={() => navigate(buildRoute.sessionResult(s.id), { state: s })}
             >
               <div className="session-row-info">
                 <p className="session-row-text">
@@ -89,6 +106,9 @@ function AllSessionsPage() {
                   {s.duration_sec ? ` · ${formatDuration(s.duration_sec)}` : ''}
                 </p>
               </div>
+              <span className={`session-mode-tag ${getSessionMode(s).toLowerCase()}`}>
+                {getSessionMode(s)}
+              </span>
               <span
                 className="score-badge"
                 style={{ background: tier.color + '22', color: tier.color }}

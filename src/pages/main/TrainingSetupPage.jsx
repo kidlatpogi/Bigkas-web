@@ -89,13 +89,13 @@ function TrainingSetupPage() {
       setShowTopicModal(true);
     } else {
       if (!selectedScript) return;
-      navigate(ROUTES.TRAINING, { state: { script: selectedScript, focus } });
+      navigate(`${ROUTES.TRAINING}?autostart=1`, { state: { script: selectedScript, focus, autoStartCountdown: true } });
     }
   };
 
   const handleFreeStart = () => {
-    navigate(ROUTES.TRAINING, {
-      state: { script: selectedScript, focus: 'free', freeTopic },
+    navigate(`${ROUTES.TRAINING}?autostart=1`, {
+      state: { script: selectedScript, focus: 'free', freeTopic, autoStartCountdown: true },
     });
   };
 
@@ -135,12 +135,12 @@ function TrainingSetupPage() {
       <div className="form-group ts-script-select-group">
         {isLoading ? (
           <div className="ts-status-row" role="status" aria-live="polite">
-            <span className="ts-status-icon" aria-hidden="true">⏳</span>
+            <span className="ts-status-icon" aria-hidden="true"></span>
             <p className="ts-loading-text">Loading scripts…</p>
           </div>
         ) : noGeneratedScripts ? (
           <div className="ts-empty-state">
-            <span className="ts-status-icon" aria-hidden="true">🤖</span>
+            <span className="ts-status-icon" aria-hidden="true"></span>
             <p className="ts-empty-text">You haven’t generated any AI scripts yet.</p>
             <button
               className="btn-primary training-generate-btn"

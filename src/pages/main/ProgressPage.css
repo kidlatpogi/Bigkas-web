@@ -71,6 +71,36 @@
   color: #010101;
 }
 
+.progress-mode-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 8px;
+  flex-wrap: wrap;
+}
+
+.progress-mode-selector--outside {
+  margin: 4px 0 12px;
+}
+
+.progress-mode-btn {
+  border: 1px solid #e2e2e2;
+  background: #fff;
+  color: #666;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.progress-mode-btn.active {
+  background: #FCBA04;
+  color: #010101;
+  border-color: #FCBA04;
+}
+
 .progress-line-chart {
   width: 100%;
   min-height: 220px;
@@ -136,6 +166,62 @@
   margin: 0;
 }
 
+.progress-pillars-card {
+  margin-bottom: 22px;
+  border-radius: 16px;
+  border: 1px solid #e6e6e6;
+  padding: 16px 16px 14px;
+}
+
+.progress-pillars-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.progress-pillars-caption {
+  font-size: 12px;
+  color: #8a8a8a;
+}
+
+.progress-pillars-list {
+  display: grid;
+  gap: 10px;
+}
+
+.progress-pillars-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.progress-pillars-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.progress-pillars-value {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.progress-pillars-track {
+  height: 9px;
+  background: #ececec;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-pillars-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
 /* Recent sessions header */
 .progress-recent-header {
   display: flex;
@@ -183,6 +269,27 @@
   text-overflow: ellipsis;
 }
 
+.progress-session-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.progress-session-tag.training {
+  background: rgba(252, 186, 4, 0.22);
+  color: #8a5a00;
+}
+
+.progress-session-tag.practice {
+  background: rgba(21, 184, 166, 0.2);
+  color: #0f7268;
+}
+
 .session-row-date {
   font-size: 12px;
   color: #AAAAAA;
@@ -218,6 +325,7 @@
 
 [data-theme='dark'] .progress-trend-card,
 [data-theme='dark'] .stat-block,
+[data-theme='dark'] .progress-pillars-card,
 [data-theme='dark'] .session-row {
   background: #1E1E1E;
   border-color: #2E2E2E;
@@ -233,13 +341,44 @@
 [data-theme='dark'] .progress-trend-label,
 [data-theme='dark'] .progress-trend-value,
 [data-theme='dark'] .progress-label,
+[data-theme='dark'] .progress-pillars-caption,
 [data-theme='dark'] .stat-desc,
 [data-theme='dark'] .session-row-date {
   color: rgba(240,240,240,0.62);
 }
 
+[data-theme='dark'] .progress-pillars-label {
+  color: #f0f0f0;
+}
+
+[data-theme='dark'] .progress-pillars-track {
+  background: #2a2a2a;
+}
+
 [data-theme='dark'] .progress-range-selector {
   background: #2A2A2A;
+}
+
+[data-theme='dark'] .progress-mode-btn {
+  background: #1f1f1f;
+  border-color: #343434;
+  color: rgba(240,240,240,0.72);
+}
+
+[data-theme='dark'] .progress-mode-btn.active {
+  background: #FCBA04;
+  color: #010101;
+  border-color: #FCBA04;
+}
+
+[data-theme='dark'] .progress-session-tag.training {
+  background: rgba(252, 186, 4, 0.28);
+  color: #ffcf57;
+}
+
+[data-theme='dark'] .progress-session-tag.practice {
+  background: rgba(21, 184, 166, 0.28);
+  color: #58d8ca;
 }
 
 [data-theme='dark'] .progress-range-btn {

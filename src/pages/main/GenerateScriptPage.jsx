@@ -213,7 +213,7 @@ function GenerateScriptPage() {
         content: editContent.trim(),
         type: 'auto-generated',
       });
-      navigate(ROUTES.TRAINING, { state: { script: saved, focus: 'scripted' } });
+      navigate(`${ROUTES.TRAINING}?autostart=1`, { state: { script: saved, focus: 'scripted', autoStartCountdown: true } });
     } catch {
       setError('Failed to save script.');
     } finally {

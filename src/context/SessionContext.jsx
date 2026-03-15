@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { ENV } from '../config/env';
 
 const PAGE_SIZE = 10;
+const LOCAL_SESSIONS_KEY = 'bigkas_local_sessions_v1';
 
 const initialState = {
   sessions:       [],
@@ -10,15 +11,15 @@ const initialState = {
   isLoading:      false,
   isAnalysing:    false,
   error:          null,
-  pagination:     { page: 1, total: 0, hasMore: true },
+  pagination:     { page: 1, total: 0, hasMore: true, pageSize: PAGE_SIZE },
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case 'SET_LOADING':      return { ...state, isLoading: action.payload };
     case 'SET_ANALYSING':   return { ...state, isAnalysing: action.payload };
-    case 'SET_SESSIONS':    return { ...state, sessions: action.payload.sessions, pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === PAGE_SIZE } };
-    case 'APPEND_SESSIONS': return { ...state, sessions: [...state.sessions, ...action.payload.sessions], pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === PAGE_SIZE } };
+    case 'SET_SESSIONS':    return { ...state, sessions: action.payload.sessions, pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === action.payload.pageSize, pageSize: action.payload.pageSize } };
+    case 'APPEND_SESSIONS': return { ...state, sessions: [...state.sessions, ...action.payload.sessions], pagination: { page: action.payload.page, total: action.payload.total, hasMore: action.payload.sessions.length === action.payload.pageSize, pageSize: action.payload.pageSize } };
     case 'SET_CURRENT':     return { ...state, currentSession: action.payload };
     case 'ADD_SESSION':     return { ...state, sessions: [action.payload, ...state.sessions] };
     case 'REMOVE_SESSION':  return { ...state, sessions: state.sessions.filter((s) => s.id !== action.payload) };
@@ -35,6 +36,38 @@ function reducer(state, action) {
  */
 
 const SessionContext = createContext(null);
+
+function normalizeSessionRow(session) {
+  if (!session) return session;
+  return {
+    ...session,
+    confidence_score: session.confidence_score ?? session.score ?? 0,
+    duration_sec: session.duration_sec ?? session.duration ?? 0,
+    recommendations: Array.isArray(session.recommendations) ? session.recommendations : [],
+  };
+}
+
+function readLocalSessions() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SESSIONS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(normalizeSessionRow).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalSessions(sessions) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(LOCAL_SESSIONS_KEY, JSON.stringify(sessions));
+  } catch {
+    // Ignore localStorage write errors.
+  }
+}
 
 function isSessionsTableMissing(error) {
   if (!error) return false;
@@ -58,22 +91,35 @@ export function SessionProvider({ children }) {
   }, []);
 
   /* ── Fetch paginated sessions ── */
-  const fetchSessions = useCallback(async (page = 1, refresh = false) => {
+  const fetchSessions = useCallback(async (page = 1, refresh = false, pageSize = PAGE_SIZE) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-      dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0 } });
-      return { success: true };
+      const allLocal = readLocalSessions();
+      const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : PAGE_SIZE;
+      const from = (page - 1) * safePageSize;
+      const paged = allLocal.slice(from, from + safePageSize);
+      dispatch({
+        type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS',
+        payload: {
+          sessions: paged,
+          page,
+          total: allLocal.length,
+          pageSize: safePageSize,
+        },
+      });
+      return { success: true, sessions: paged };
     }
 
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_LOADING', payload: true });
-    const from = (page - 1) * PAGE_SIZE;
+    const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : PAGE_SIZE;
+    const from = (page - 1) * safePageSize;
     const { data, error, count } = await supabase
       .from('sessions')
       .select('*', { count: 'exact' })
       .eq('user_id', uid)
       .order('created_at', { ascending: false })
-      .range(from, from + PAGE_SIZE - 1);
+      .range(from, from + safePageSize - 1);
     dispatch({ type: 'SET_LOADING', payload: false });
     if (error) {
       if (isSessionsTableMissing(error)) {
@@ -83,18 +129,94 @@ export function SessionProvider({ children }) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
       return { success: false, error: error.message };
     }
-    const next = { sessions: data ?? [], page, total: count ?? 0 };
+    const normalized = (data ?? []).map(normalizeSessionRow);
+    const next = { sessions: normalized, page, total: count ?? 0, pageSize: safePageSize };
     dispatch({ type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS', payload: next });
     return { success: true };
   }, [getUserId]);
 
+  const fetchAllSessions = useCallback(async () => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      const local = readLocalSessions();
+      dispatch({ type: 'SET_SESSIONS', payload: { sessions: local, page: 1, total: local.length, pageSize: PAGE_SIZE } });
+      return { success: true, sessions: local };
+    }
+
+    const uid = await getUserId();
+    if (!uid) return { success: false, error: 'Not authenticated' };
+
+    dispatch({ type: 'SET_LOADING', payload: true });
+    const allSessions = [];
+    let page = 1;
+    const batchSize = 200;
+
+    try {
+      while (true) {
+        const from = (page - 1) * batchSize;
+        const { data, error, count } = await supabase
+          .from('sessions')
+          .select('*', { count: page === 1 ? 'exact' : undefined })
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false })
+          .range(from, from + batchSize - 1);
+
+        if (error) {
+          if (isSessionsTableMissing(error)) {
+            dispatch({ type: 'SET_SESSIONS', payload: { sessions: [], page: 1, total: 0, pageSize: batchSize } });
+            dispatch({ type: 'SET_LOADING', payload: false });
+            return { success: true, sessions: [] };
+          }
+          dispatch({ type: 'SET_ERROR', payload: error.message });
+          dispatch({ type: 'SET_LOADING', payload: false });
+          return { success: false, error: error.message };
+        }
+
+        const normalizedBatch = (data ?? []).map(normalizeSessionRow);
+        allSessions.push(...normalizedBatch);
+
+        if (normalizedBatch.length < batchSize) {
+          dispatch({
+            type: 'SET_SESSIONS',
+            payload: {
+              sessions: allSessions,
+              page,
+              total: count ?? allSessions.length,
+              pageSize: batchSize,
+            },
+          });
+          dispatch({ type: 'SET_LOADING', payload: false });
+          return { success: true, sessions: allSessions };
+        }
+
+        page += 1;
+      }
+    } catch (err) {
+      dispatch({ type: 'SET_ERROR', payload: err.message || 'Failed to load sessions.' });
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return { success: false, error: err.message || 'Failed to load sessions.' };
+    }
+  }, [getUserId]);
+
   const loadMoreSessions = useCallback(async () => {
     if (!state.pagination.hasMore || state.isLoading) return;
-    await fetchSessions(state.pagination.page + 1);
+    await fetchSessions(state.pagination.page + 1, false, state.pagination.pageSize || PAGE_SIZE);
   }, [fetchSessions, state.pagination, state.isLoading]);
 
   /* ── Fetch single session ── */
   const fetchSessionById = useCallback(async (sessionId) => {
+    const normalizedId = String(sessionId || '');
+    const inMemoryMatch = state.sessions.find((s) => String(s.id) === normalizedId);
+    if (inMemoryMatch) {
+      dispatch({ type: 'SET_CURRENT', payload: inMemoryMatch });
+      return { success: true, session: inMemoryMatch };
+    }
+
+    const localMatch = readLocalSessions().find((s) => String(s.id) === normalizedId);
+    if (localMatch) {
+      dispatch({ type: 'SET_CURRENT', payload: localMatch });
+      return { success: true, session: localMatch };
+    }
+
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
       dispatch({ type: 'SET_CURRENT', payload: null });
       return { success: false, error: 'Session persistence is disabled' };
@@ -108,12 +230,13 @@ export function SessionProvider({ children }) {
       return { success: false, error: 'Session not found' };
     }
     if (error) { dispatch({ type: 'SET_ERROR', payload: error.message }); return { success: false, error: error.message }; }
-    dispatch({ type: 'SET_CURRENT', payload: data });
-    return { success: true, session: data };
-  }, []);
+    const normalized = normalizeSessionRow(data);
+    dispatch({ type: 'SET_CURRENT', payload: normalized });
+    return { success: true, session: normalized };
+  }, [state.sessions]);
 
   /* ── Analyse & save session (calls Python backend) ── */
-  const analyseAndSave = useCallback(async ({ audioBlob, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
+  const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_ANALYSING', payload: true });
@@ -122,10 +245,13 @@ export function SessionProvider({ children }) {
       const { data: { session: authSession } } = await supabase.auth.getSession();
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.webm');
+      if (videoBlob) {
+        formData.append('video', videoBlob, 'recording-video.webm');
+      }
       formData.append('target_text', targetText);
       formData.append('script_type', scriptType);
       formData.append('difficulty', difficulty);
-      const res = await fetch(`${apiUrl}/api/v1/analysis/analyze`, {
+      const res = await fetch(`${apiUrl}/api/analysis/analyze`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authSession?.access_token}` },
         body: formData,
@@ -144,33 +270,66 @@ export function SessionProvider({ children }) {
         visual_score:   analysisResult.visual_score   ?? null,
         feedback:       analysisResult.summary         ?? '',
         duration:       analysisResult.duration_sec    ?? 0,
+        confidence_score: analysisResult.confidence_score ?? 0,
+        facial_expression_score: analysisResult.facial_expression_score ?? null,
+        gesture_score: analysisResult.gesture_score ?? null,
+        jitter_score: analysisResult.jitter_score ?? null,
+        shimmer_score: analysisResult.shimmer_score ?? null,
+        pronunciation_score: analysisResult.pronunciation_score ?? null,
+        recommendations: analysisResult.recommendations ?? [],
+        transcript: analysisResult.transcript ?? '',
       };
 
       if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-        const localSession = {
+        const localSession = normalizeSessionRow({
           id: `local-${Date.now()}`,
           ...sessionRow,
           created_at: new Date().toISOString(),
-        };
+        });
+        const nextLocal = [localSession, ...readLocalSessions()];
+        writeLocalSessions(nextLocal);
         dispatch({ type: 'ADD_SESSION', payload: localSession });
-        return { success: true, session: localSession, analysisResult };
+        return { success: true, session: localSession, analysisResult, data: localSession };
       }
 
       const { data: saved, error: saveErr } = await supabase.from('sessions').insert(sessionRow).select().single();
       if (saveErr) {
         if (isSessionsTableMissing(saveErr)) {
-          const localSession = {
+          const localSession = normalizeSessionRow({
             id: `local-${Date.now()}`,
             ...sessionRow,
             created_at: new Date().toISOString(),
-          };
+          });
+          const nextLocal = [localSession, ...readLocalSessions()];
+          writeLocalSessions(nextLocal);
           dispatch({ type: 'ADD_SESSION', payload: localSession });
-          return { success: true, session: localSession, analysisResult };
+          return { success: true, session: localSession, analysisResult, data: localSession };
         }
         throw new Error(saveErr.message);
       }
-      dispatch({ type: 'ADD_SESSION', payload: saved });
-      return { success: true, session: saved, analysisResult };
+      const normalizedSaved = normalizeSessionRow(saved);
+      dispatch({ type: 'ADD_SESSION', payload: normalizedSaved });
+      return {
+        success: true,
+        session: normalizedSaved,
+        analysisResult,
+        data: {
+          ...normalizedSaved,
+          confidence_score: analysisResult.confidence_score ?? normalizedSaved.score ?? 0,
+          acoustic_score: analysisResult.acoustic_score ?? normalizedSaved.acoustic_score ?? 0,
+          fluency_score: analysisResult.fluency_score ?? normalizedSaved.fluency_score ?? 0,
+          visual_score: analysisResult.visual_score ?? normalizedSaved.visual_score ?? null,
+          facial_expression_score: analysisResult.facial_expression_score ?? null,
+          gesture_score: analysisResult.gesture_score ?? null,
+          jitter_score: analysisResult.jitter_score ?? null,
+          shimmer_score: analysisResult.shimmer_score ?? null,
+          pronunciation_score: analysisResult.pronunciation_score ?? null,
+          recommendations: analysisResult.recommendations ?? [],
+          transcript: analysisResult.transcript ?? '',
+          duration_sec: analysisResult.duration_sec ?? normalizedSaved.duration ?? 0,
+          summary: analysisResult.summary ?? normalizedSaved.feedback ?? '',
+        },
+      };
     } catch (err) {
       dispatch({ type: 'SET_ERROR', payload: err.message });
       return { success: false, error: err.message };
@@ -182,6 +341,8 @@ export function SessionProvider({ children }) {
   /* ── Delete session ── */
   const deleteSession = useCallback(async (sessionId) => {
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      const filtered = readLocalSessions().filter((s) => s.id !== sessionId);
+      writeLocalSessions(filtered);
       dispatch({ type: 'REMOVE_SESSION', payload: sessionId });
       return { success: true };
     }
@@ -203,6 +364,7 @@ export function SessionProvider({ children }) {
   const value = {
     ...state,
     fetchSessions,
+    fetchAllSessions,
     loadMoreSessions,
     fetchSessionById,
     analyseAndSave,

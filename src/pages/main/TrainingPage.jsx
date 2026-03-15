@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { LuRotateCcw } from 'react-icons/lu';
 import { useSessionContext } from '../../context/useSessionContext';
 import { buildRoute } from '../../utils/constants';
 import BackButton from '../../components/common/BackButton';
@@ -8,6 +9,15 @@ import './TrainingPage.css';
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 function getSupportedMime() {
   const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
+  return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+}
+function getSupportedVideoMime() {
+  const types = [
+    'video/webm;codecs=vp8,opus',
+    'video/webm;codecs=vp9,opus',
+    'video/webm',
+    'video/mp4',
+  ];
   return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
 }
 
@@ -41,12 +51,7 @@ function PlayIcon() {
 }
 
 function RestartIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 12a9 9 0 109-9H3"/>
-      <polyline points="3 3 3 12 12 12"/>
-    </svg>
-  );
+  return <LuRotateCcw size={22} strokeWidth={2.5} />;
 }
 
 function SettingsGearIcon() {
@@ -60,12 +65,16 @@ function SettingsGearIcon() {
 /* ─── Main Component ───────────────────────────────────────────────────────── */
 function TrainingPage() {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const location = useLocation();
+  const { state } = location;
   const { analyseAndSave } = useSessionContext();
 
   const script    = state?.script    || null;
   const focus     = state?.focus     || 'scripted';
   const freeTopic = state?.freeTopic || '';
+  const shouldAutoStart =
+    state?.autoStartCountdown === true ||
+    new URLSearchParams(location.search).get('autostart') === '1';
 
   /* Recording state */
   const [status, setStatus]         = useState('idle'); // idle | countdown | recording | paused | analysing | error
@@ -93,6 +102,9 @@ function TrainingPage() {
   const countRef    = useRef(null);
   const mediaRef    = useRef(null);
   const chunksRef   = useRef([]);
+  const visualMediaRef = useRef(null);
+  const visualChunksRef = useRef([]);
+  const visualMimeRef = useRef('');
   const streamRef   = useRef(null);
   const analyserRef = useRef(null);
   const animRef     = useRef(null);
@@ -101,6 +113,8 @@ function TrainingPage() {
   const silenceStartRef  = useRef(null);
   const hintDismissRef   = useRef(null);
   const frameworksRef    = useRef([]);
+  const autoStartTriggeredRef = useRef(false);
+  const countdownAudioCtxRef = useRef(null);
 
   /* Hint toast state */
   const [showHint, setShowHint]       = useState(false);
@@ -126,7 +140,44 @@ function TrainingPage() {
       clearInterval(wpmTimerRef.current);
       cancelAnimationFrame(animRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      if (countdownAudioCtxRef.current) {
+        countdownAudioCtxRef.current.close().catch(() => {});
+        countdownAudioCtxRef.current = null;
+      }
     };
+  }, []);
+
+  const playCountdownCue = useCallback((type = 'tick') => {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+
+    if (!countdownAudioCtxRef.current || countdownAudioCtxRef.current.state === 'closed') {
+      countdownAudioCtxRef.current = new AudioCtx();
+    }
+
+    const ctx = countdownAudioCtxRef.current;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+
+    const now = ctx.currentTime;
+    const isStart = type === 'start';
+    const duration = isStart ? 0.22 : 0.12;
+    const freq = isStart ? 940 : 720;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(isStart ? 0.2 : 0.14, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
   }, []);
 
   /* ── Auto-scroll teleprompter to highlighted word ── */
@@ -195,14 +246,40 @@ function TrainingPage() {
       src.connect(analyser);
       startWaveformLoop();
 
-      /* MediaRecorder */
-      const recorder = new MediaRecorder(stream, { mimeType: getSupportedMime() });
+      /* MediaRecorder records audio only; the camera stream is only for preview. */
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length === 0) {
+        throw new Error('No microphone track available for recording.');
+      }
+
+      const recordingStream = new MediaStream(audioTracks);
+      const recorderMime = getSupportedMime();
+      const recorder = recorderMime
+        ? new MediaRecorder(recordingStream, { mimeType: recorderMime })
+        : new MediaRecorder(recordingStream);
+
       mediaRef.current = recorder;
       chunksRef.current = [];
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
       recorder.start(200);
+
+      if (focus === 'scripted' && stream.getVideoTracks().length > 0) {
+        const videoMime = getSupportedVideoMime();
+        const videoRecorder = videoMime
+          ? new MediaRecorder(stream, { mimeType: videoMime })
+          : new MediaRecorder(stream);
+
+        visualMediaRef.current = videoRecorder;
+        visualChunksRef.current = [];
+        visualMimeRef.current = videoRecorder.mimeType || videoMime || 'video/webm';
+
+        videoRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) visualChunksRef.current.push(e.data);
+        };
+        videoRecorder.start(400);
+      }
 
       setStatus('recording');
       setElapsedSec(0);
@@ -219,9 +296,15 @@ function TrainingPage() {
           else clearInterval(wpmTimerRef.current);
         }, msPerWord);
       }
-    } catch {
-      setErrorMsg('Camera / microphone access denied. Please allow access and try again.');
-      setStatus('error');
+
+      setErrorMsg('');
+    } catch (err) {
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        setStatus('permission-denied');
+      } else {
+        setErrorMsg('Could not start audio recording. Please check your microphone and try again.');
+        setStatus('error');
+      }
     }
   }, [focus, scriptWords, startWaveformLoop, wpm]);
 
@@ -231,15 +314,34 @@ function TrainingPage() {
     setCountdown(3);
     setHighlightIdx(-1);
     let c = 3;
+    playCountdownCue('tick');
     countRef.current = setInterval(() => {
       c -= 1;
       setCountdown(c);
+      playCountdownCue(c <= 0 ? 'start' : 'tick');
       if (c <= 0) {
         clearInterval(countRef.current);
         startRecording();
       }
     }, 1000);
-  }, [startRecording]);
+  }, [playCountdownCue, startRecording]);
+
+  /* ── Auto-start when launched from Start actions ── */
+  useEffect(() => {
+    if (!shouldAutoStart) return;
+
+    // Guard is checked inside the callback so React StrictMode's
+    // cleanup-and-remount cycle doesn't permanently consume the flag
+    // before the timer actually fires.
+    const autoStartTimer = setTimeout(() => {
+      if (autoStartTriggeredRef.current) return;
+      autoStartTriggeredRef.current = true;
+      startCountdown();
+    }, 300);
+
+    return () => clearTimeout(autoStartTimer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldAutoStart]);
 
   /* ── Stop → analyse ── */
   const stopRecording = () => {
@@ -253,13 +355,29 @@ function TrainingPage() {
     if (!recorder || recorder.state === 'inactive') return;
 
     recorder.onstop = async () => {
-      const mime = getSupportedMime();
+      const mime = recorder.mimeType || getSupportedMime() || 'audio/webm';
       const blob = new Blob(chunksRef.current, { type: mime });
+
+      let videoBlob = null;
+      const videoRecorder = visualMediaRef.current;
+      if (videoRecorder && videoRecorder.state !== 'inactive') {
+        await new Promise((resolve) => {
+          videoRecorder.onstop = () => resolve();
+          videoRecorder.stop();
+        });
+      }
+      if (visualChunksRef.current.length > 0) {
+        videoBlob = new Blob(visualChunksRef.current, {
+          type: visualMimeRef.current || 'video/webm',
+        });
+      }
+
       streamRef.current?.getTracks().forEach((t) => t.stop());
       setStatus('analysing');
       try {
         const result = await analyseAndSave({
           audioBlob:  blob,
+          videoBlob,
           targetText: focus === 'scripted' ? (script?.content || '') : (freeTopic || 'Free speech session'),
           scriptType: focus,
           difficulty: 'medium',
@@ -301,6 +419,7 @@ function TrainingPage() {
     clearInterval(wpmTimerRef.current);
     cancelAnimationFrame(animRef.current);
     if (mediaRef.current && mediaRef.current.state !== 'inactive') mediaRef.current.stop();
+    if (visualMediaRef.current && visualMediaRef.current.state !== 'inactive') visualMediaRef.current.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     if (videoRef.current) videoRef.current.srcObject = null;
     waveHistRef.current = Array(50).fill(0);
@@ -312,6 +431,9 @@ function TrainingPage() {
     setElapsedSec(0);
     setHighlightIdx(-1);
     chunksRef.current = [];
+    visualMediaRef.current = null;
+    visualChunksRef.current = [];
+    visualMimeRef.current = '';
   };
 
   const isRecording = status === 'recording';
@@ -440,7 +562,7 @@ function TrainingPage() {
             {/* Record / Stop */}
             <div className="tp-ctrl-col">
               <button
-                className={`tp-record-btn${isActive ? ' tp-record-btn--active' : ''}`}
+                className={`tp-record-btn${isActive ? ' tp-record-btn--active' : ''}${status === 'idle' && !shouldAutoStart ? ' tp-record-btn--hint' : ''}`}
                 onClick={isActive ? stopRecording : startCountdown}
                 aria-label={isActive ? 'Stop and analyse' : 'Start recording'}
               >
@@ -448,6 +570,11 @@ function TrainingPage() {
                   <div className={`tp-record-dot${isActive ? ' tp-record-dot--active' : ''}`} />
                 </div>
               </button>
+              {status === 'idle' && !shouldAutoStart && (
+                <div className="tp-record-tooltip" role="status" aria-live="polite">
+                  Click Record to start
+                </div>
+              )}
               <span className="tp-ctrl-label">{isActive ? 'Stop' : 'Record'}</span>
             </div>
 
@@ -511,7 +638,7 @@ function TrainingPage() {
       {status === 'countdown' && (
         <div className="tp-overlay">
           <div className="tp-countdown-box">
-            <span className="tp-countdown-num">{countdown > 0 ? countdown : 'Go!'}</span>
+            <span className="tp-countdown-num">{countdown > 0 ? countdown : 'Start!'}</span>
           </div>
         </div>
       )}
@@ -535,6 +662,41 @@ function TrainingPage() {
       )}
 
       {/* ── Settings Modal ── */}
+        {/* ── Permission Denied Overlay ── */}
+        {status === 'permission-denied' && (
+          <div className="tp-overlay tp-permission-overlay">
+            <div className="tp-permission-box">
+              <div className="tp-permission-icon" aria-hidden="true">🎙️</div>
+              <h2 className="tp-permission-title">
+                {focus === 'scripted' ? 'Microphone & Camera Required' : 'Microphone Required'}
+              </h2>
+              <p className="tp-permission-desc">
+                Bigkas needs access to your {focus === 'scripted' ? 'microphone and camera' : 'microphone'} to record your session.
+              </p>
+              <ol className="tp-permission-steps">
+                <li>Click the <strong>lock 🔒</strong> icon in your browser&rsquo;s address bar</li>
+                <li>Set <strong>Microphone{focus === 'scripted' ? ' and Camera' : ''}</strong> to <strong>Allow</strong></li>
+                <li>Tap <strong>Try Again</strong> below</li>
+              </ol>
+              <div className="tp-permission-actions">
+                <button
+                  className="tp-permission-retry"
+                  onClick={() => {
+                    autoStartTriggeredRef.current = false;
+                    startCountdown();
+                  }}
+                >
+                  Try Again
+                </button>
+                <button className="tp-permission-back" onClick={() => navigate(-1)}>
+                  Go Back
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Settings Modal ── */}
       {showSettings && (
         <div className="tp-modal-backdrop" onClick={() => setShowSettings(false)}>
           <div className="tp-modal" onClick={(e) => e.stopPropagation()}>

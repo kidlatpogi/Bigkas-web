@@ -4,9 +4,23 @@
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ── Page shell — fixed full-screen, sits above BottomNav (z-index 1000) ── */
+/* Force html and body to be flush when TrainingPage is active to escape scrollbar-gutter and margins */
+html:has(.tp-page),
+body:has(.tp-page) {
+  scrollbar-gutter: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
 .tp-page {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 1100;
   display: flex;
   flex-direction: column;
@@ -270,6 +284,30 @@
   letter-spacing: 0.02em;
 }
 
+.tp-record-tooltip {
+  margin-top: 4px;
+  position: relative;
+  background: rgba(1, 1, 1, 0.92);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  animation: tp-tooltip-fade-in 0.22s ease, tp-tooltip-breathe 2.2s ease-in-out infinite 0.22s;
+}
+
+.tp-record-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid rgba(1, 1, 1, 0.92);
+}
+
 /* Small circular button (Pause / Restart) */
 .tp-ctrl-btn {
   width: 48px;
@@ -315,6 +353,11 @@
   border-color: #FF3B30;
 }
 
+.tp-record-btn--hint {
+  border-color: rgba(252, 186, 4, 0.85);
+  animation: tp-record-breathe 2s ease-in-out infinite;
+}
+
 .tp-record-btn:hover { transform: scale(1.04); }
 
 .tp-record-inner {
@@ -345,6 +388,39 @@
 @keyframes tp-record-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255,59,48,0.5); }
   50%       { box-shadow: 0 0 0 8px rgba(255,59,48,0); }
+}
+
+@keyframes tp-tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tp-tooltip-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(252, 186, 4, 0);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 6px rgba(252, 186, 4, 0.16);
+  }
+}
+
+@keyframes tp-record-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(252, 186, 4, 0.18);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 26px rgba(252, 186, 4, 0.44);
+  }
 }
 
 /* ── Right column — Teleprompter ── */
@@ -521,6 +597,103 @@
   padding: 40px 24px;
   text-align: center;
 }
+
+/* ── Permission Denied Overlay ── */
+.tp-permission-overlay {
+  background: rgba(0,0,0,0.65);
+}
+
+.tp-permission-box {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 380px;
+  width: calc(100% - 48px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.tp-permission-icon {
+  font-size: 52px;
+  line-height: 1;
+}
+
+.tp-permission-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #010101;
+  margin: 0;
+}
+
+.tp-permission-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tp-permission-steps {
+  text-align: left;
+  width: 100%;
+  padding: 14px 16px;
+  background: #F5F5F5;
+  border-radius: 12px;
+  margin: 4px 0;
+  font-size: 13.5px;
+  color: #333;
+  line-height: 1.9;
+  list-style-position: inside;
+}
+
+.tp-permission-steps strong {
+  color: #010101;
+}
+
+.tp-permission-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.tp-permission-retry {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  background: #FCBA04;
+  color: #010101;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.tp-permission-retry:hover { opacity: 0.88; }
+
+.tp-permission-back {
+  width: 100%;
+  padding: 11px;
+  border-radius: 14px;
+  border: 1.5px solid #E0E0E0;
+  background: transparent;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.tp-permission-back:hover { border-color: #AAAAAA; }
+
+[data-theme="dark"] .tp-permission-box { background: #1E1E1E; }
+[data-theme="dark"] .tp-permission-title { color: #F0F0F0; }
+[data-theme="dark"] .tp-permission-desc { color: #999; }
+[data-theme="dark"] .tp-permission-steps { background: #2A2A2A; color: #CCC; }
+[data-theme="dark"] .tp-permission-steps strong { color: #F0F0F0; }
+[data-theme="dark"] .tp-permission-back { border-color: #2E2E2E; color: #AAA; }
 
 .tp-empty-icon { font-size: 48px; }
 
@@ -723,6 +896,12 @@
 [data-theme="dark"] .tp-wpm-value { color: #F0F0F0; }
 [data-theme="dark"] .tp-scroll-speed-row { border-color: #2A2A2A; }
 [data-theme="dark"] .tp-ctrl-label { color: rgba(240,240,240,0.5); }
+[data-theme="dark"] .tp-record-tooltip { background: rgba(252, 186, 4, 0.95); color: #010101; }
+[data-theme="dark"] .tp-record-tooltip::before { border-bottom-color: rgba(252, 186, 4, 0.95); }
+[data-theme="dark"] .tp-record-btn--hint {
+  border-color: rgba(252, 186, 4, 0.95);
+  box-shadow: 0 6px 24px rgba(252, 186, 4, 0.34);
+}
 
 [data-theme="dark"] .tp-modal { background: #1A1A1A; }
 [data-theme="dark"] .tp-modal-title { color: #F0F0F0; }

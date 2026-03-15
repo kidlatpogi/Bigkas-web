@@ -97,6 +97,18 @@ class VisualMetricsResponse(BaseModel):
     confidence_reason: str
 
 
+# ── Pronunciation Analysis ─────────────────────────────────────────
+
+class PronunciationMetricsResponse(BaseModel):
+    transcript: str
+    target_text: str
+    text_similarity: float
+    asr_confidence: float
+    pronunciation_score: float = Field(..., ge=0, le=100)
+    low_confidence: bool
+    confidence_reason: str
+
+
 # ── Confidence Score ───────────────────────────────────────────────
 
 class ConfidenceScoreResponse(BaseModel):
@@ -129,6 +141,30 @@ class AnalysisResponse(BaseModel):
     duration_sec: Optional[float] = None
     feedback: Optional[str] = None
     error: Optional[str] = None
+
+
+class AnalysisV1Response(BaseModel):
+    """Legacy-compatible response used by frontend `/api/v1/analysis/analyze`."""
+
+    success: bool
+    confidence_score: float = Field(..., ge=0, le=100)
+
+    # Required five pillars
+    facial_expression_score: float = Field(..., ge=0, le=100)
+    gesture_score: float = Field(..., ge=0, le=100)
+    jitter_score: float = Field(..., ge=0, le=100)
+    shimmer_score: float = Field(..., ge=0, le=100)
+    pronunciation_score: float = Field(..., ge=0, le=100)
+
+    # Extra sub-scores for compatibility and richer UI
+    acoustic_score: float = Field(..., ge=0, le=100)
+    fluency_score: float = Field(..., ge=0, le=100)
+    visual_score: float = Field(..., ge=0, le=100)
+
+    duration_sec: Optional[float] = None
+    summary: str = ""
+    transcript: str = ""
+    recommendations: List[str] = Field(default_factory=list)
 
 
 # ── Generic ─────────────────────────────────────────────────────────
