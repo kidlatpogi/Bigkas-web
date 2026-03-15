@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { formatDate, formatDuration } from '../../utils/formatters';
 import { buildRoute, getScoreTier, ROUTES } from '../../utils/constants';
@@ -10,29 +10,31 @@ import './SessionPages.css';
 function SessionDetailPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const { state: locationState } = useLocation();
   const { currentSession, fetchSessionById, isLoading, error } = useSessionContext();
+  const session = locationState || currentSession;
 
   useEffect(() => {
-    if (sessionId) fetchSessionById(sessionId);
-  }, [sessionId, fetchSessionById]);
+    if (!locationState && sessionId) fetchSessionById(sessionId);
+  }, [sessionId, fetchSessionById, locationState]);
 
-  if (isLoading) {
+  if (isLoading && !session) {
     return <div className="inner-page"><div className="page-loading">Loading session…</div></div>;
   }
 
-  if (error || !currentSession) {
+  if (!session) {
     return (
       <div className="inner-page">
         <div className="empty-state">
           <span className="empty-icon">⚠️</span>
-          <p className="empty-title">Session not found</p>
+          <p className="empty-title">{error ? 'Session not found' : 'Session not found'}</p>
           <button className="btn-secondary" onClick={() => navigate(-1)}>Go Back</button>
         </div>
       </div>
     );
   }
 
-  const s     = currentSession;
+  const s     = session;
   const score = s.confidence_score ?? 0;
   const tier  = getScoreTier(score);
   const durationSec = s.duration_sec ?? s.duration;

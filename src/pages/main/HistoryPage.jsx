@@ -160,7 +160,7 @@ function HistoryPage() {
             <div
               key={s.id}
               className="session-row"
-              onClick={() => navigate(buildRoute.sessionDetail(s.id))}
+              onClick={() => navigate(buildRoute.sessionDetail(s.id), { state: s })}
             >
               <div className="session-row-info">
                 <p className="session-row-text">

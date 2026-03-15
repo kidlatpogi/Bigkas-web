@@ -204,6 +204,19 @@ export function SessionProvider({ children }) {
 
   /* ── Fetch single session ── */
   const fetchSessionById = useCallback(async (sessionId) => {
+    const normalizedId = String(sessionId || '');
+    const inMemoryMatch = state.sessions.find((s) => String(s.id) === normalizedId);
+    if (inMemoryMatch) {
+      dispatch({ type: 'SET_CURRENT', payload: inMemoryMatch });
+      return { success: true, session: inMemoryMatch };
+    }
+
+    const localMatch = readLocalSessions().find((s) => String(s.id) === normalizedId);
+    if (localMatch) {
+      dispatch({ type: 'SET_CURRENT', payload: localMatch });
+      return { success: true, session: localMatch };
+    }
+
     if (!ENV.ENABLE_SESSION_PERSISTENCE) {
       dispatch({ type: 'SET_CURRENT', payload: null });
       return { success: false, error: 'Session persistence is disabled' };
@@ -220,7 +233,7 @@ export function SessionProvider({ children }) {
     const normalized = normalizeSessionRow(data);
     dispatch({ type: 'SET_CURRENT', payload: normalized });
     return { success: true, session: normalized };
-  }, []);
+  }, [state.sessions]);
 
   /* ── Analyse & save session (calls Python backend) ── */
   const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
