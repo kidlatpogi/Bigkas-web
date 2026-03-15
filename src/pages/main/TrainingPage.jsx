@@ -97,6 +97,7 @@ function TrainingPage() {
   const silenceStartRef  = useRef(null);
   const hintDismissRef   = useRef(null);
   const frameworksRef    = useRef([]);
+  const autoStartTriggeredRef = useRef(false);
 
   /* Hint toast state */
   const [showHint, setShowHint]       = useState(false);
@@ -236,6 +237,19 @@ function TrainingPage() {
       }
     }, 1000);
   }, [startRecording]);
+
+  /* ── Auto-start each session: 3..2..1..Start → record ── */
+  useEffect(() => {
+    if (autoStartTriggeredRef.current) return;
+    if (status !== 'idle') return;
+
+    autoStartTriggeredRef.current = true;
+    const autoStartTimer = setTimeout(() => {
+      startCountdown();
+    }, 300);
+
+    return () => clearTimeout(autoStartTimer);
+  }, [startCountdown, status]);
 
   /* ── Stop → analyse ── */
   const stopRecording = () => {
