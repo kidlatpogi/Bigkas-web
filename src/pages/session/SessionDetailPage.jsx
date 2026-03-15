@@ -35,6 +35,7 @@ function SessionDetailPage() {
   const s     = currentSession;
   const score = s.confidence_score ?? 0;
   const tier  = getScoreTier(score);
+  const durationSec = s.duration_sec ?? s.duration;
 
   return (
     <div className="inner-page">
@@ -71,10 +72,10 @@ function SessionDetailPage() {
           <span className="info-row-key">Date</span>
           <span className="info-row-val">{formatDate(s.created_at)}</span>
         </div>
-        {s.duration_sec != null && (
+        {durationSec != null && (
           <div className="info-row">
             <span className="info-row-key">Duration</span>
-            <span className="info-row-val">{formatDuration(s.duration_sec)}</span>
+            <span className="info-row-val">{formatDuration(durationSec)}</span>
           </div>
         )}
         {s.script_type && (

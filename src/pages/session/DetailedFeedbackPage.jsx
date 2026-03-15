@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useSessionContext } from '../../context/useSessionContext';
 import { ROUTES } from '../../utils/constants';
+import { formatDuration } from '../../utils/formatters';
 import BackButton from '../../components/common/BackButton';
 import '../main/InnerPages.css';
 import './SessionPages.css';
@@ -12,10 +13,14 @@ function toPct(value, fallback = 50) {
 }
 
 function scoreWord(score) {
-  if (score >= 85) return 'EXCELLENT';
-  if (score >= 70) return 'GOOD';
-  if (score >= 50) return 'FAIR';
-  return 'NEEDS WORK';
+  if (score >= 85) return 'Excellent';
+  if (score >= 70) return 'Good';
+  if (score >= 50) return 'Fair';
+  return 'Needs Work';
+}
+
+function clamp(value, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function DetailedFeedbackPage() {
@@ -32,27 +37,91 @@ function DetailedFeedbackPage() {
     }
   }, [fetchSessionById, session, sessionId]);
 
-  const eye = toPct(session?.facial_expression_score ?? session?.eye_contact_score);
-  const gesture = toPct(session?.gesture_score ?? session?.visual_score);
-  const voice = toPct(session?.pronunciation_score ?? session?.acoustic_score ?? session?.confidence_score);
+  const durationSec = Math.max(1, Math.round(session?.duration_sec ?? session?.duration ?? 1));
   const total = toPct(session?.confidence_score ?? session?.score, 0);
 
-  const timeline = useMemo(() => {
-    const e = [Math.max(35, eye - 18), Math.min(95, eye + 7), Math.max(30, eye - 6), Math.min(95, eye + 4)];
-    const g = [Math.max(30, gesture - 20), Math.min(95, gesture + 6), Math.max(35, gesture - 12), Math.min(95, gesture + 3)];
-    const v = [Math.max(40, voice - 16), Math.min(97, voice + 3), Math.max(42, voice - 5), Math.min(97, voice + 1)];
-    return { eye: e, gesture: g, voice: v };
-  }, [eye, gesture, voice]);
+  const categories = useMemo(() => {
+    return [
+      {
+        id: 'facial',
+        label: 'Facial Expression',
+        score: toPct(session?.facial_expression_score ?? session?.eye_contact_score, total),
+        color: '#21C26A',
+      },
+      {
+        id: 'gesture',
+        label: 'Gestures',
+        score: toPct(session?.gesture_score ?? session?.visual_score, total),
+        color: '#15B8A6',
+      },
+      {
+        id: 'jitter',
+        label: 'Jitter',
+        score: toPct(session?.jitter_score ?? session?.acoustic_score, total),
+        color: '#FCBA04',
+      },
+      {
+        id: 'shimmer',
+        label: 'Shimmer',
+        score: toPct(session?.shimmer_score ?? session?.acoustic_score, total),
+        color: '#F59E0B',
+      },
+      {
+        id: 'pronunciation',
+        label: 'Pronunciation',
+        score: toPct(session?.pronunciation_score ?? session?.acoustic_score ?? total, total),
+        color: '#EF4444',
+      },
+    ];
+  }, [session, total]);
 
-  const tips = useMemo(() => {
-    const sorted = [
-      { key: 'eye', score: eye, title: 'Strong Eye Contact', color: 'eye', text: 'Maintain direct eye contact with the camera to build trust and confidence.' },
-      { key: 'voice', score: voice, title: 'Confident Vocal Energy', color: 'voice', text: 'Project your voice clearly and keep articulation crisp across key points.' },
-      { key: 'gesture', score: gesture, title: 'Effective Hand Gestures', color: 'gesture', text: 'Use open-palmed gestures to emphasize key points naturally.' },
-    ].sort((a, b) => b.score - a.score);
+  const timelinePoints = useMemo(() => {
+    const pointCount = clamp(Math.floor(durationSec / 15) + 1, 4, 8);
+    return Array.from({ length: pointCount }, (_, idx) => {
+      const progress = pointCount === 1 ? 1 : idx / (pointCount - 1);
+      const timeSec = idx === pointCount - 1 ? durationSec : Math.round(durationSec * progress);
 
-    return sorted.map((x, i) => ({ ...x, time: ['0:12', '0:18', '0:31'][i] }));
-  }, [eye, gesture, voice]);
+      const values = categories.reduce((acc, cat, catIndex) => {
+        const variance = 8 + (100 - cat.score) * 0.08;
+        const phase = progress * Math.PI * 1.6 + catIndex * 0.75;
+        const wave = Math.sin(phase) * variance * 0.5 + Math.cos(phase * 0.7) * variance * 0.25;
+        const momentum = (progress - 0.5) * ((cat.score - 50) / 12);
+        acc[cat.id] = clamp(Math.round(cat.score + wave + momentum));
+        return acc;
+      }, {});
+
+      return {
+        idx,
+        timeSec,
+        label: formatDuration(timeSec),
+        values,
+      };
+    });
+  }, [categories, durationSec]);
+
+  const timelineFeedback = useMemo(() => {
+    const recommendations = Array.isArray(session?.recommendations) ? session.recommendations : [];
+    const byPriority = [...categories].sort((a, b) => a.score - b.score);
+    const feedbackText = recommendations.length
+      ? recommendations
+      : byPriority.map((cat) => `Keep practicing your ${cat.label.toLowerCase()} to improve consistency over time.`);
+
+    return feedbackText.slice(0, 5).map((text, idx) => {
+      const category = byPriority[idx % byPriority.length];
+      const lowPoint = timelinePoints.reduce((minPoint, point) => {
+        if (!minPoint) return point;
+        return point.values[category.id] < minPoint.values[category.id] ? point : minPoint;
+      }, null);
+
+      return {
+        key: `${category.id}-${idx}`,
+        title: `${category.label} Focus`,
+        text,
+        time: lowPoint ? formatDuration(lowPoint.timeSec) : '00:00',
+        color: category.id,
+      };
+    });
+  }, [categories, session, timelinePoints]);
 
   if (isLoading && !session) {
     return <div className="inner-page"><div className="page-loading">Loading...</div></div>;
@@ -72,7 +141,7 @@ function DetailedFeedbackPage() {
 
   return (
     <div className="inner-page feedback-figma-page">
-      <div className="inner-page-header">
+      <div className="inner-page-header centered-header">
         <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Detailed Feedback</h1>
       </div>
@@ -82,50 +151,46 @@ function DetailedFeedbackPage() {
         <h2 className="feedback-flow-title">Timeline</h2>
 
         <div className="feedback-timeline">
-          {[1, 2, 3, 4].map((minute, i) => (
-            <div key={minute} className="feedback-col">
+          {timelinePoints.map((point) => (
+            <div key={point.idx} className="feedback-col">
               <div className="feedback-col-bg" />
-              <div className="feedback-bar feedback-bar-eye" style={{ height: `${timeline.eye[i]}%` }} />
-              <div className="feedback-bar feedback-bar-gesture" style={{ height: `${timeline.gesture[i]}%` }} />
-              <div className="feedback-bar feedback-bar-voice" style={{ height: `${timeline.voice[i]}%` }} />
-              <span className="feedback-time">{minute}:00</span>
+              <div className="feedback-col-bars">
+                {categories.map((cat) => (
+                  <div key={`${point.idx}-${cat.id}`} className="feedback-mini-bar-wrap">
+                    <div
+                      className="feedback-mini-bar"
+                      style={{ height: `${point.values[cat.id]}%`, background: cat.color }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <span className="feedback-time">{point.label}</span>
             </div>
           ))}
         </div>
 
         <div className="feedback-legend-row">
-          <span className="feedback-legend"><i className="dot dot-eye" /> EyeContact</span>
-          <span className="feedback-legend"><i className="dot dot-gesture" /> Body Gestures</span>
-          <span className="feedback-legend"><i className="dot dot-voice" /> Voice</span>
+          {categories.map((cat) => (
+            <span key={cat.id} className="feedback-legend">
+              <i className="dot" style={{ background: cat.color }} /> {cat.label}
+            </span>
+          ))}
         </div>
       </div>
 
       <div className="feedback-metrics-grid">
-        <div className="page-card feedback-score-card eye">
-          <p className="feedback-score-title">EyeContact</p>
-          <p className="feedback-score-main">{eye}%</p>
-          <p className="feedback-score-sub">MAINTAINED</p>
-          <div className="feedback-score-track"><div style={{ width: `${eye}%` }} /></div>
-          <p className="feedback-score-note">Focus needs more practice</p>
-        </div>
-
-        <div className="page-card feedback-score-card gesture">
-          <p className="feedback-score-title">Body Gestures</p>
-          <p className="feedback-score-main word">{scoreWord(gesture)}</p>
-          <div className="feedback-score-track"><div style={{ width: `${gesture}%` }} /></div>
-          <p className="feedback-score-note">Natural hand movements detected</p>
-        </div>
-      </div>
-
-      <div className="page-card feedback-score-card voice wide">
-        <p className="feedback-score-title">Voice</p>
-        <p className="feedback-score-main word">{scoreWord(voice)}</p>
-        <div className="feedback-score-track"><div style={{ width: `${voice}%` }} /></div>
-        <p className="feedback-score-note">Pronunciation and diction are improving</p>
+        {categories.map((cat) => (
+          <div key={cat.id} className={`page-card feedback-score-card ${cat.id}`}>
+            <p className="feedback-score-title">{cat.label}</p>
+            <p className="feedback-score-main">{cat.score}%</p>
+            <p className="feedback-score-sub">{scoreWord(cat.score).toUpperCase()}</p>
+            <div className="feedback-score-track"><div style={{ width: `${cat.score}%`, background: cat.color }} /></div>
+          </div>
+        ))}
       </div>
 
       <div className="feedback-tips-list">
-        {tips.map((tip) => (
+        {timelineFeedback.map((tip) => (
           <div key={tip.title} className={`feedback-tip-card ${tip.color}`}>
             <div className="feedback-tip-top">
               <h3>{tip.title}</h3>

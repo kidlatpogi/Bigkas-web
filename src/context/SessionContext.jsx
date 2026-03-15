@@ -36,6 +36,16 @@ function reducer(state, action) {
 
 const SessionContext = createContext(null);
 
+function normalizeSessionRow(session) {
+  if (!session) return session;
+  return {
+    ...session,
+    confidence_score: session.confidence_score ?? session.score ?? 0,
+    duration_sec: session.duration_sec ?? session.duration ?? 0,
+    recommendations: Array.isArray(session.recommendations) ? session.recommendations : [],
+  };
+}
+
 function isSessionsTableMissing(error) {
   if (!error) return false;
   const message = error.message?.toLowerCase() || '';
@@ -83,7 +93,8 @@ export function SessionProvider({ children }) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
       return { success: false, error: error.message };
     }
-    const next = { sessions: data ?? [], page, total: count ?? 0 };
+    const normalized = (data ?? []).map(normalizeSessionRow);
+    const next = { sessions: normalized, page, total: count ?? 0 };
     dispatch({ type: refresh || page === 1 ? 'SET_SESSIONS' : 'APPEND_SESSIONS', payload: next });
     return { success: true };
   }, [getUserId]);
@@ -108,8 +119,9 @@ export function SessionProvider({ children }) {
       return { success: false, error: 'Session not found' };
     }
     if (error) { dispatch({ type: 'SET_ERROR', payload: error.message }); return { success: false, error: error.message }; }
-    dispatch({ type: 'SET_CURRENT', payload: data });
-    return { success: true, session: data };
+    const normalized = normalizeSessionRow(data);
+    dispatch({ type: 'SET_CURRENT', payload: normalized });
+    return { success: true, session: normalized };
   }, []);
 
   /* ── Analyse & save session (calls Python backend) ── */
@@ -158,11 +170,11 @@ export function SessionProvider({ children }) {
       };
 
       if (!ENV.ENABLE_SESSION_PERSISTENCE) {
-        const localSession = {
+        const localSession = normalizeSessionRow({
           id: `local-${Date.now()}`,
           ...sessionRow,
           created_at: new Date().toISOString(),
-        };
+        });
         dispatch({ type: 'ADD_SESSION', payload: localSession });
         return { success: true, session: localSession, analysisResult, data: localSession };
       }
@@ -170,27 +182,28 @@ export function SessionProvider({ children }) {
       const { data: saved, error: saveErr } = await supabase.from('sessions').insert(sessionRow).select().single();
       if (saveErr) {
         if (isSessionsTableMissing(saveErr)) {
-          const localSession = {
+          const localSession = normalizeSessionRow({
             id: `local-${Date.now()}`,
             ...sessionRow,
             created_at: new Date().toISOString(),
-          };
+          });
           dispatch({ type: 'ADD_SESSION', payload: localSession });
           return { success: true, session: localSession, analysisResult, data: localSession };
         }
         throw new Error(saveErr.message);
       }
-      dispatch({ type: 'ADD_SESSION', payload: saved });
+      const normalizedSaved = normalizeSessionRow(saved);
+      dispatch({ type: 'ADD_SESSION', payload: normalizedSaved });
       return {
         success: true,
-        session: saved,
+        session: normalizedSaved,
         analysisResult,
         data: {
-          ...saved,
-          confidence_score: analysisResult.confidence_score ?? saved.score ?? 0,
-          acoustic_score: analysisResult.acoustic_score ?? saved.acoustic_score ?? 0,
-          fluency_score: analysisResult.fluency_score ?? saved.fluency_score ?? 0,
-          visual_score: analysisResult.visual_score ?? saved.visual_score ?? null,
+          ...normalizedSaved,
+          confidence_score: analysisResult.confidence_score ?? normalizedSaved.score ?? 0,
+          acoustic_score: analysisResult.acoustic_score ?? normalizedSaved.acoustic_score ?? 0,
+          fluency_score: analysisResult.fluency_score ?? normalizedSaved.fluency_score ?? 0,
+          visual_score: analysisResult.visual_score ?? normalizedSaved.visual_score ?? null,
           facial_expression_score: analysisResult.facial_expression_score ?? null,
           gesture_score: analysisResult.gesture_score ?? null,
           jitter_score: analysisResult.jitter_score ?? null,
@@ -198,8 +211,8 @@ export function SessionProvider({ children }) {
           pronunciation_score: analysisResult.pronunciation_score ?? null,
           recommendations: analysisResult.recommendations ?? [],
           transcript: analysisResult.transcript ?? '',
-          duration_sec: analysisResult.duration_sec ?? saved.duration ?? 0,
-          summary: analysisResult.summary ?? saved.feedback ?? '',
+          duration_sec: analysisResult.duration_sec ?? normalizedSaved.duration ?? 0,
+          summary: analysisResult.summary ?? normalizedSaved.feedback ?? '',
         },
       };
     } catch (err) {

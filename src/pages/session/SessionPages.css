@@ -500,7 +500,7 @@
 .feedback-timeline {
   height: 190px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
   gap: 8px;
   align-items: end;
   border-bottom: 1px solid #cacbd0;
@@ -519,29 +519,27 @@
   background: #f1f2f6;
 }
 
-.feedback-bar {
+.feedback-col-bars {
   position: absolute;
-  left: 0;
-  right: 0;
-  border-top: 4px solid transparent;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+  align-items: end;
+  padding: 8px;
 }
 
-.feedback-bar-eye {
-  bottom: 0;
-  background: rgba(255, 146, 138, 0.18);
-  border-top-color: #ff928a;
+.feedback-mini-bar-wrap {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
 }
 
-.feedback-bar-gesture {
-  bottom: 0;
-  background: rgba(251, 175, 0, 0.18);
-  border-top-color: #fbaf00;
-}
-
-.feedback-bar-voice {
-  bottom: 0;
-  background: rgba(60, 195, 223, 0.18);
-  border-top-color: #3cc3df;
+.feedback-mini-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  opacity: 0.9;
 }
 
 .feedback-time {
@@ -575,13 +573,9 @@
   display: inline-block;
 }
 
-.dot-eye { background: #ff928a; }
-.dot-gesture { background: #fbaf00; }
-.dot-voice { background: #3cc3df; }
-
 .feedback-metrics-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 10px;
   margin-bottom: 10px;
 }
@@ -590,10 +584,11 @@
   border: 1px solid #ececec;
 }
 
-.feedback-score-card.eye { border-color: #ff928a; }
-.feedback-score-card.gesture { border-color: #fbaf00; }
-.feedback-score-card.voice { border-color: #3cc3df; }
-.feedback-score-card.wide { margin-bottom: 10px; }
+.feedback-score-card.facial { border-color: #21c26a; }
+.feedback-score-card.gesture { border-color: #15b8a6; }
+.feedback-score-card.jitter { border-color: #fcba04; }
+.feedback-score-card.shimmer { border-color: #f59e0b; }
+.feedback-score-card.pronunciation { border-color: #ef4444; }
 
 .feedback-score-title {
   margin: 0;
@@ -605,7 +600,7 @@
 
 .feedback-score-main {
   margin: 6px 0 2px;
-  font-size: 35px;
+  font-size: 32px;
   font-weight: 800;
   color: #111;
 }
@@ -628,10 +623,6 @@
   margin-bottom: 6px;
   overflow: hidden;
 }
-
-.feedback-score-card.eye .feedback-score-track > div { background: #ff928a; }
-.feedback-score-card.gesture .feedback-score-track > div { background: #fbaf00; }
-.feedback-score-card.voice .feedback-score-track > div { background: #3cc3df; }
 
 .feedback-score-track > div {
   height: 100%;
@@ -668,6 +659,26 @@
 .feedback-tip-card.gesture {
   border-color: #f6c55f;
   background: #fff9eb;
+}
+
+.feedback-tip-card.facial {
+  border-color: #89dfb3;
+  background: #f2fcf6;
+}
+
+.feedback-tip-card.jitter {
+  border-color: #f6d471;
+  background: #fffdf4;
+}
+
+.feedback-tip-card.shimmer {
+  border-color: #f5c287;
+  background: #fff8f1;
+}
+
+.feedback-tip-card.pronunciation {
+  border-color: #f4a2a2;
+  background: #fff5f5;
 }
 
 .feedback-tip-top {
