@@ -37,6 +37,7 @@ function SettingsPage() {
   const [showClearMediaModal, setShowClearMediaModal] = useState(false);
   const [isClearingMedia, setIsClearingMedia] = useState(false);
   const [clearMediaMessage, setClearMediaMessage] = useState('');
+  const [clearMediaStatus, setClearMediaStatus] = useState('');
 
   useEffect(() => {
     const enumerate = async () => {
@@ -72,15 +73,23 @@ function SettingsPage() {
   const handleClearMedia = async () => {
     setIsClearingMedia(true);
     setClearMediaMessage('');
+    setClearMediaStatus('');
     const result = await clearSessionMedia();
     setIsClearingMedia(false);
     if (result?.success) {
       setShowClearMediaModal(false);
-      setClearMediaMessage('Your audio and video recordings were cleared.');
+      const clearedCount = Number(result?.clearedFiles || 0);
+      setClearMediaMessage(
+        clearedCount > 0
+          ? `Successfully cleared recordings (${clearedCount} file${clearedCount > 1 ? 's' : ''}).`
+          : 'Successfully cleared recordings.'
+      );
+      setClearMediaStatus('success');
       return;
     }
 
     setClearMediaMessage(result?.error || 'Failed to clear recordings. Please try again.');
+    setClearMediaStatus('error');
   };
 
   const displayName  = user?.nickname || user?.name || 'My Profile';
@@ -240,7 +249,13 @@ function SettingsPage() {
       </div>
 
       {clearMediaMessage ? (
-        <p className="stg-inline-message" role="status" aria-live="polite">{clearMediaMessage}</p>
+        <p
+          className={`stg-inline-message ${clearMediaStatus === 'success' ? 'stg-inline-message--success' : ''} ${clearMediaStatus === 'error' ? 'stg-inline-message--error' : ''}`.trim()}
+          role="status"
+          aria-live="polite"
+        >
+          {clearMediaMessage}
+        </p>
       ) : null}
 
       {/* ── Log out ── */}

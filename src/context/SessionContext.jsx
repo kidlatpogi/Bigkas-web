@@ -56,6 +56,8 @@ function normalizeSessionRow(session) {
     ...session,
     confidence_score: session.confidence_score ?? session.score ?? 0,
     duration_sec: session.duration_sec ?? session.duration ?? 0,
+    video_url: session.video_url ?? session.video_storage_url ?? null,
+    video_storage_url: session.video_storage_url ?? session.video_url ?? null,
     recommendations: Array.isArray(session.recommendations) ? session.recommendations : [],
   };
 }
@@ -70,6 +72,12 @@ function isSessionsTableMissing(error) {
     message.includes('relation') ||
     message.includes('not found')
   );
+}
+
+function isMissingVideoUrlColumn(error) {
+  if (!error) return false;
+  const msg = (error.message || '').toLowerCase();
+  return error.code === '42703' || msg.includes('video_url') || msg.includes('column') && msg.includes('does not exist');
 }
 
 function getFileExtension(blobType, fallback = 'webm') {
@@ -364,6 +372,7 @@ export function SessionProvider({ children }) {
         pronunciation_score: analysisResult.pronunciation_score == null ? null : toInt(analysisResult.pronunciation_score, 0),
         recommendations: analysisResult.recommendations ?? [],
         transcript: analysisResult.transcript ?? '',
+        audio_url: audioStorageUrl,
       };
 
       if (!ENV.ENABLE_SESSION_PERSISTENCE) {
@@ -379,16 +388,21 @@ export function SessionProvider({ children }) {
       }
 
       let persistedSession = saved;
-      if (audioStorageUrl) {
-        const { data: updatedSession, error: updateErr } = await supabase
+
+      if (videoStorageUrl) {
+        const { data: updatedSessionWithVideo, error: videoUpdateErr } = await supabase
           .from('sessions')
-          .update({ audio_url: audioStorageUrl })
+          .update({ video_url: videoStorageUrl })
           .eq('id', saved.id)
           .select()
           .single();
 
-        if (!updateErr && updatedSession) {
-          persistedSession = updatedSession;
+        if (videoUpdateErr) {
+          if (!isMissingVideoUrlColumn(videoUpdateErr)) {
+            throw new Error(videoUpdateErr.message);
+          }
+        } else if (updatedSessionWithVideo) {
+          persistedSession = updatedSessionWithVideo;
         }
       }
 
@@ -414,7 +428,8 @@ export function SessionProvider({ children }) {
           duration_sec: analysisResult.duration_sec ?? normalizedSaved.duration ?? 0,
           summary: analysisResult.summary ?? normalizedSaved.feedback ?? '',
           audio_url: normalizedSaved.audio_url ?? audioStorageUrl,
-          video_storage_url: videoStorageUrl,
+          video_url: normalizedSaved.video_url ?? videoStorageUrl,
+          video_storage_url: normalizedSaved.video_storage_url ?? videoStorageUrl,
         },
       };
     } catch (err) {
@@ -460,16 +475,33 @@ export function SessionProvider({ children }) {
     try {
       const { data: sessionRows, error: sessionReadErr } = await supabase
         .from('sessions')
-        .select('audio_url')
+        .select('audio_url,video_url')
         .eq('user_id', uid)
-        .not('audio_url', 'is', null);
+        .or('audio_url.not.is.null,video_url.not.is.null');
 
-      if (sessionReadErr && !isSessionsTableMissing(sessionReadErr)) {
-        throw new Error(sessionReadErr.message);
+      let safeSessionRows = sessionRows;
+      if (sessionReadErr) {
+        if (isMissingVideoUrlColumn(sessionReadErr)) {
+          const { data: fallbackRows, error: fallbackErr } = await supabase
+            .from('sessions')
+            .select('audio_url')
+            .eq('user_id', uid)
+            .not('audio_url', 'is', null);
+
+          if (fallbackErr && !isSessionsTableMissing(fallbackErr)) {
+            throw new Error(fallbackErr.message);
+          }
+          safeSessionRows = fallbackRows;
+        } else if (!isSessionsTableMissing(sessionReadErr)) {
+          throw new Error(sessionReadErr.message);
+        }
       }
 
-      const dbAudioPaths = (sessionRows ?? [])
+      const dbAudioPaths = (safeSessionRows ?? [])
         .map((row) => toSessionRecordingStoragePath(row.audio_url))
+        .filter(Boolean);
+      const dbVideoPaths = (safeSessionRows ?? [])
+        .map((row) => toSessionRecordingStoragePath(row.video_url))
         .filter(Boolean);
 
       const [audioPaths, videoPaths] = await Promise.all([
@@ -477,7 +509,7 @@ export function SessionProvider({ children }) {
         listUserStoragePaths(uid, 'video').catch(() => []),
       ]);
 
-      const allPaths = Array.from(new Set([...dbAudioPaths, ...audioPaths, ...videoPaths]));
+      const allPaths = Array.from(new Set([...dbAudioPaths, ...dbVideoPaths, ...audioPaths, ...videoPaths]));
 
       for (const batch of chunkArray(allPaths, 100)) {
         const { error: removeErr } = await supabase.storage
@@ -491,12 +523,24 @@ export function SessionProvider({ children }) {
 
       const { error: clearDbErr } = await supabase
         .from('sessions')
-        .update({ audio_url: null })
+        .update({ audio_url: null, video_url: null })
         .eq('user_id', uid)
-        .not('audio_url', 'is', null);
+        .or('audio_url.not.is.null,video_url.not.is.null');
 
-      if (clearDbErr && !isSessionsTableMissing(clearDbErr)) {
-        throw new Error(clearDbErr.message);
+      if (clearDbErr) {
+        if (isMissingVideoUrlColumn(clearDbErr)) {
+          const { error: fallbackClearErr } = await supabase
+            .from('sessions')
+            .update({ audio_url: null })
+            .eq('user_id', uid)
+            .not('audio_url', 'is', null);
+
+          if (fallbackClearErr && !isSessionsTableMissing(fallbackClearErr)) {
+            throw new Error(fallbackClearErr.message);
+          }
+        } else if (!isSessionsTableMissing(clearDbErr)) {
+          throw new Error(clearDbErr.message);
+        }
       }
 
       dispatch({ type: 'CLEAR_MEDIA_URLS' });
