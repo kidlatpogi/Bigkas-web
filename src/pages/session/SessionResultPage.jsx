@@ -41,7 +41,7 @@ function SessionResultPage() {
     return null;
   }, [currentSession, sessionId, state]);
 
-  const [isSessionInfoOpen, setIsSessionInfoOpen] = useState(true);
+  const [isSessionInfoOpen, setIsSessionInfoOpen] = useState(false);
 
   if (!result && isLoading) {
     return <div className="inner-page"><div className="page-loading">Loading...</div></div>;
