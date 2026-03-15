@@ -89,12 +89,12 @@ function TrainingSetupPage() {
       setShowTopicModal(true);
     } else {
       if (!selectedScript) return;
-      navigate(ROUTES.TRAINING, { state: { script: selectedScript, focus, autoStartCountdown: true } });
+      navigate(`${ROUTES.TRAINING}?autostart=1`, { state: { script: selectedScript, focus, autoStartCountdown: true } });
     }
   };
 
   const handleFreeStart = () => {
-    navigate(ROUTES.TRAINING, {
+    navigate(`${ROUTES.TRAINING}?autostart=1`, {
       state: { script: selectedScript, focus: 'free', freeTopic, autoStartCountdown: true },
     });
   };

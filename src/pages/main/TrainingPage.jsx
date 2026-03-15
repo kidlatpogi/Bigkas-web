@@ -56,13 +56,16 @@ function SettingsGearIcon() {
 /* ─── Main Component ───────────────────────────────────────────────────────── */
 function TrainingPage() {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const location = useLocation();
+  const { state } = location;
   const { analyseAndSave } = useSessionContext();
 
   const script    = state?.script    || null;
   const focus     = state?.focus     || 'scripted';
   const freeTopic = state?.freeTopic || '';
-  const shouldAutoStart = state?.autoStartCountdown === true;
+  const shouldAutoStart =
+    state?.autoStartCountdown === true ||
+    new URLSearchParams(location.search).get('autostart') === '1';
 
   /* Recording state */
   const [status, setStatus]         = useState('idle'); // idle | countdown | recording | paused | analysing | error
@@ -239,7 +242,7 @@ function TrainingPage() {
     }, 1000);
   }, [startRecording]);
 
-  /* ── Auto-start based on Settings preference ── */
+  /* ── Auto-start when launched from Start actions ── */
   useEffect(() => {
     if (!shouldAutoStart) return;
     if (autoStartTriggeredRef.current) return;
