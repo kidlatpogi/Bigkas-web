@@ -135,12 +135,12 @@ function TrainingSetupPage() {
       <div className="form-group ts-script-select-group">
         {isLoading ? (
           <div className="ts-status-row" role="status" aria-live="polite">
-            <span className="ts-status-icon" aria-hidden="true">⏳</span>
+            <span className="ts-status-icon" aria-hidden="true"></span>
             <p className="ts-loading-text">Loading scripts…</p>
           </div>
         ) : noGeneratedScripts ? (
           <div className="ts-empty-state">
-            <span className="ts-status-icon" aria-hidden="true">🤖</span>
+            <span className="ts-status-icon" aria-hidden="true"></span>
             <p className="ts-empty-text">You haven’t generated any AI scripts yet.</p>
             <button
               className="btn-primary training-generate-btn"

@@ -14,6 +14,7 @@ function SessionResultPage() {
   const result = state || {};
   const score  = result.confidence_score ?? 0;
   const tier   = getScoreTier(score);
+  const scoreDisplay = Number.isInteger(score) ? `${score}` : Number(score).toFixed(2);
 
   const durationSec = result.duration_sec ?? 0;
   const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
@@ -29,23 +30,40 @@ function SessionResultPage() {
     return { ...p, score: Math.max(0, Math.min(100, Math.round(scoreVal))) };
   });
 
+  const pillarColors = {
+    facial: '#21C26A',
+    gesture: '#15B8A6',
+    jitter: '#FCBA04',
+    shimmer: '#F59E0B',
+    pronunciation: '#EF4444',
+  };
+
   return (
     <div className="inner-page">
       {/* Header */}
-      <div className="inner-page-header">
+      <div className="inner-page-header centered-header">
         <BackButton onClick={() => navigate(-1)} />
         <h1 className="inner-page-title">Analysis Result</h1>
       </div>
 
       {/* Overall score */}
-      <div className="page-card" style={{ textAlign: 'center', marginBottom: 16 }}>
-        <div className="score-circle" style={{ borderColor: tier.color }}>
-          <span className="score-circle-num">{score}</span>
-          <span className="score-circle-label">/100</span>
+      <div className="page-card result-hero-card">
+        <p className="result-hero-kicker">Speaking Confidence Score</p>
+        <div className="result-hero-score-row">
+          <p className="result-hero-score">
+            {scoreDisplay}
+            <span>/100</span>
+          </p>
+          <span className="result-hero-tier" style={{ background: `${tier.color}1A`, color: tier.color }}>
+            {tier.label}
+          </span>
         </div>
-        <p style={{ fontSize: 16, fontWeight: 700, color: tier.color, margin: '8px 0 4px' }}>
-          {tier.label}
-        </p>
+        <div className="result-hero-track">
+          <div
+            className="result-hero-track-fill"
+            style={{ width: `${Math.max(0, Math.min(100, Number(score) || 0))}%`, background: tier.color }}
+          />
+        </div>
         <p className="result-summary">
           {score >= 85 ? 'Outstanding! Your speech was clear and fluent.'
           : score >= 65 ? 'Good job! A few areas to polish for even better results.'
@@ -55,20 +73,20 @@ function SessionResultPage() {
       </div>
 
       {/* Five scoring pillars */}
-      <div className="page-card" style={{ marginBottom: 16 }}>
+      <div className="page-card result-pillars-card" style={{ marginBottom: 16 }}>
         <p className="section-label" style={{ marginBottom: 10 }}>Scoring Pillars</p>
         {pillars.map((p) => {
-          const t = getScoreTier(p.score);
+          const color = pillarColors[p.key] || '#FCBA04';
           return (
-            <div key={p.key} style={{ marginBottom: 10 }}>
-              <div className="metric-card-top" style={{ marginBottom: 6 }}>
+            <div key={p.key} className="result-pillar-item">
+              <div className="metric-card-top result-pillar-head" style={{ marginBottom: 6 }}>
                 <span className="metric-label" style={{ fontSize: 14 }}>{p.label}</span>
-                <span className="score-badge" style={{ background: t.color + '22', color: t.color }}>
+                <span className="score-badge result-pillar-score" style={{ background: `${color}1F`, color }}>
                   {p.score}/100
                 </span>
               </div>
-              <div className="progress-track" style={{ marginBottom: 0 }}>
-                <div className="progress-track-fill" style={{ width: `${p.score}%`, background: t.color }} />
+              <div className="progress-track result-pillar-track" style={{ marginBottom: 0 }}>
+                <div className="progress-track-fill" style={{ width: `${p.score}%`, background: color }} />
               </div>
             </div>
           );
