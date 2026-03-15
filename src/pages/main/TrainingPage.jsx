@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { LuRotateCcw } from 'react-icons/lu';
 import { useSessionContext } from '../../context/useSessionContext';
 import { buildRoute } from '../../utils/constants';
 import BackButton from '../../components/common/BackButton';
@@ -41,12 +42,7 @@ function PlayIcon() {
 }
 
 function RestartIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 12a9 9 0 109-9H3"/>
-      <polyline points="3 3 3 12 12 12"/>
-    </svg>
-  );
+  return <LuRotateCcw size={22} strokeWidth={2.5} />;
 }
 
 function SettingsGearIcon() {
@@ -511,7 +507,7 @@ function TrainingPage() {
       {status === 'countdown' && (
         <div className="tp-overlay">
           <div className="tp-countdown-box">
-            <span className="tp-countdown-num">{countdown > 0 ? countdown : 'Go!'}</span>
+            <span className="tp-countdown-num">{countdown > 0 ? countdown : 'Start!'}</span>
           </div>
         </div>
       )}

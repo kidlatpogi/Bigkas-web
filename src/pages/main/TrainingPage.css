@@ -4,9 +4,23 @@
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ── Page shell — fixed full-screen, sits above BottomNav (z-index 1000) ── */
+/* Force html and body to be flush when TrainingPage is active to escape scrollbar-gutter and margins */
+html:has(.tp-page),
+body:has(.tp-page) {
+  scrollbar-gutter: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
 .tp-page {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 1100;
   display: flex;
   flex-direction: column;
