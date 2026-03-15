@@ -125,10 +125,10 @@ function SessionResultPage() {
 
       {/* Actions */}
       <div className="btn-row" style={{ marginTop: 24 }}>
-        <button className="btn-secondary" onClick={() => navigate(ROUTES.TRAINING_SETUP)}>
-          Train Again
+        <button className="btn-secondary" onClick={() => navigate(ROUTES.DASHBOARD)}>
+          Back to Dashboard
         </button>
-        <button className="btn-primary" onClick={() => navigate(ROUTES.SCRIPTS)}>
+        <button className="btn-primary" onClick={() => navigate(ROUTES.TRAINING_SETUP)}>
           Practice Again
         </button>
       </div>
