@@ -24,6 +24,18 @@ function reducer(state, action) {
     case 'SET_CURRENT':     return { ...state, currentSession: action.payload };
     case 'ADD_SESSION':     return { ...state, sessions: [action.payload, ...state.sessions] };
     case 'REMOVE_SESSION':  return { ...state, sessions: state.sessions.filter((s) => s.id !== action.payload) };
+    case 'CLEAR_MEDIA_URLS':
+      return {
+        ...state,
+        sessions: state.sessions.map((s) => ({
+          ...s,
+          audio_url: null,
+          video_storage_url: null,
+        })),
+        currentSession: state.currentSession
+          ? { ...state.currentSession, audio_url: null, video_storage_url: null }
+          : state.currentSession,
+      };
     case 'SET_ERROR':       return { ...state, error: action.payload, isLoading: false };
     case 'CLEAR_ERROR':     return { ...state, error: null };
     case 'RESET':           return initialState;
@@ -79,6 +91,25 @@ function toNumeric(value, fallback = 0) {
   return num;
 }
 
+function chunkArray(items, size) {
+  if (!Array.isArray(items) || size <= 0) return [];
+  const chunks = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
+function toSessionRecordingStoragePath(publicUrl) {
+  if (!publicUrl || typeof publicUrl !== 'string') return null;
+  const marker = `/storage/v1/object/public/${SESSION_MEDIA_BUCKET}/`;
+  const markerIdx = publicUrl.indexOf(marker);
+  if (markerIdx < 0) return null;
+  const encodedPath = publicUrl.slice(markerIdx + marker.length);
+  if (!encodedPath) return null;
+  return decodeURIComponent(encodedPath);
+}
+
 async function uploadSessionMediaBlob({ userId, blob, kind }) {
   if (!blob || !userId) return null;
 
@@ -99,6 +130,33 @@ async function uploadSessionMediaBlob({ userId, blob, kind }) {
 
   const { data } = supabase.storage.from(SESSION_MEDIA_BUCKET).getPublicUrl(filePath);
   return data?.publicUrl ?? null;
+}
+
+async function listUserStoragePaths(userId, kind) {
+  const prefix = `${userId}/${kind}`;
+  const allPaths = [];
+  let offset = 0;
+  const limit = 100;
+
+  while (true) {
+    const { data, error } = await supabase.storage
+      .from(SESSION_MEDIA_BUCKET)
+      .list(prefix, { limit, offset, sortBy: { column: 'name', order: 'asc' } });
+
+    if (error) {
+      throw new Error(error.message || `Failed to list ${kind} recordings.`);
+    }
+
+    const files = Array.isArray(data) ? data.filter((item) => item?.name) : [];
+    for (const file of files) {
+      allPaths.push(`${prefix}/${file.name}`);
+    }
+
+    if (files.length < limit) break;
+    offset += limit;
+  }
+
+  return allPaths;
 }
 
 export function SessionProvider({ children }) {
@@ -386,6 +444,72 @@ export function SessionProvider({ children }) {
     return { success: true };
   }, []);
 
+  const clearSessionMedia = useCallback(async () => {
+    if (!ENV.ENABLE_SESSION_PERSISTENCE) {
+      return {
+        success: false,
+        error: 'Session persistence is disabled. Enable database persistence to clear session media.',
+      };
+    }
+
+    const uid = await getUserId();
+    if (!uid) return { success: false, error: 'Not authenticated' };
+
+    dispatch({ type: 'SET_LOADING', payload: true });
+
+    try {
+      const { data: sessionRows, error: sessionReadErr } = await supabase
+        .from('sessions')
+        .select('audio_url')
+        .eq('user_id', uid)
+        .not('audio_url', 'is', null);
+
+      if (sessionReadErr && !isSessionsTableMissing(sessionReadErr)) {
+        throw new Error(sessionReadErr.message);
+      }
+
+      const dbAudioPaths = (sessionRows ?? [])
+        .map((row) => toSessionRecordingStoragePath(row.audio_url))
+        .filter(Boolean);
+
+      const [audioPaths, videoPaths] = await Promise.all([
+        listUserStoragePaths(uid, 'audio').catch(() => []),
+        listUserStoragePaths(uid, 'video').catch(() => []),
+      ]);
+
+      const allPaths = Array.from(new Set([...dbAudioPaths, ...audioPaths, ...videoPaths]));
+
+      for (const batch of chunkArray(allPaths, 100)) {
+        const { error: removeErr } = await supabase.storage
+          .from(SESSION_MEDIA_BUCKET)
+          .remove(batch);
+
+        if (removeErr) {
+          throw new Error(removeErr.message || 'Failed to remove one or more recording files.');
+        }
+      }
+
+      const { error: clearDbErr } = await supabase
+        .from('sessions')
+        .update({ audio_url: null })
+        .eq('user_id', uid)
+        .not('audio_url', 'is', null);
+
+      if (clearDbErr && !isSessionsTableMissing(clearDbErr)) {
+        throw new Error(clearDbErr.message);
+      }
+
+      dispatch({ type: 'CLEAR_MEDIA_URLS' });
+      return { success: true, clearedFiles: allPaths.length };
+    } catch (err) {
+      const message = err.message || 'Failed to clear session media.';
+      dispatch({ type: 'SET_ERROR', payload: message });
+      return { success: false, error: message };
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, [getUserId]);
+
   const clearCurrentSession = useCallback(() => dispatch({ type: 'SET_CURRENT', payload: null }), []);
   const clearError          = useCallback(() => dispatch({ type: 'CLEAR_ERROR' }), []);
   const reset               = useCallback(() => dispatch({ type: 'RESET' }), []);
@@ -398,6 +522,7 @@ export function SessionProvider({ children }) {
     fetchSessionById,
     analyseAndSave,
     deleteSession,
+    clearSessionMedia,
     clearCurrentSession,
     clearError,
     reset,

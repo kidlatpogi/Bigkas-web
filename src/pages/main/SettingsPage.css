@@ -80,6 +80,11 @@
   color: #c98800;
 }
 
+.stg-row-icon.stg-icon-danger {
+  background: rgba(229, 36, 59, 0.12);
+  color: #c71f35;
+}
+
 /* Avatar photo inside profile row icon */
 .stg-avatar {
   width: 38px;
@@ -237,6 +242,12 @@
 .stg-btn-logout:hover  { opacity: 0.88; }
 .stg-btn-logout:active { transform: scale(0.98); }
 
+.stg-inline-message {
+  margin: 10px 4px 0;
+  font-size: 13px;
+  color: #5f5f5f;
+}
+
 /* ══════════════════════════════════════════════
    Dark mode
    ══════════════════════════════════════════════ */
@@ -260,6 +271,11 @@
 [data-theme="dark"] .stg-row-icon.stg-icon-gold {
   background: rgba(252, 186, 4, 0.12);
   color: #FCBA04;
+}
+
+[data-theme="dark"] .stg-row-icon.stg-icon-danger {
+  background: rgba(229, 36, 59, 0.18);
+  color: #ff6a7f;
 }
 
 [data-theme="dark"] .stg-row-title { color: #F0F0F0; }
@@ -292,6 +308,10 @@
 [data-theme="dark"] .stg-btn-logout {
   background: #C41E33;
   box-shadow: 0 4px 14px rgba(196, 30, 51, 0.25);
+}
+
+[data-theme="dark"] .stg-inline-message {
+  color: #a6a6a6;
 }
 
 /* ── Mobile responsive ── */
