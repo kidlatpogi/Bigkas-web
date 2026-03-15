@@ -402,6 +402,14 @@
 .practice-modal-close {
   width: 36px;
   height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1;
   border: none;
   background: rgba(1, 1, 1, 0.05);
   border-radius: 50%;

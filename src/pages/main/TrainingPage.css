@@ -768,6 +768,14 @@ body:has(.tp-page) {
 .tp-modal-close {
   width: 32px;
   height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1;
   border-radius: 50%;
   border: none;
   background: #F0F0F0;
