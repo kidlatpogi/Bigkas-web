@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/useTheme';
 import './ThemeToggleBtn.css';
+
+const THEME_TOGGLE_HIDDEN_KEY = 'bigkas-hide-theme-toggle';
 
 /**
  * ThemeToggleBtn — 1:1 clone of the Portfolio ModeSwitcher.
@@ -11,6 +14,27 @@ import './ThemeToggleBtn.css';
 function ThemeToggleBtn({ className = '' }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
+  const [isHidden, setIsHidden] = useState(
+    () => localStorage.getItem(THEME_TOGGLE_HIDDEN_KEY) === '1'
+  );
+
+  useEffect(() => {
+    const syncHiddenPreference = () => {
+      setIsHidden(localStorage.getItem(THEME_TOGGLE_HIDDEN_KEY) === '1');
+    };
+
+    window.addEventListener('storage', syncHiddenPreference);
+    window.addEventListener('theme-toggle-visibility-changed', syncHiddenPreference);
+
+    return () => {
+      window.removeEventListener('storage', syncHiddenPreference);
+      window.removeEventListener('theme-toggle-visibility-changed', syncHiddenPreference);
+    };
+  }, []);
+
+  if (isHidden) {
+    return null;
+  }
 
   function handleToggle(e) {
     if (document.body.dataset.themeAnimating === '1') return;

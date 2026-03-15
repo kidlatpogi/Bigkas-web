@@ -52,6 +52,14 @@
 }
 .stg-row--select:hover { background: transparent; }
 
+.stg-row--toggle {
+  cursor: default;
+}
+
+.stg-row--toggle:hover {
+  background: transparent;
+}
+
 /* ── Row icon circle ───────────────────────── */
 .stg-row-icon {
   display: flex;
@@ -153,6 +161,57 @@
   transform: rotate(90deg);
 }
 
+/* ── Toggle switch ─────────────────────────── */
+.stg-switch {
+  margin-left: auto;
+  position: relative;
+  width: 48px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.stg-switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.stg-switch-slider {
+  position: absolute;
+  inset: 0;
+  background: #d9d9d9;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.stg-switch-slider::before {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.stg-switch-input:checked + .stg-switch-slider {
+  background: #FCBA04;
+}
+
+.stg-switch-input:checked + .stg-switch-slider::before {
+  transform: translateX(20px);
+}
+
+.stg-switch-input:focus-visible + .stg-switch-slider {
+  outline: 2px solid rgba(252, 186, 4, 0.55);
+  outline-offset: 2px;
+}
+
 /* ── Log Out button ────────────────────────── */
 .stg-btn-logout {
   display: flex;
@@ -217,6 +276,18 @@
 
 [data-theme="dark"] .stg-select:focus { border-color: #FCBA04; }
 [data-theme="dark"] .stg-select-arrow { color: #555; }
+
+[data-theme="dark"] .stg-switch-slider {
+  background: #3a3a3a;
+}
+
+[data-theme="dark"] .stg-switch-slider::before {
+  background: #f4f4f4;
+}
+
+[data-theme="dark"] .stg-switch-input:checked + .stg-switch-slider {
+  background: #FCBA04;
+}
 
 [data-theme="dark"] .stg-btn-logout {
   background: #C41E33;

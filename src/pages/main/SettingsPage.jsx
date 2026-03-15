@@ -6,6 +6,7 @@ import {
   IoShieldCheckmarkOutline,
   IoMicOutline,
   IoCameraOutline,
+  IoContrastOutline,
   IoHardwareChipOutline,
   IoLogOutOutline,
   IoChevronForward,
@@ -16,6 +17,8 @@ import './InnerPages.css';
 import './SettingsPage.css';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 
+const THEME_TOGGLE_HIDDEN_KEY = 'bigkas-hide-theme-toggle';
+
 function SettingsPage() {
   const navigate = useNavigate();
   const { logout, user } = useAuthContext();
@@ -25,6 +28,9 @@ function SettingsPage() {
   const [cameras, setCameras]         = useState([]);
   const [mic, setMic] = useState(() => localStorage.getItem('pref_mic') || '');
   const [cam, setCam] = useState(() => localStorage.getItem('pref_cam') || '');
+  const [hideThemeToggle, setHideThemeToggle] = useState(
+    () => localStorage.getItem(THEME_TOGGLE_HIDDEN_KEY) === '1'
+  );
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
@@ -49,6 +55,12 @@ function SettingsPage() {
 
   const handleMicChange = (e) => { setMic(e.target.value); localStorage.setItem('pref_mic', e.target.value); };
   const handleCamChange = (e) => { setCam(e.target.value); localStorage.setItem('pref_cam', e.target.value); };
+  const handleThemeToggleVisibilityChange = (e) => {
+    const shouldHide = e.target.checked;
+    setHideThemeToggle(shouldHide);
+    localStorage.setItem(THEME_TOGGLE_HIDDEN_KEY, shouldHide ? '1' : '0');
+    window.dispatchEvent(new Event('theme-toggle-visibility-changed'));
+  };
 
   const handleLogout = () => { setShowLogoutModal(true); };
 
@@ -107,6 +119,29 @@ function SettingsPage() {
           </div>
           <IoChevronForward size={17} className="stg-chevron" />
         </button>
+      </div>
+
+      {/* ── Appearance section ── */}
+      <p className="stg-section-label">APPEARANCE</p>
+      <div className="stg-card">
+        <div className="stg-row stg-row--toggle">
+          <span className="stg-row-icon">
+            <IoContrastOutline size={20} />
+          </span>
+          <div className="stg-row-body">
+            <span className="stg-row-title">Hide Theme Button</span>
+            <span className="stg-row-sub">Hide or show the floating light-dark toggle button</span>
+          </div>
+          <label className="stg-switch" aria-label="Hide theme button">
+            <input
+              type="checkbox"
+              className="stg-switch-input"
+              checked={hideThemeToggle}
+              onChange={handleThemeToggleVisibilityChange}
+            />
+            <span className="stg-switch-slider" />
+          </label>
+        </div>
       </div>
 
       {/* ── Hardware section ── */}
