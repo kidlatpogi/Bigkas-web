@@ -225,13 +225,13 @@
 }
 
 .dash-btn-practice {
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+  background: rgba(252, 186, 4, 0.13);
+  border: 1px solid rgba(252, 186, 4, 0.55);
+  color: #FCBA04;
 }
 
 .dash-btn-practice:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(252, 186, 4, 0.22);
   transform: translateY(-1px);
 }
 
@@ -525,13 +525,13 @@
 }
 
 [data-theme="dark"] .dash-btn-practice {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: rgba(252, 186, 4, 0.10);
+  border-color: rgba(252, 186, 4, 0.50);
+  color: #FCBA04;
 }
 
 [data-theme="dark"] .dash-btn-practice:hover {
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(252, 186, 4, 0.18);
 }
 
 [data-theme="dark"] .dash-quicklearn-card {
