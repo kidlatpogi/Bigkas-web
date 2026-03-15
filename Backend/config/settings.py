@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
 
+    # ── Hugging Face ASR ────────────────────────────────
+    HF_WHISPER_MODEL_ID: str = "openai/whisper-tiny"
+
     @property
     def max_upload_size_bytes(self) -> int:
         return self.MAX_UPLOAD_SIZE_MB * 1024 * 1024

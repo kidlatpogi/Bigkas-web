@@ -20,6 +20,7 @@ numpy==1.26.4
 soundfile==0.12.1
 scipy==1.14.1
 openai-whisper==20231117
+transformers==4.46.3
 
 # Computer vision (visual engagement tracking)
 mediapipe==0.10.21
