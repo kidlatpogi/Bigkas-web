@@ -89,6 +89,18 @@ function getFileExtension(blobType, fallback = 'webm') {
   return cleaned || fallback;
 }
 
+function toInt(value, fallback = 0) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.round(num);
+}
+
+function toNumeric(value, fallback = 0) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return num;
+}
+
 async function uploadSessionMediaBlob({ userId, blob, kind }) {
   if (!blob || !userId) return null;
 
@@ -309,18 +321,18 @@ export function SessionProvider({ children }) {
         target_text:   targetText,
         script_type:   scriptType,
         difficulty,
-        score:         analysisResult.confidence_score ?? 0,
-        acoustic_score: analysisResult.acoustic_score ?? 0,
-        fluency_score:  analysisResult.fluency_score  ?? 0,
-        visual_score:   analysisResult.visual_score   ?? null,
+        score:         toNumeric(analysisResult.confidence_score, 0),
+        acoustic_score: toNumeric(analysisResult.acoustic_score, 0),
+        fluency_score:  toNumeric(analysisResult.fluency_score, 0),
+        visual_score:   analysisResult.visual_score == null ? null : toNumeric(analysisResult.visual_score, 0),
         feedback:       analysisResult.summary         ?? '',
-        duration:       analysisResult.duration_sec    ?? 0,
-        confidence_score: analysisResult.confidence_score ?? 0,
-        facial_expression_score: analysisResult.facial_expression_score ?? null,
-        gesture_score: analysisResult.gesture_score ?? null,
-        jitter_score: analysisResult.jitter_score ?? null,
-        shimmer_score: analysisResult.shimmer_score ?? null,
-        pronunciation_score: analysisResult.pronunciation_score ?? null,
+        duration:       toInt(analysisResult.duration_sec, 0),
+        confidence_score: toInt(analysisResult.confidence_score, 0),
+        facial_expression_score: analysisResult.facial_expression_score == null ? null : toInt(analysisResult.facial_expression_score, 0),
+        gesture_score: analysisResult.gesture_score == null ? null : toInt(analysisResult.gesture_score, 0),
+        jitter_score: analysisResult.jitter_score == null ? null : toInt(analysisResult.jitter_score, 0),
+        shimmer_score: analysisResult.shimmer_score == null ? null : toInt(analysisResult.shimmer_score, 0),
+        pronunciation_score: analysisResult.pronunciation_score == null ? null : toInt(analysisResult.pronunciation_score, 0),
         recommendations: analysisResult.recommendations ?? [],
         transcript: analysisResult.transcript ?? '',
       };
