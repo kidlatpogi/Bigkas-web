@@ -4,6 +4,7 @@ import { ENV } from '../config/env';
 
 const PAGE_SIZE = 10;
 const LOCAL_SESSIONS_KEY = 'bigkas_local_sessions_v1';
+const SESSION_MEDIA_BUCKET = 'session-recordings';
 
 const initialState = {
   sessions:       [],
@@ -79,6 +80,35 @@ function isSessionsTableMissing(error) {
     message.includes('relation') ||
     message.includes('not found')
   );
+}
+
+function getFileExtension(blobType, fallback = 'webm') {
+  if (!blobType) return fallback;
+  const [, subtype = fallback] = String(blobType).split('/');
+  const cleaned = subtype.split(';')[0].trim();
+  return cleaned || fallback;
+}
+
+async function uploadSessionMediaBlob({ userId, blob, kind }) {
+  if (!blob || !userId) return null;
+
+  const extension = getFileExtension(blob.type, kind === 'video' ? 'webm' : 'webm');
+  const random = Math.random().toString(36).slice(2, 8);
+  const filePath = `${userId}/${kind}/${Date.now()}-${random}.${extension}`;
+
+  const { error } = await supabase.storage
+    .from(SESSION_MEDIA_BUCKET)
+    .upload(filePath, blob, {
+      contentType: blob.type || (kind === 'video' ? 'video/webm' : 'audio/webm'),
+      upsert: false,
+    });
+
+  if (error) {
+    throw new Error(error.message || `Failed to upload ${kind} blob.`);
+  }
+
+  const { data } = supabase.storage.from(SESSION_MEDIA_BUCKET).getPublicUrl(filePath);
+  return data?.publicUrl ?? null;
 }
 
 export function SessionProvider({ children }) {
@@ -258,6 +288,21 @@ export function SessionProvider({ children }) {
       });
       if (!res.ok) throw new Error(`Analysis failed: ${res.status}`);
       const analysisResult = await res.json();
+
+      let audioStorageUrl = null;
+      let videoStorageUrl = null;
+      if (ENV.ENABLE_SESSION_PERSISTENCE) {
+        try {
+          audioStorageUrl = await uploadSessionMediaBlob({ userId: uid, blob: audioBlob, kind: 'audio' });
+          if (videoBlob) {
+            videoStorageUrl = await uploadSessionMediaBlob({ userId: uid, blob: videoBlob, kind: 'video' });
+          }
+        } catch (uploadErr) {
+          // Keep analysis/session save working even if storage bucket upload fails.
+          console.warn('[Bigkas] Session media upload skipped:', uploadErr?.message || uploadErr);
+        }
+      }
+
       // Persist to Supabase (optional in local/dev)
       const sessionRow = {
         user_id:       uid,
@@ -295,19 +340,26 @@ export function SessionProvider({ children }) {
       const { data: saved, error: saveErr } = await supabase.from('sessions').insert(sessionRow).select().single();
       if (saveErr) {
         if (isSessionsTableMissing(saveErr)) {
-          const localSession = normalizeSessionRow({
-            id: `local-${Date.now()}`,
-            ...sessionRow,
-            created_at: new Date().toISOString(),
-          });
-          const nextLocal = [localSession, ...readLocalSessions()];
-          writeLocalSessions(nextLocal);
-          dispatch({ type: 'ADD_SESSION', payload: localSession });
-          return { success: true, session: localSession, analysisResult, data: localSession };
+          throw new Error('Supabase table "sessions" is missing. Create it in your Supabase project to persist data.');
         }
         throw new Error(saveErr.message);
       }
-      const normalizedSaved = normalizeSessionRow(saved);
+
+      let persistedSession = saved;
+      if (audioStorageUrl) {
+        const { data: updatedSession, error: updateErr } = await supabase
+          .from('sessions')
+          .update({ audio_url: audioStorageUrl })
+          .eq('id', saved.id)
+          .select()
+          .single();
+
+        if (!updateErr && updatedSession) {
+          persistedSession = updatedSession;
+        }
+      }
+
+      const normalizedSaved = normalizeSessionRow(persistedSession);
       dispatch({ type: 'ADD_SESSION', payload: normalizedSaved });
       return {
         success: true,
@@ -328,6 +380,8 @@ export function SessionProvider({ children }) {
           transcript: analysisResult.transcript ?? '',
           duration_sec: analysisResult.duration_sec ?? normalizedSaved.duration ?? 0,
           summary: analysisResult.summary ?? normalizedSaved.feedback ?? '',
+          audio_url: normalizedSaved.audio_url ?? audioStorageUrl,
+          video_storage_url: videoStorageUrl,
         },
       };
     } catch (err) {
