@@ -316,7 +316,7 @@ export function SessionProvider({ children }) {
   }, [state.sessions]);
 
   /* ── Analyse & save session (calls Python backend) ── */
-  const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech', difficulty = 'medium' }) => {
+  const analyseAndSave = useCallback(async ({ audioBlob, videoBlob = null, targetText, scriptType = 'free-speech' }) => {
     const uid = await getUserId();
     if (!uid) return { success: false, error: 'Not authenticated' };
     dispatch({ type: 'SET_ANALYSING', payload: true });
@@ -330,7 +330,6 @@ export function SessionProvider({ children }) {
       }
       formData.append('target_text', targetText);
       formData.append('script_type', scriptType);
-      formData.append('difficulty', difficulty);
       const res = await fetch(`${apiUrl}/api/analysis/analyze`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authSession?.access_token}` },
@@ -357,7 +356,6 @@ export function SessionProvider({ children }) {
         user_id:       uid,
         target_text:   targetText,
         script_type:   scriptType,
-        difficulty,
         score:         toNumeric(analysisResult.confidence_score, 0),
         acoustic_score: toNumeric(analysisResult.acoustic_score, 0),
         fluency_score:  toNumeric(analysisResult.fluency_score, 0),

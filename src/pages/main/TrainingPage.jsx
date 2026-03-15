@@ -382,7 +382,6 @@ function TrainingPage() {
           videoBlob,
           targetText: focus === 'scripted' ? (script?.content || '') : (freeTopic || 'Free speech session'),
           scriptType: focus,
-          difficulty: 'medium',
         });
         if (result?.success && result?.data?.id) {
           navigate(buildRoute.sessionResult(result.data.id), { state: result.data });

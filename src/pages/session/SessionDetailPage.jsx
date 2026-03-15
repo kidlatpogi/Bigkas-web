@@ -86,12 +86,6 @@ function SessionDetailPage() {
             <span className="info-row-val" style={{ textTransform: 'capitalize' }}>{s.script_type}</span>
           </div>
         )}
-        {s.difficulty && (
-          <div className="info-row">
-            <span className="info-row-key">Difficulty</span>
-            <span className="info-row-val" style={{ textTransform: 'capitalize' }}>{s.difficulty}</span>
-          </div>
-        )}
       </div>
 
       {/* Feedback card */}

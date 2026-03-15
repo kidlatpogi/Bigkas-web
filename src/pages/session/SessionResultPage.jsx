@@ -202,12 +202,6 @@ function SessionResultPage() {
               <span className="info-row-key">Mode</span>
               <span className="info-row-val">{modeLabel}</span>
             </div>
-            <div className="info-row" style={{ borderBottom: 'none' }}>
-              <span className="info-row-key">Difficulty</span>
-              <span className="info-row-val" style={{ textTransform: 'capitalize' }}>
-                {result?.difficulty ? String(result.difficulty) : 'N/A'}
-              </span>
-            </div>
 
             <p className="detail-section-title" style={{ marginTop: 14 }}>Practiced Text</p>
             <p className="practiced-text">{practicedText}</p>
