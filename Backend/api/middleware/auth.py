@@ -118,20 +118,26 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    token = credentials.credentials
+    token = credentials.credentials.strip().strip('"').strip("'")
 
     try:
         header = jwt.get_unverified_header(token)
         token_alg = (header or {}).get("alg", "")
         kid = (header or {}).get("kid")
     except JWTError:
-        token_alg = ""
-        kid = None
+        logger.warning("JWT header parse failed before verification.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Malformed bearer token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     payload = None
+    logger.debug("JWT auth start: alg=%s kid=%s", token_alg, kid)
 
     # Supabase hosted projects commonly issue RS256 JWTs.
     if token_alg == "RS256":
+        logger.debug("JWT RS256 path selected; attempting JWKS verification.")
         payload = _decode_rs256_with_jwks(token, kid)
 
         # Do not fall back to HS256 for RS256 tokens.
@@ -158,6 +164,7 @@ async def get_current_user(
 
     # Fallback: local/dev HS256 secret verification.
     if payload is None:
+        logger.debug("JWT HS256 fallback path selected.")
         try:
             payload = jwt.decode(
                 token,
@@ -166,7 +173,7 @@ async def get_current_user(
                 options={"verify_aud": False},
             )
         except JWTError as exc:
-            logger.warning("JWT verification failed: %s", exc)
+            logger.warning("JWT HS verification failed: %s", exc)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or expired token.",
